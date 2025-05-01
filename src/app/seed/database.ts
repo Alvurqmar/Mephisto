@@ -37,7 +37,7 @@ export const cards = [
     { name: 'Key', type: 'ITEM', cost: 0, attack: 0, durability: 3, effect: 'KeyE', soulPts: 0 },
   
     // WEAPONS
-    { name: 'Blast Wand', type: 'WEAPON', cost: 1, attack: 3, durability: 3, effect: 'BWE', soulPts: 0 },
+    { name: 'Blast_Wand', type: 'WEAPON', cost: 1, attack: 3, durability: 3, effect: 'BWE', soulPts: 0 },
     { name: 'Corruptor', type: 'WEAPON', cost: 2, attack: 5, durability: 2, effect: 'CorruptorE', soulPts: 0 },
     { name: 'Fork', type: 'WEAPON', cost: 0, attack: 2, durability: 3, effect: 'ForkE', soulPts: 0 },
     { name: 'Grimoire', type: 'WEAPON', cost: 2, attack: 5, durability: 3, effect: 'GrimoireE', soulPts: 0 },

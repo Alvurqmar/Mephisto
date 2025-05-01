@@ -28,7 +28,13 @@ export default function Board() {
   const [fieldCards, setFieldCards] = useState<Card[]>([]);
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
   const [opponentHand, setOpponentHand] = useState<Card[]>([]);
+  const [playerFavor, setPlayerFavor] = useState(3);
+  const [enemyFavor, setEnemyFavor] = useState(5);
 
+
+  function modifyFavor(current: number, change: number): number {
+    return Math.max(0, Math.min(10, current + change));
+  }
   useEffect(() => {
     async function fetchCards() {
       const res = await fetch('/api/cards');
@@ -55,8 +61,8 @@ export default function Board() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-grey overflow-hidden">
-      {/* Opponent Hand */}
+    <main className="flex flex-col h-screen">
+
       <div className="flex justify-center space-x-2 p-2 flex-none rotate-180">
         {opponentHand.map((_, index) => (
           <img
@@ -65,7 +71,7 @@ export default function Board() {
             alt="Hidden Card"
             width={100}
             height={150}
-            className="rounded-lg"
+            className="rounded-lg transition-transform duration-300 hover:scale-110"
           />
         ))}
       </div>
@@ -78,34 +84,82 @@ export default function Board() {
             alt="Favor Tracker"
             width={150}
             height={200}
-            className="rounded-lg transform rotate-180"
-          />
+            className="rounded-lg transform rotate-180 transition-transform duration-300 hover:scale-110"
+            />
           <img
             src="/cards/CardBack.png"
             alt="Card Back"
             width={150}
             height={200}
-            className="rounded-lg"
+            className="rounded-lg transition-transform duration-300 hover:scale-110"
           />
         </div>
 
         <div className="flex flex-col items-center space-y-4">
+        <div className="bg-transparent border flex items-center justify-center rounded">
+            Espacio vacio 
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded">
+            Espacio vacio 
+          </div>
+          <div className = "transition-transform duration-300 hover:scale-110">
           {fieldCards[0] && renderCard(fieldCards[0])}
+          </div>
+          <div className = "transition-transform duration-300 hover:scale-110">
           {fieldCards[1] && renderCard(fieldCards[1])}
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+          Espacio vacio
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+          Espacio vacio
+          </div>
         </div>
 
         <div className="flex flex-col items-center space-y-4">
+        <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+          Espacio vacio
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+            Espacio vacio
+          </div>
+          <div className = "transition-transform duration-300 hover:scale-110">
           {fieldCards[2] && renderCard(fieldCards[2])}
+          </div>
+          <div className = "transition-transform duration-300 hover:scale-110">
           {fieldCards[3] && renderCard(fieldCards[3])}
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+            Espacio vacio
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+            Espacio vacio
+          </div>
         </div>
 
         <div className="flex flex-col items-center space-y-4">
+        <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+            Espacio vacio
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110 ">
+            Espacio vacio
+          </div>
+          <div className = "transition-transform duration-300 hover:scale-110">
           {fieldCards[4] && renderCard(fieldCards[4])}
+          </div>
+          <div className = "transition-transform duration-300 hover:scale-110">
           {fieldCards[5] && renderCard(fieldCards[5])}
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+            Espacio vacio
+          </div>
+          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
+          Espacio vacio
+          </div>
         </div>
 
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-35 h-50 bg-transparent border flex items-center justify-center rounded rotate-90">
+          <div className="w-35 h-50 bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
             Discard Pile
           </div>
           <img
@@ -113,13 +167,13 @@ export default function Board() {
             alt="Favor Tracker"
             width={150}
             height={200}
-            className="rounded-lg transform"
+            className="rounded-lg transform transition-transform duration-300 hover:scale-110"
           />
         </div>
 
       </div>
 
-      <div className="flex justify-center space-x-2 p-2 flex-none">
+      <footer className="flex justify-center space-x-2 p-2 flex-none">
         {playerHand.map((card, index) => (
           <img
             key={index}
@@ -127,12 +181,13 @@ export default function Board() {
             alt={card.name}
             width={100}
             height={150}
-            className="rounded-lg"
+            className="rounded-lg transition-transform duration-300 hover:scale-110"
           />
         ))}
-      </div>
-    </div>
+      </footer>
+    </main>
   );
 }
+
 
 
