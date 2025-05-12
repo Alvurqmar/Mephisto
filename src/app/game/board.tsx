@@ -1,193 +1,217 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from "react";
+import { game } from "../components/hooks/game";
+import Player from "../components/player";
+import Card, { cardImg } from "../components/card";
+import Hand from "../components/hand";
 
-interface Card {
-  id: number;
-  name: string;
-  type: string;
-  cost: number;
-  attack: number;
-  durability: number;
-  effect: string;
-  soulpts: number;
-}
-function renderCard(card: Card) {
-  return (
-    <img
-      src={`/cards/${card.name}.png`}
-      alt={card.name}
-        width={150}
-        height={200}
-        className="rounded-lg"
-    />
-  );
-}
 export default function Board() {
-  const [deck, setDeck] = useState<Card[]>([]);
-  const [fieldCards, setFieldCards] = useState<Card[]>([]);
-  const [playerHand, setPlayerHand] = useState<Card[]>([]);
-  const [opponentHand, setOpponentHand] = useState<Card[]>([]);
-  const [playerFavor, setPlayerFavor] = useState(3);
-  const [enemyFavor, setEnemyFavor] = useState(5);
+  const {
+    deck,
+    fieldCards,
+    hands,
+    playerFields,
+    currentTurn,
+    currentPhase,
+    changePhase,
+    playCard,
+    cardsToDiscard,
+    setCardsToDiscard,
+    selectedCard,
+    setSelectedCard,
+    isDiscarding,
+    startDiscard,
+    toggleCardToDiscard,
+    confirmDiscard,
+  } = game();
 
-
-  function modifyFavor(current: number, change: number): number {
-    return Math.max(0, Math.min(10, current + change));
-  }
-  useEffect(() => {
-    async function fetchCards() {
-      const res = await fetch('/api/cards');
-      const data = await res.json();
-      const shuffled = shuffleArray(data);
-
-      setDeck(shuffled);
-
-      setFieldCards(shuffled.slice(0, 6));
-      setPlayerHand(shuffled.slice(6, 9));
-      setOpponentHand(shuffled.slice(9, 13));
-    }
-
-    fetchCards();
-  }, []);
-
-  function shuffleArray(array: Card[]) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
+  const [player1Favor, setPlayer1Favor] = useState(3);
+  const [player2Favor, setPlayer2Favor] = useState(5);
+  const [zoomCard, setZoomCard] = useState<Card | null>(null);
+  const [playMessage, setPlayMessage] = useState<string | null>(null);
+  const [zoomCardPosition, setZoomCardPosition] = useState<{
+    playerId: "player1" | "player2";
+    lane: number;
+    slot: number;
+  } | null>(null);
 
   return (
-    <main className="flex flex-col h-screen">
-
-      <div className="flex justify-center space-x-2 p-2 flex-none rotate-180">
-        {opponentHand.map((_, index) => (
-          <img
-            key={index}
-            src="/cards/CardBack.png"
-            alt="Hidden Card"
-            width={100}
-            height={150}
-            className="rounded-lg transition-transform duration-300 hover:scale-110"
-          />
-        ))}
-      </div>
-
-      <div className="grid grid-cols-5 gap-2 flex-grow p-4">
-        
-        <div className="flex flex-col items-center space-y-4">
-          <img
-            src="/cards/Favor.png"
-            alt="Favor Tracker"
-            width={150}
-            height={200}
-            className="rounded-lg transform rotate-180 transition-transform duration-300 hover:scale-110"
+    <main className="flex flex-col h-screen overflow-hidden p-2 relative">
+      <div className="grid grid-cols-5 gap-1 flex-grow items-center">
+        {/*Zona info y Deck*/}
+        <div className="flex flex-col items-center space-y-2">
+          <div className="w-[110px] h-[100px] border rounded bg-neutral-800 flex items-center justify-center">
+            <Player
+              user="user2"
+              name="Jugador 2"
+              favor={player2Favor}
+              soulPoints={0}
             />
+          </div>
           <img
             src="/cards/CardBack.png"
-            alt="Card Back"
-            width={150}
-            height={200}
-            className="rounded-lg transition-transform duration-300 hover:scale-110"
+            alt="Dungeon Deck"
+            className="w-[100px] h-[150px] rounded"
           />
-        </div>
 
-        <div className="flex flex-col items-center space-y-4">
-        <div className="bg-transparent border flex items-center justify-center rounded">
-            Espacio vacio 
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded">
-            Espacio vacio 
-          </div>
-          <div className = "transition-transform duration-300 hover:scale-110">
-          {fieldCards[0] && renderCard(fieldCards[0])}
-          </div>
-          <div className = "transition-transform duration-300 hover:scale-110">
-          {fieldCards[1] && renderCard(fieldCards[1])}
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-          Espacio vacio
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-          Espacio vacio
-          </div>
-        </div>
+          <p className="rounded bg-neutral-800">
+            Turno: {currentTurn === "player1" ? "Jugador 1" : "Jugador 2"}
+          </p>
+          <button
+            className="text-2xl border rounded bg-red-900 hover:bg-red-950 cursor-pointer transition transform active:scale-95"
+            onClick={changePhase}
+          >
+            Fase Siguiente
+          </button>
+          <p className="rounded bg-neutral-800 ">Fase actual: {currentPhase}</p>
 
-        <div className="flex flex-col items-center space-y-4">
-        <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-          Espacio vacio
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-            Espacio vacio
-          </div>
-          <div className = "transition-transform duration-300 hover:scale-110">
-          {fieldCards[2] && renderCard(fieldCards[2])}
-          </div>
-          <div className = "transition-transform duration-300 hover:scale-110">
-          {fieldCards[3] && renderCard(fieldCards[3])}
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-            Espacio vacio
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-            Espacio vacio
+          <div className="w-[110px] h-[100px] border rounded bg-neutral-800 flex items-center justify-center">
+            <Player
+              user="user1"
+              name="Jugador 1"
+              favor={player1Favor}
+              soulPoints={0}
+            />
           </div>
         </div>
+        {/*Zona de juego*/}
+        {[0, 1, 2].map((laneIndex) => (
+          <div key={laneIndex} className="flex flex-col items-center space-y-3">
+            {playerFields.player2[laneIndex].map((card, idx) => (
+              <div
+                key={`p2-${laneIndex}-${idx}`}
+                className={`w-[80px] h-[100px] border border-dashed rounded flex items-center justify-center${
+                  !card && selectedCard
+                    ? "hover:bg-green-800 cursor-pointer"
+                    : ""
+                }`}
+                onClick={() => {
+                  if (!card && selectedCard && currentTurn === "player2") {
+                    playCard("player2", selectedCard, laneIndex, idx);
+                    startDiscard(selectedCard);
+                    setPlayMessage(null);
+                  }
+                }}
+              >
+                {card ? cardImg(card, () => setZoomCard(card)) : "Zona rival"}
+              </div>
+            ))}
 
-        <div className="flex flex-col items-center space-y-4">
-        <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-            Espacio vacio
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110 ">
-            Espacio vacio
-          </div>
-          <div className = "transition-transform duration-300 hover:scale-110">
-          {fieldCards[4] && renderCard(fieldCards[4])}
-          </div>
-          <div className = "transition-transform duration-300 hover:scale-110">
-          {fieldCards[5] && renderCard(fieldCards[5])}
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-            Espacio vacio
-          </div>
-          <div className="bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-          Espacio vacio
-          </div>
-        </div>
+            <div className="w-[80px] h-[100px]">
+              {fieldCards[laneIndex * 2] &&
+                cardImg(fieldCards[laneIndex * 2], () =>
+                  setZoomCard(fieldCards[laneIndex * 2])
+                )}
+            </div>
+            <div className="w-[80px] h-[100px]">
+              {fieldCards[laneIndex * 2 + 1] &&
+                cardImg(fieldCards[laneIndex * 2 + 1], () =>
+                  setZoomCard(fieldCards[laneIndex * 2 + 1])
+                )}
+            </div>
 
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-35 h-50 bg-transparent border flex items-center justify-center rounded transition-transform duration-300 hover:scale-110">
-            Discard Pile
+            {playerFields.player1[laneIndex].map((card, idx) => (
+              <div
+                key={`p1-${laneIndex}-${idx}`}
+                className={`w-[80px] h-[100px] border border-dashed rounded flex items-center justify-center${
+                  !card && selectedCard
+                    ? "hover:bg-green-800 cursor-pointer"
+                    : ""
+                }`}
+                onClick={() => {
+                  if (!card && selectedCard && currentTurn === "player1") {
+                    playCard("player1", selectedCard, laneIndex, idx);
+                    startDiscard(selectedCard);
+                    setPlayMessage(null);
+                  }
+                }}
+              >
+                {card ? cardImg(card, () => setZoomCard(card)) : "Tu zona"}
+              </div>
+            ))}
           </div>
-          <img
-            src="/cards/Favor.png"
-            alt="Favor Tracker"
-            width={150}
-            height={200}
-            className="rounded-lg transform transition-transform duration-300 hover:scale-110"
-          />
-        </div>
-
+        ))}
+      </div>
+      {/*Zona de manos*/}
+      <div className="absolute bottom-4 right-4 z-50 flex flex-col items-end space-y-2 bg-neutral-900 p-2 rounded-lg border border-white shadow-lg">
+        {Object.entries(hands).map(([playerId, hand]) => (
+          <div key={playerId} className="flex flex-col items-end">
+            <Hand
+              cards={hand}
+              isOpponent={playerId !== currentTurn}
+              onCardHover={(card) => setZoomCard(card)}
+              isCurrentPlayer={currentTurn === playerId}
+            />
+            <span className="text-s bg-neutral-950 rounded px-2">
+              {playerId === currentTurn ? "Tu mano" : `Mano de ${playerId}`}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <footer className="flex justify-center space-x-2 p-2 flex-none">
-        {playerHand.map((card, index) => (
-          <img
-            key={index}
-            src={`/cards/${card.name}.png`}
-            alt={card.name}
-            width={100}
-            height={150}
-            className="rounded-lg transition-transform duration-300 hover:scale-110"
-          />
-        ))}
-      </footer>
+      {zoomCard && (
+        <div className="absolute top-4 right-4 bg-neutral-900 p-2 rounded border border-white">
+          <div className="flex flex-col items-center">
+            <img
+              src={`/cards/${zoomCard.name}.png`}
+              alt={zoomCard.name}
+              className="w-[200px] h-[300px] rounded"
+            />
+            {currentPhase === "Fase Inicial" &&
+              zoomCard?.type !== "MONSTER" &&
+              hands[currentTurn].includes(zoomCard) && (
+                <button
+                  className="mt-2 px-4 py-1 bg-white text-black rounded hover:cursor-pointer transition transform active:scale-95"
+                  onClick={() => {
+                    setSelectedCard(zoomCard);
+                    setPlayMessage("Selecciona un slot para tu carta");
+                  }}
+                >
+                  Jugar
+                </button>
+              )}
+          </div>
+        </div>
+      )}
+
+      {isDiscarding && (
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-neutral-700 p-4 rounded-md max-w-md w-full">
+            <p>Elige {selectedCard?.cost} carta(s) a descartar</p>
+            <div className="grid grid-cols-3 gap-2 place-items-center gap-y-3">
+              {hands[currentTurn].map((card, idx) => (
+                <div
+                  key={idx}
+                  className={`cursor-pointer transition transform ${
+                    cardsToDiscard.some((c) => c.id === card.id)
+                      ? "border-4 border-blue-700"
+                      : ""
+                  }`}
+                  onClick={() => toggleCardToDiscard(card)}
+                >
+                  {cardImg(card)}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-between mt-4">
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded"
+                onClick={confirmDiscard}
+              >
+                Confirmar Descarta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {playMessage && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black px-4 py-2 rounded shadow-lg z-50">
+          {playMessage}
+        </div>
+      )}
     </main>
   );
 }
-
-
-
