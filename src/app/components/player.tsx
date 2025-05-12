@@ -5,7 +5,7 @@ interface PlayerProps {
   soulPoints: number;
 }
 
-export default function Player({ name, favor, soulPoints,  isOpponent = false }: PlayerProps) {
+export default function Player({ name, favor, soulPoints}: PlayerProps) {
   return (
     <div className="text-center">
       <h2 className="text-xl font-bold">{name}</h2>
