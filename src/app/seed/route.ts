@@ -68,16 +68,18 @@ if (existingType.length === 0) {
 }
 
 export async function GET() {
-    try {
-      const result = await sql.begin((sql) => [
-        seedUsers(),
-        seedCards(),
-      ]);
-  
-      return Response.json({ message: 'La base de datos se ha creado correctamente, dirigete a localhost:3000 para volver al inicio' });
-    } catch (error) {
-      return Response.json({ error }, { status: 500 });
-    }
+  try {
+    await sql.begin(async () => {
+      await seedUsers();
+      await seedCards();
+    });
+
+    return Response.json({
+      message: 'La base de datos se ha creado correctamente, dirígete a localhost:3000 para volver al inicio',
+    });
+  } catch (error) {
+    return Response.json({ error }, { status: 500 });
   }
+}
 
   

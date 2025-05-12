@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { game } from "../components/hooks/game";
+import { Game } from "../components/hooks/game";
 import Player from "../components/player";
 import Card, { cardImg } from "../components/card";
 import Hand from "../components/hand";
 
 export default function Board() {
   const {
-    deck,
     fieldCards,
     hands,
     playerFields,
@@ -17,24 +16,18 @@ export default function Board() {
     changePhase,
     playCard,
     cardsToDiscard,
-    setCardsToDiscard,
     selectedCard,
     setSelectedCard,
     isDiscarding,
     startDiscard,
     toggleCardToDiscard,
     confirmDiscard,
-  } = game();
+  } = Game();
 
-  const [player1Favor, setPlayer1Favor] = useState(3);
-  const [player2Favor, setPlayer2Favor] = useState(5);
+  const [player1Favor] = useState(3);
+  const [player2Favor] = useState(5);
   const [zoomCard, setZoomCard] = useState<Card | null>(null);
   const [playMessage, setPlayMessage] = useState<string | null>(null);
-  const [zoomCardPosition, setZoomCardPosition] = useState<{
-    playerId: "player1" | "player2";
-    lane: number;
-    slot: number;
-  } | null>(null);
 
   return (
     <main className="flex flex-col h-screen overflow-hidden p-2 relative">
@@ -43,7 +36,6 @@ export default function Board() {
         <div className="flex flex-col items-center space-y-2">
           <div className="w-[110px] h-[100px] border rounded bg-neutral-800 flex items-center justify-center">
             <Player
-              user="user2"
               name="Jugador 2"
               favor={player2Favor}
               soulPoints={0}
@@ -68,7 +60,6 @@ export default function Board() {
 
           <div className="w-[110px] h-[100px] border rounded bg-neutral-800 flex items-center justify-center">
             <Player
-              user="user1"
               name="Jugador 1"
               favor={player1Favor}
               soulPoints={0}

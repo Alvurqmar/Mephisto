@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Card from "../card";
 
-export function game() {
+export function Game() {
   // Estados
   const [deck, setDeck] = useState<Card[]>([]);
   const [fieldCards, setFieldCards] = useState<Card[]>([]);
