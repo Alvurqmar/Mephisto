@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
 import postgres from 'postgres';
 import { cards, users  } from './database';
 
@@ -19,7 +19,7 @@ async function seedUsers() {
 
   const insertedUsers = await Promise.all(
     users.map(async (user) => {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
+      const hashedPassword = await bcryptjs.hash(user.password, 10);
       return sql`
         INSERT INTO users (name, email, password)
         VALUES (${user.name}, ${user.email}, ${hashedPassword})
