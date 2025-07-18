@@ -1,11 +1,11 @@
-interface PlayerProps {
+interface Player {
+  id: string;
   name: string;
   favor: number;
-  isOpponent?: boolean;
   soulPoints: number;
 }
 
-export default function Player({ name, favor, soulPoints}: PlayerProps) {
+export default function Player({ name, favor, soulPoints }: Player) {
   return (
     <div className="text-center">
       <h2 className="text-xl font-bold">{name}</h2>

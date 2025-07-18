@@ -1,11 +1,11 @@
 import Card, { cardImg } from "./card";
 
-interface HandProps {
+interface Hand {
   cards: Card[];
   isOpponent?: boolean;
   onCardHover?: (card: Card) => void;
   onCardClick?: (card: Card) => void;
-  isCurrentPlayer: boolean; // Nuevo estado para saber si es el jugador actual
+  isCurrentPlayer: boolean;
 }
 
 export default function Hand({
@@ -14,7 +14,7 @@ export default function Hand({
   onCardHover,
   onCardClick,
   isCurrentPlayer,
-}: HandProps) {
+}: Hand) {
   return (
     <div className={`flex justify-center space-x-2 p-2`}>
       {cards.map((card, index) =>

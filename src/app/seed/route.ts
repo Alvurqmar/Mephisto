@@ -50,15 +50,16 @@ if (existingType.length === 0) {
     cost INTEGER NOT NULL,
     attack INTEGER NOT NULL,
     durability INTEGER NOT NULL,
-    effect VARCHAR(255) NOT NULL,
+    effectId VARCHAR(255) NOT NULL,
+    effectType VARCHAR(255) NOT NULL,
     soulPts INTEGER NOT NULL
   );
 `;
-   const insertedCards = await Promise.all(
+ const insertedCards = await Promise.all(
     cards.map(async (card) => {
       return sql`
-        INSERT INTO cards (name, type, cost, attack, durability, effect, soulPts)
-        VALUES (${card.name}, ${card.type}::card_type, ${card.cost}, ${card.attack}, ${card.durability}, ${card.effect}, ${card.soulPts})
+        INSERT INTO cards (name, type, cost, attack, durability, effectId, effectType, soulPts)
+        VALUES (${card.name}, ${card.type}::card_type, ${card.cost}, ${card.attack}, ${card.durability}, ${card.effectId},${card.effectType}, ${card.soulPts})
         ON CONFLICT DO NOTHING;
       `;
     }),

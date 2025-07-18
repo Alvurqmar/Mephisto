@@ -1,4 +1,7 @@
-import Board from "./board";
+'use client';
+
+import Board from './board';
+
 export default function Page() {
 
   return (
@@ -6,4 +9,4 @@ export default function Page() {
       <Board />
     </div>
   );
-  }
+}

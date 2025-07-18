@@ -5,18 +5,29 @@ export default interface Card {
   cost: number;
   attack: number;
   durability: number;
-  effect: string;
+  effectId: string;
+  effectType: CardEffectType;
   soulpts: number;
 }
 
-export enum CardType {
-  MONSTER = 'MONSTER',
-  ITEM = 'ITEM',
-  WEAPON = 'WEAPON',
-  SPELL = 'SPELL',
+export enum CardEffectType {
+  ETB = "ETB",
+  CONTINUOUS_EFFECT = "CE",
+  ACTIVATED_ABILITY = "AA",
 }
 
-export function cardImg(card: Card, onHover?: () => void, onLeave?: () => void) {
+export enum CardType {
+  MONSTER = "MONSTER",
+  ITEM = "ITEM",
+  WEAPON = "WEAPON",
+  SPELL = "SPELL",
+}
+
+export function cardImg(
+  card: Card,
+  onHover?: () => void,
+  onLeave?: () => void
+) {
   return (
     <img
       src={`/cards/${card.name}.png`}
