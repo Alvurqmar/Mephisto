@@ -1,8 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react";
-import Field, { Slot } from "../components/field";
-import gameStore from "../components/gameStore";
-import gameActions from "../components/gameActions";
+import Field, { Slot } from "../models/field";
+import gameStore from "../stores/gameStore";
+import gameActions from "../stores/gameActions";
 
 type FieldViewProps = {
   field: Field;

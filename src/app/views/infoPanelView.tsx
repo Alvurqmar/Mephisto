@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
-import gameStore from "../components/gameStore";
-import gameActions from "../components/gameActions";
+import gameStore from "../stores/gameStore";
+import gameActions from "../stores/gameActions";
 import React from "react";
 import DiscardPileView from "./discardPileView";
 

@@ -1,15 +1,13 @@
 import React from "react";
 import { observer } from "mobx-react";
-import gameActions from "../components/gameActions";
-import gameStore from "../components/gameStore";
+import gameActions from "../stores/gameActions";
+import gameStore from "../stores/gameStore";
 
-type DiscardViewProps = {
-  row: number;
-  col: number;
-  onClose: () => void;
-};
+const DiscardView = observer(() => {
+  const slot = gameActions.pendingSlot;
 
-const DiscardView: React.FC<DiscardViewProps> = observer(({ row, col, onClose }) => {
+  if (!gameActions.discardModal || !slot) return null;
+
   const hand = gameStore.hands[gameStore.currentTurn];
   const cost = gameActions.selectedCard?.cost ?? 0;
 
@@ -52,7 +50,6 @@ const DiscardView: React.FC<DiscardViewProps> = observer(({ row, col, onClose })
           <button
             onClick={() => {
               gameActions.cancelDiscard();
-              onClose();
             }}
             className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400 transition"
           >
@@ -62,8 +59,7 @@ const DiscardView: React.FC<DiscardViewProps> = observer(({ row, col, onClose })
           <button
             disabled={gameActions.discardSelection.length !== cost}
             onClick={() => {
-              gameActions.confirmDiscard(row, col);
-              onClose();
+              gameActions.confirmDiscard(slot.row, slot.col);
             }}
             className={`px-4 py-2 rounded text-white transition ${
               gameActions.discardSelection.length === cost

@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import gameStore from "../components/gameStore";
-import gameActions from "../components/gameActions";
+import gameStore from "../stores/gameStore";
+import gameActions from "../stores/gameActions";
 
 const FightView = observer(() => {
   const { selectedRow, selectedMonsters, selectedWeapons, favorSpent } = gameActions.fightState;

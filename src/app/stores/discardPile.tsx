@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import Card from "./card";
+import Card from "../models/card";
 
 
 class DiscardPile {

@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx";
-import Card from "./card";
-import Player from "./player";
+import Card from "../models/card";
+import Player from "../models/player";
 import Hand from "./hand";
-import Field from "./field";
+import Field from "../models/field";
 
 export type Phase = "Main Phase" | "Action Phase" | "End Phase";
 export type Action = "Loot" | "Fight" | "Summon" | null;

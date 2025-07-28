@@ -1,15 +1,15 @@
 import { observer } from "mobx-react";
-import gameStore from "../components/gameStore";
+import gameStore from "../stores/gameStore";
 import { useEffect, useState } from "react";
 import HandView from "./handView";
 import FieldView from "./fieldView";
-import gameActions from "../components/gameActions";
-import DiscardController from "../components/discardController";
+import gameActions from "../stores/gameActions";
 import "react-toastify/dist/ReactToastify.css";
 import ToastProvider from "@/app/ui/toastProvider";
 import ZoomedCardView from "./zoomCardView";
 import InfoPanelView from "./infoPanelView";
 import FightView from "./fightView";
+import DiscardView from "./discardView";
 
 const BoardView = observer(() => {
   const [isReady, setIsReady] = useState(false);
@@ -138,7 +138,7 @@ const BoardView = observer(() => {
           </div>
         )}
 
-      <DiscardController />
+      <DiscardView />
       <ToastProvider />
     </main>
   );

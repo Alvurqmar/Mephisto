@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import Card from "./card";
-import Player from "./player";
+import Card from "../models/card";
+import Player from "../models/player";
 
 class Hand {
   cards: Card[] = [];

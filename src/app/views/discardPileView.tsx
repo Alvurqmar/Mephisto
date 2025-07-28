@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react";
-import discardPile from "../components/discardPile";
+import discardPile from "../stores/discardPile";
 
 const DiscardPileView = observer(() => {
   const [open, setOpen] = useState(false);

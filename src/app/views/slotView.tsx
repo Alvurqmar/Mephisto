@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react";
-import { Slot } from "../components/field";
+import { Slot } from "../models/field";
 
 type SlotViewProps = {
   slot: Slot;

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
-import Hand from "../components/hand";
-import Card from "../components/card";
+import Hand from "../stores/hand";
+import Card from "../models/card";
 
 type HandView = {
   hand: Hand;

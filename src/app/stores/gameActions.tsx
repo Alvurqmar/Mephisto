@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import gameStore, { Action, Phase } from "./gameStore";
-import Card from "./card";
+import Card from "../models/card";
 import { toast } from "react-toastify";
 import discardPile from "./discardPile";
 
