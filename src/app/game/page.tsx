@@ -1,12 +1,12 @@
 'use client';
 
-import Board from './board';
+import BoardView from '../views/boardView';
 
 export default function Page() {
 
   return (
-    <div className="bg-[url('/GameBg.jpg')] bg-cover bg-no-repeat bg-center">
-      <Board />
+    <div>
+      <BoardView/>
     </div>
   );
 }

@@ -1,54 +1,32 @@
-import Card, { cardImg } from "./card";
+import { makeAutoObservable } from "mobx";
+import Card from "./card";
+import Player from "./player";
 
-interface Hand {
-  cards: Card[];
-  isOpponent?: boolean;
-  onCardHover?: (card: Card) => void;
-  onCardClick?: (card: Card) => void;
-  isCurrentPlayer: boolean;
+class Hand {
+  cards: Card[] = [];
+  player: Player = new Player("");
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  updateHand(cards: Card[]) {
+    this.cards = cards;
+  }
+
+  setPlayer(player: Player) {
+    this.player = player;
+  }
+
+  removeCard(card: Card) {
+    const index = this.cards.findIndex((c) => c.id === card.id);
+    if (index !== -1) {
+      this.cards.splice(index, 1);
+    }
+  }
+  addCard(card: Card) {
+    this.cards.push(card);
+  }
 }
 
-export default function Hand({
-  cards,
-  isOpponent = false,
-  onCardHover,
-  onCardClick,
-  isCurrentPlayer,
-}: Hand) {
-  return (
-    <div className={`flex justify-center space-x-2 p-2`}>
-      {cards.map((card, index) =>
-        isOpponent ? (
-          !isCurrentPlayer ? (
-            <img
-              key={index}
-              src="/cards/CardBack.png"
-              alt="Hidden Card"
-              width={80}
-              height={100}
-              className="rounded-lg"
-            />
-          ) : (
-            <div
-              key={index}
-              onMouseEnter={() => onCardHover && onCardHover(card)}
-              onClick={() => onCardClick && onCardClick(card)}
-              className="transition-transform hover:-translate-y-2"
-            >
-              {cardImg(card)}
-            </div>
-          )
-        ) : (
-          <div
-            key={index}
-            onMouseEnter={() => onCardHover && onCardHover(card)}
-            onClick={() => onCardClick && onCardClick(card)}
-            className="transition-transform hover:-translate-y-2"
-          >
-            {cardImg(card)}
-          </div>
-        )
-      )}
-    </div>
-  );
-}
+export default Hand;

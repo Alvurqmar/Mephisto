@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { toast } from "react-toastify";
+import ToastProvider from "../ui/toastProvider";
 
 export default function SetupGame() {
   const [playerCount, setPlayerCount] = useState(2);
@@ -20,31 +21,36 @@ export default function SetupGame() {
     setPlayerNames(updated);
   };
 
-  const handleStartGame = () => {
-    // Guardar nombres en localStorage o context si hace falta
-    localStorage.setItem(
-      "mephisto-players",
-      JSON.stringify(
-        playerNames.map((name, i) => ({
-          id: `player${i + 1}`,
-          name: name || `Jugador ${i + 1}`,
-        }))
-      )
-    );
-    router.push("/game");
-  };
+const handleStartGame = () => {
+  for (let i = 0; i < playerNames.length; i++) {
+    const name = playerNames[i].trim();
+    if (name === "") {
+      toast.error(`El nombre del jugador ${i + 1} no puede estar vacío.`);
+      return;
+    }
+    if (name.length > 20) {
+      toast.error(`El nombre del jugador ${i + 1} no puede tener más de 20 caracteres.`);
+      return;
+    }
+  }
+
+  const players = playerNames.map((name) => ({
+    name: name.trim(),
+    favorPoints: 0,
+    soulPoints: 0,
+  }));
+
+  localStorage.setItem("mephisto-players", JSON.stringify(players));
+  console.log("Jugadores guardados:", players);
+
+  router.push("/game");
+};
+
+
 
   return (
     <div className="min-h-screen p-10 bg-[url('/MephistoBG.jpg')] bg-cover bg-no-repeat bg-center text-[#d4af37] font-[family-name:var(--font-uncial-antiqua)]">
       <div className="max-w-xl mx-auto space-y-12 text-center">
-        <Image
-          src="/mephisto_title.png"
-          alt="Mephisto logo"
-          width={320}
-          height={100}
-          priority
-        />
-
         <div>
           <h2 className="text-2xl mb-4">¿Cuántos jugadores?</h2>
           <div className="flex justify-center gap-4">
@@ -65,7 +71,7 @@ export default function SetupGame() {
         </div>
 
         <div>
-          <h2 className="text-xl mb-4">Nombres de los jugadores</h2>
+          <h2 className="text-xl mb-4">Indique el nombre de los jugadores</h2>
           <div className="space-y-4">
             {playerNames.map((name, i) => (
               <input
@@ -86,6 +92,7 @@ export default function SetupGame() {
           Iniciar partida
         </button>
       </div>
+      <ToastProvider />
     </div>
   );
 }

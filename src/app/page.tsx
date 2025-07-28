@@ -11,10 +11,10 @@ export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-uncial-antiqua)] bg-[url('/MephistoBG.jpg')] bg-cover bg-no-repeat bg-center">
       <header>
-        <Image
+        <Image className="w-auto h-auto"
           src="/mephisto_title.png"
           alt="Mephisto logo"
-          width={320}
+          width={300}
           height={100}
           priority
         />
@@ -44,7 +44,7 @@ export default function Home() {
 
         <section className="flex flex-col gap-6 items-center">
           <Link
-            href="/setup"
+            href="/setPlayers"
             className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
           >
             Comienza a jugar
@@ -70,6 +70,19 @@ export default function Home() {
           Mira las reglas originales aquí
         </a>
       </footer>
+      <section className="flex flex-col gap-6 items-center">
+          <div className="flex items-center gap-2">
+            <span className="text-base tracking-wide text-[#d4af37]">
+              Comienza seedeando la base de datos, para que puedas jugar.
+            </span>
+            <Link
+              href="seed"
+              className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
+            >
+              Pulsa aquí 
+            </Link>
+          </div>
+        </section>
     </div>
   );
 }

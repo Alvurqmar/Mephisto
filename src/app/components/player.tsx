@@ -1,16 +1,26 @@
-interface Player {
-  id: string;
-  name: string;
-  favor: number;
-  soulPoints: number;
+import { makeAutoObservable } from "mobx";
+
+class Player {
+  name: string = "";
+  favorPoints = 0;
+  soulPoints = 0;
+
+  constructor(name: string) {
+    this.name = name;
+    makeAutoObservable(this);
+  }
+
+  setName(name: string) {
+    this.name = name;
+  }
+
+  updateFP(amount: number) {
+    this.favorPoints += amount;
+  }
+
+  updateSP(amount: number) {
+    this.soulPoints += amount;
+  }
 }
 
-export default function Player({ name, favor, soulPoints }: Player) {
-  return (
-    <div className="text-center">
-      <h2 className="text-xl font-bold">{name}</h2>
-      <p className="text-sm">Favor: {favor}</p>
-      <p className="text-sm">Soul Points: {soulPoints}</p>
-    </div>
-  );
-}
+export default Player;
