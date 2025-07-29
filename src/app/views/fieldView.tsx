@@ -32,8 +32,13 @@ const FieldView = ({ field }: FieldViewProps) => {
                   slot.card &&
                   (!slot.owner || slot.owner === gameStore.currentTurn)
                 ) {
-                  lootActions.lootField(rowIndex, colIndex);
-                  phaseActions.changePhase();
+                  const wasSuccessful = lootActions.lootField(
+                    rowIndex,
+                    colIndex
+                  );
+                  if (wasSuccessful) {
+                    phaseActions.changePhase();
+                  }
                 }
               } else if (isSummon) {
                 if (

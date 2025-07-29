@@ -23,7 +23,7 @@ const FightView = observer(() => {
         </h2>
 
         <div className="grid grid-cols-2 gap-6">
-          {/* Monstruos */}
+
           <div>
             <h3 className="font-semibold mb-2">Monstruos:</h3>
             <div className="flex flex-wrap gap-2">
@@ -40,7 +40,7 @@ const FightView = observer(() => {
                         ? "border-red-500"
                         : "border-transparent"
                     }`}
-                    onClick={() => fightActions.toggleMonster(monster!)}
+                    onClick={() => fightActions.selectMonster(monster!)}
                   />
                 ))}
             </div>
@@ -65,7 +65,7 @@ const FightView = observer(() => {
                         ? "border-blue-500"
                         : "border-transparent"
                     }`}
-                    onClick={() => fightActions.toggleWeapon(slot.card!)}
+                    onClick={() => fightActions.selectWeapon(slot.card!)}
                   />
                 ))}
             </div>
@@ -94,7 +94,7 @@ const FightView = observer(() => {
             Cancelar
           </button>
           <button
-            onClick={() => fightActions.confirmFight()}
+            onClick={() => fightActions.fight()}
             className="px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white"
           >
             Confirmar Combate

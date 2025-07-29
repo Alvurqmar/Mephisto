@@ -12,7 +12,6 @@ class SummonActions {
 
     const previousCard = slot.card;
     slot.card = selectedCard;
-    slot.owner = gameStore.currentTurn;
 
     const hand = gameStore.hands[gameStore.currentTurn];
     hand.removeCard(selectedCard);

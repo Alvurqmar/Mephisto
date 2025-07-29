@@ -3,6 +3,7 @@ import gameStore from "../gameStore";
 import Card from "../../models/card";
 import { toast } from "react-toastify";
 import discardPile from "../discardPile";
+import phaseActions from "./phaseActions";
 
 class FightActions {
   fightState = {
@@ -27,14 +28,14 @@ class FightActions {
     };
   }
 
-  toggleMonster(card: Card) {
+  selectMonster(card: Card) {
     const selected = this.fightState.selectedMonsters;
     const index = selected.findIndex((c) => c.id === card.id);
     if (index !== -1) selected.splice(index, 1);
     else selected.push(card);
   }
 
-  toggleWeapon(card: Card) {
+  selectWeapon(card: Card) {
     const selected = this.fightState.selectedWeapons;
     const index = selected.findIndex((c) => c.id === card.id);
     if (index !== -1) selected.splice(index, 1);
@@ -50,7 +51,7 @@ class FightActions {
     }
   }
 
-  confirmFight() {
+  fight() {
     const { selectedRow, selectedMonsters, selectedWeapons, favorSpent } =
       this.fightState;
     if (selectedRow === null) return;
@@ -106,7 +107,8 @@ class FightActions {
     });
     if (selectedMonsters.length > 0) {
       toast.success("¡Combate exitoso! Has obtenido puntos de alma.");
-
+      
+      phaseActions.changePhase();
       this.fightState = {
         selectedRow: null,
         selectedMonsters: [],
