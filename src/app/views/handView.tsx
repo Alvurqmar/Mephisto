@@ -9,13 +9,16 @@ type HandView = {
 
 const HandView = observer(({ hand, onCardClick }: HandView) => {
   return (
-    <div className="flex justify-center">
+    <div
+      className="flex justify-start overflow-x-auto max-w-full"
+      style={{ maxWidth: "600px", padding: "0 8px" }}
+    >
       {hand.cards.map((card) => (
         <img
           key={card.id}
           src={`/cards/${card.name}.png`}
           alt={card.name}
-          className="w-24 h-36 mx-1 cursor-pointer"
+          className="w-24 h-36 mx-1 flex-shrink-0 cursor-pointer"
           onClick={() => onCardClick?.(card)}
         />
       ))}
