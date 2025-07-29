@@ -1,15 +1,18 @@
 import { observer } from "mobx-react";
-import gameStore from "../stores/gameStore";
 import { useEffect, useState } from "react";
+import gameStore from "../stores/gameStore";
 import HandView from "./handView";
 import FieldView from "./fieldView";
-import gameActions from "../stores/gameActions";
 import "react-toastify/dist/ReactToastify.css";
 import ToastProvider from "@/app/ui/toastProvider";
 import ZoomedCardView from "./zoomCardView";
 import InfoPanelView from "./infoPanelView";
 import FightView from "./fightView";
 import DiscardView from "./discardView";
+import cardActions from "../stores/actions/cardActions";
+import fightActions from "../stores/actions/fightActions";
+import lootActions from "../stores/actions/lootActions";
+import phaseActions from "../stores/actions/phaseActions";
 
 const BoardView = observer(() => {
   const [isReady, setIsReady] = useState(false);
@@ -25,7 +28,11 @@ const BoardView = observer(() => {
   }, []);
 
   if (!isReady) {
-    return <div>Cargando...</div>;
+    return (
+      <div className="h-screen bg-[url('/GameBg.jpg')] bg-cover bg-no-repeat bg-center">
+        Cargando...
+      </div>
+    );
   }
 
   return (
@@ -42,13 +49,13 @@ const BoardView = observer(() => {
 
           <HandView
             hand={gameStore.hands[gameStore.currentTurn]}
-            onCardClick={(card) => gameActions.selectCard(card)}
+            onCardClick={(card) => cardActions.selectCard(card)}
           />
 
-          {gameActions.selectedCard && (
+          {cardActions.selectedCard && (
             <ZoomedCardView
-              card={gameActions.selectedCard}
-              onClose={() => gameActions.selectCard(null)}
+              card={cardActions.selectedCard}
+              onClose={() => cardActions.selectCard(null)}
             />
           )}
         </div>
@@ -67,20 +74,20 @@ const BoardView = observer(() => {
           <h2 className="font-bold mb-2 text-center">Elige una acción:</h2>
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => gameActions.setPhaseAction("Loot")}
+              onClick={() => phaseActions.setPhaseAction("Loot")}
               className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
             >
               Loot
             </button>
             <button
-              onClick={() => gameActions.setPhaseAction("Summon")}
+              onClick={() => phaseActions.setPhaseAction("Summon")}
               className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
             >
               Summon
             </button>
 
             <button
-              onClick={() => gameActions.setPhaseAction("Fight")}
+              onClick={() => phaseActions.setPhaseAction("Fight")}
               className="bg-orange-700 text-white px-4 py-2 rounded hover:bg-orange-800"
             >
               Fight
@@ -88,12 +95,12 @@ const BoardView = observer(() => {
           </div>
         </div>
       )}
-      {gameStore.phaseAction === "Fight" && gameActions.fightState.isActive && (
-        <FightView />
-      )}
 
       {gameStore.phaseAction === "Fight" &&
-        !gameActions.fightState.isActive && (
+        fightActions.fightState.isActive && <FightView />}
+
+      {gameStore.phaseAction === "Fight" &&
+        !fightActions.fightState.isActive && (
           <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50 bg-neutral-400 p-4 rounded shadow">
             <h2 className="font-bold mb-2 text-center">
               Selecciona una fila para combatir:
@@ -102,15 +109,14 @@ const BoardView = observer(() => {
               {[...Array(gameStore.field.rows)].map((_, i) => (
                 <button
                   key={i}
-                  onClick={() => gameActions.startFight(i)}
+                  onClick={() => fightActions.startFight(i)}
                   className="bg-orange-600 text-white px-4 py-1 rounded"
                 >
                   Fila {i + 1}
                 </button>
-
               ))}
               <button
-                onClick={() => gameActions.setPhaseAction(null)}
+                onClick={() => phaseActions.setPhaseAction(null)}
                 className="bg-red-500 text-white px-4 py-1 rounded"
               >
                 Cancelar
@@ -128,8 +134,8 @@ const BoardView = observer(() => {
             </h3>
             <button
               onClick={() => {
-                gameActions.lootDeck();
-                gameActions.changePhase();
+                lootActions.lootDeck();
+                phaseActions.changePhase();
               }}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >

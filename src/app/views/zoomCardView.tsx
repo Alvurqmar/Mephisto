@@ -23,16 +23,28 @@ const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
 
         <div className="space-y-2 text-base">
           <p className="font-bold text-xl">{name}</p>
-          {type !== "MONSTER" && <p><strong>🧪 Coste:</strong> {cost}</p>}
-          <p><strong>📖 Tipo:</strong> {type}</p>
+          {type !== "MONSTER" && (
+            <p>
+              <strong>🧪 Coste:</strong> {cost}
+            </p>
+          )}
+          <p>
+            <strong>📖 Tipo:</strong> {type}
+          </p>
           {type !== "WEAPON" && type !== "ITEM" && type !== "SPELL" && (
-            <p><strong>🌀 SP:</strong> {soulpts}</p>
+            <p>
+              <strong>🌀 SP:</strong> {soulpts}
+            </p>
           )}
           {type !== "ITEM" && type !== "SPELL" && (
-            <p><strong>🗡️ ATK:</strong> {attack}</p>
+            <p>
+              <strong>🗡️ ATK:</strong> {attack}
+            </p>
           )}
           {type !== "MONSTER" && type !== "SPELL" && (
-            <p><strong>🛡️ Durabilidad:</strong> {durability}</p>
+            <p>
+              <strong>🛡️ Durabilidad:</strong> {durability}
+            </p>
           )}
         </div>
       </div>

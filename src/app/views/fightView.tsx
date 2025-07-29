@@ -1,22 +1,26 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import gameStore from "../stores/gameStore";
-import gameActions from "../stores/gameActions";
+import fightActions from "../stores/actions/fightActions";
 
 const FightView = observer(() => {
-  const { selectedRow, selectedMonsters, selectedWeapons, favorSpent } = gameActions.fightState;
-  const fieldRow = selectedRow !== null ? gameStore.field.slots[selectedRow] : [];
+  const { selectedRow, selectedMonsters, selectedWeapons, favorSpent } =
+    fightActions.fightState;
+  const fieldRow =
+    selectedRow !== null ? gameStore.field.slots[selectedRow] : [];
   const player = gameStore.players[gameStore.currentTurn];
 
   const handleFavorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
-    if (!isNaN(value)) gameActions.setFavorSpent(value);
+    if (!isNaN(value)) fightActions.setFavorSpent(value);
   };
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
       <div className="bg-neutral-600 rounded-xl p-6 w-[800px] max-h-[90vh] overflow-y-auto shadow-2xl">
-        <h2 className="text-xl font-bold mb-4 text-center">⚔️ Combate en Fila {selectedRow! + 1}</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">
+          ⚔️ Combate en Fila {selectedRow! + 1}
+        </h2>
 
         <div className="grid grid-cols-2 gap-6">
           {/* Monstruos */}
@@ -36,18 +40,21 @@ const FightView = observer(() => {
                         ? "border-red-500"
                         : "border-transparent"
                     }`}
-                    onClick={() => gameActions.toggleMonster(monster!)}
+                    onClick={() => fightActions.toggleMonster(monster!)}
                   />
                 ))}
             </div>
           </div>
 
-          {/* Armas */}
           <div>
             <h3 className="font-semibold mb-2">Tus armas en esta fila:</h3>
             <div className="flex flex-wrap gap-2">
               {fieldRow
-                .filter((slot) => slot.owner === gameStore.currentTurn && slot.card?.type === "WEAPON")
+                .filter(
+                  (slot) =>
+                    slot.owner === gameStore.currentTurn &&
+                    slot.card?.type === "WEAPON"
+                )
                 .map((slot) => (
                   <img
                     key={slot.card!.id}
@@ -58,16 +65,17 @@ const FightView = observer(() => {
                         ? "border-blue-500"
                         : "border-transparent"
                     }`}
-                    onClick={() => gameActions.toggleWeapon(slot.card!)}
+                    onClick={() => fightActions.toggleWeapon(slot.card!)}
                   />
                 ))}
             </div>
           </div>
         </div>
 
-        {/* Favor */}
         <div className="mt-4">
-          <label className="font-semibold">Favor gastado (máx. {player.favorPoints}): </label>
+          <label className="font-semibold">
+            Favor gastado (máx. {player.favorPoints}):{" "}
+          </label>
           <input
             type="number"
             value={favorSpent}
@@ -78,16 +86,15 @@ const FightView = observer(() => {
           />
         </div>
 
-        {/* Botones */}
         <div className="flex justify-end gap-4 mt-6">
           <button
-            onClick={() => gameActions.cancelFight()}
+            onClick={() => fightActions.cancelFight()}
             className="px-4 py-2 rounded bg-gray-400 hover:bg-gray-500 text-white"
           >
             Cancelar
           </button>
           <button
-            onClick={() => gameActions.confirmFight()}
+            onClick={() => fightActions.confirmFight()}
             className="px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white"
           >
             Confirmar Combate

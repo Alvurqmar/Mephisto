@@ -1,20 +1,21 @@
 import React from "react";
 import { observer } from "mobx-react";
-import gameActions from "../stores/gameActions";
+
 import gameStore from "../stores/gameStore";
+import cardActions from "../stores/actions/cardActions";
 
 const DiscardView = observer(() => {
-  const slot = gameActions.pendingSlot;
+  const slot = cardActions.pendingSlot;
 
-  if (!gameActions.discardModal || !slot) return null;
+  if (!cardActions.discardModal || !slot) return null;
 
   const hand = gameStore.hands[gameStore.currentTurn];
-  const cost = gameActions.selectedCard?.cost ?? 0;
+  const cost = cardActions.selectedCard?.cost ?? 0;
 
   const toggleCard = (cardId: number) => {
     const card = hand.cards.find((c) => c.id === cardId);
     if (card) {
-      gameActions.toggleDiscardCard(card);
+      cardActions.toggleDiscardCard(card);
     }
   };
 
@@ -27,9 +28,9 @@ const DiscardView = observer(() => {
 
         <div className="flex gap-2 overflow-x-auto mb-6">
           {hand.cards
-            .filter((c) => c.id !== gameActions.selectedCard?.id)
+            .filter((c) => c.id !== cardActions.selectedCard?.id)
             .map((card) => {
-              const isSelected = gameActions.discardSelection.some(
+              const isSelected = cardActions.discardSelection.some(
                 (c) => c.id === card.id
               );
               return (
@@ -49,7 +50,7 @@ const DiscardView = observer(() => {
         <div className="flex justify-between">
           <button
             onClick={() => {
-              gameActions.cancelDiscard();
+              cardActions.cancelDiscard();
             }}
             className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400 transition"
           >
@@ -57,12 +58,12 @@ const DiscardView = observer(() => {
           </button>
 
           <button
-            disabled={gameActions.discardSelection.length !== cost}
+            disabled={cardActions.discardSelection.length !== cost}
             onClick={() => {
-              gameActions.confirmDiscard(slot.row, slot.col);
+              cardActions.confirmDiscard(slot.row, slot.col);
             }}
             className={`px-4 py-2 rounded text-white transition ${
-              gameActions.discardSelection.length === cost
+              cardActions.discardSelection.length === cost
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-red-300 cursor-not-allowed"
             }`}

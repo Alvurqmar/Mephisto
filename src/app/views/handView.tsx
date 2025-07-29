@@ -23,4 +23,3 @@ const HandView = observer(({ hand, onCardClick }: HandView) => {
   );
 });
 export default HandView;
-

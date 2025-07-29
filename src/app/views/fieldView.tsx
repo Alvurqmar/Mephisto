@@ -2,7 +2,10 @@ import React from "react";
 import { observer } from "mobx-react";
 import Field, { Slot } from "../models/field";
 import gameStore from "../stores/gameStore";
-import gameActions from "../stores/gameActions";
+import lootActions from "../stores/actions/lootActions";
+import phaseActions from "../stores/actions/phaseActions";
+import cardActions from "../stores/actions/cardActions";
+import summonActions from "../stores/actions/summonActions";
 
 type FieldViewProps = {
   field: Field;
@@ -29,23 +32,23 @@ const FieldView = ({ field }: FieldViewProps) => {
                   slot.card &&
                   (!slot.owner || slot.owner === gameStore.currentTurn)
                 ) {
-                  gameActions.lootField(rowIndex, colIndex);
-                  gameActions.changePhase();
+                  lootActions.lootField(rowIndex, colIndex);
+                  phaseActions.changePhase();
                 }
               } else if (isSummon) {
                 if (
                   slot.card &&
-                  gameActions.selectedCard &&
-                  gameActions.selectedCard.type === "MONSTER"
+                  cardActions.selectedCard &&
+                  cardActions.selectedCard.type === "MONSTER"
                 ) {
-                  gameActions.summon(rowIndex, colIndex);
-                  gameActions.changePhase();
+                  summonActions.summon(rowIndex, colIndex);
+                  phaseActions.changePhase();
                 }
               } else {
                 if (slot.card) {
-                  gameActions.selectCard(slot.card);
-                } else if (gameActions.selectedCard) {
-                  gameActions.playCard(rowIndex, colIndex);
+                  cardActions.selectCard(slot.card);
+                } else if (cardActions.selectedCard) {
+                  cardActions.playCard(rowIndex, colIndex);
                 }
               }
             }}
