@@ -15,6 +15,7 @@ class SummonActions {
 
     const hand = gameStore.hands[gameStore.currentTurn];
     hand.removeCard(selectedCard);
+    selectedCard.owner=null;
 
     if (previousCard) {
       gameStore.hands[gameStore.currentTurn].addCard(previousCard);

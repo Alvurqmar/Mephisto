@@ -1,16 +1,17 @@
 import { makeAutoObservable } from "mobx";
-import Card from "../models/card";
-import Player from "../models/player";
+import Card from "./card";
+import Player from "./player";
 
 class Hand {
   cards: Card[] = [];
-  player: Player = new Player("");
+  player: Player = new Player("", "");
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  updateHand(cards: Card[]) {
+  setCards(cards: Card[]) {
+    cards.forEach((card) => {card.owner = this.player.key })
     this.cards = cards;
   }
 
@@ -25,6 +26,7 @@ class Hand {
     }
   }
   addCard(card: Card) {
+     card.owner = this.player.key;
     this.cards.push(card);
   }
 }

@@ -3,7 +3,7 @@ import Card from "./card";
 
 class Slot {
   card: Card | null = null;
-  owner: string | null = "";
+  owner: string | null = null;
 
   constructor() {
     makeAutoObservable(this);

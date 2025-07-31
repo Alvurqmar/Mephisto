@@ -74,7 +74,7 @@ const FightView = observer(() => {
 
         <div className="mt-4">
           <label className="font-semibold">
-            Favor gastado (máx. {player.favorPoints}):{" "}
+            ✨FP gastados (máx. {player.favorPoints}):{" "}
           </label>
           <input
             type="number"

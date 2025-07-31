@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import Hand from "../stores/hand";
+import Hand from "../models/hand";
 import Card from "../models/card";
 
 type HandView = {

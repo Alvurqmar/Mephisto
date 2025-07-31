@@ -24,6 +24,8 @@ class Card {
   effectId!: string;
   effectType!: CardEffectType;
   soulpts!: number;
+  owner?: string | null;
+  isTapped = false;
 
   constructor(data: {
     id: number;

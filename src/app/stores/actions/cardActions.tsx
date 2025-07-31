@@ -55,7 +55,7 @@ class CardActions {
       return;
     }
 
-    if (slot.owner !== gameStore.currentTurn) {
+    if (slot.owner !== card.owner) {
       toast.error("Solo puedes jugar cartas en tus propias casillas.");
       return;
     }
@@ -73,7 +73,7 @@ class CardActions {
     const cost = card.cost;
 
     if (card.type === "SPELL") {
-      discardPile.addCard(card);
+      discardPile.addCards([card]);
       hand.removeCard(card);
       this.selectCard(null);
       toast.success("Carta de hechizo jugada y enviada a descartes.");

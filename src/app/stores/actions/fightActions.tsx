@@ -85,11 +85,14 @@ class FightActions {
 
     selectedWeapons.forEach((weapon) => {
       weapon.durability -= 1;
-      if (weapon.durability <= 0) {
-        hand.removeCard(weapon);
-        discardPile.addCard(weapon);
-        toast.update(`${weapon.name} se ha roto y se ha descartado.`);
+      for (const slot of fieldRow ){
+        if (slot.card?.id === weapon.id && weapon.durability <= 0 ) {
+        slot.card = null;
+        discardPile.addCards([weapon]);
+        toast.warning(`${weapon.name} se ha roto y se ha descartado.`);
       }
+      }
+
     });
 
     player.updateFP(-favorSpent);
@@ -100,7 +103,7 @@ class FightActions {
       for (const slot of fieldRow) {
         if (slot.card?.id === monster.id) {
           slot.card = null;
-          discardPile.addCard(monster);
+          discardPile.addCards([monster]);
           break;
         }
       }

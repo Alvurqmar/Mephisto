@@ -1,12 +1,14 @@
 import { makeAutoObservable } from "mobx";
 
 class Player {
+  key: string = "";
   name: string = "";
   favorPoints = 0;
   soulPoints = 0;
 
-  constructor(name: string) {
+  constructor(name: string, key: string) {
     this.name = name;
+    this.key = key;
     makeAutoObservable(this);
   }
 

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Card from "../models/card";
 import Player from "../models/player";
-import Hand from "./hand";
+import Hand from "../models/hand";
 import Field from "../models/field";
 
 export type Phase = "Main Phase" | "Action Phase" | "End Phase";
@@ -26,6 +26,7 @@ class GameStore {
     if (stored) {
       try {
         const parsed: {
+          key: string;
           name: string;
           favorPoints: number;
           soulPoints: number;
@@ -33,12 +34,12 @@ class GameStore {
 
         this.players = {};
 
-        parsed.forEach(({ name, favorPoints, soulPoints }, index) => {
-          const player = new Player(name);
+        parsed.forEach(({ key, name, favorPoints, soulPoints }) => {
+          const player = new Player(name, key);
           player.favorPoints = favorPoints;
           player.soulPoints = soulPoints;
 
-          this.players[`p${index + 1}`] = player;
+          this.players[key] = player; 
         });
 
         if (!this.currentTurn || !this.players[this.currentTurn]) {
@@ -111,7 +112,12 @@ class GameStore {
         this.hands[key] = hand;
 
         hand.setPlayer(player);
-        hand.updateHand(this.deck.splice(0, index === 0 ? 3 : 4));
+        hand.setCards(
+          this.deck.splice(0, index === 0 ? 3 : 4).map((card) => {
+            card.owner = key;
+            return card;
+          })
+        );
       });
       this.players["p1"].favorPoints = 3;
       this.players["p2"].favorPoints = 5;
@@ -134,6 +140,18 @@ class GameStore {
         "El número de jugadores debe ser 2 para iniciar el juego POR AHORA"
       );
     }
+  }
+  getOpponents(player: Player | string): Player[] {
+    const playerKey =
+      typeof player === "string"
+        ? player
+        : Object.keys(this.players).find((key) => this.players[key] === player);
+
+    if (!playerKey) return [];
+
+    return Object.entries(this.players)
+      .filter(([key]) => key !== playerKey)
+      .map(([, opponent]) => opponent);
   }
 }
 const gameStore = new GameStore();

@@ -34,7 +34,8 @@ const handleStartGame = () => {
     }
   }
 
-  const players = playerNames.map((name) => ({
+  const players = playerNames.map((name, index) => ({
+    key: `p${index + 1}`,
     name: name.trim(),
     favorPoints: 0,
     soulPoints: 0,

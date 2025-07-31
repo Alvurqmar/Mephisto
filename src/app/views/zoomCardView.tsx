@@ -7,7 +7,7 @@ type ZoomedCardViewProps = {
 };
 
 const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
-  const { name, type, cost, soulpts, attack, durability } = card;
+  const { name, type, cost, soulpts, attack, durability, owner } = card;
 
   return (
     <div
@@ -46,6 +46,7 @@ const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
               <strong>🛡️ Durabilidad:</strong> {durability}
             </p>
           )}
+          <p>{owner}</p>
         </div>
       </div>
     </div>
