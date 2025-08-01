@@ -1,10 +1,10 @@
 import { makeAutoObservable } from "mobx";
 
 
-export enum CardEffectType {
-  ETB = "ETB",
-  CONTINUOUS_EFFECT = "CE",
-  ACTIVATED_ABILITY = "AA",
+export enum EffectType {
+  ETB = "ETB", //ENTER THE BATTLEFIELD
+  CE = "CE",  //CONTINUOUS EFFECT
+  AA = "AA",  //ACTIVATED ABILITY
 }
 
 export enum CardType {
@@ -22,8 +22,8 @@ class Card {
   attack!: number;
   durability!: number;
   effectId!: string;
-  effectType!: CardEffectType;
-  soulpts!: number;
+  effectType!: EffectType;
+  soulPts!: number;
   owner?: string | null;
   isTapped = false;
 
@@ -35,8 +35,8 @@ class Card {
     attack: number;
     durability: number;
     effectId: string;
-    effectType: CardEffectType;
-    soulpts: number;
+    effectType: EffectType;
+    soulPts: number;
   }) {
     Object.assign(this, data);
     makeAutoObservable(this);

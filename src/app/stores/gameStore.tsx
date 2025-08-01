@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import Card from "../models/card";
 import Player from "../models/player";
 import Hand from "../models/hand";
@@ -39,7 +39,7 @@ class GameStore {
           player.favorPoints = favorPoints;
           player.soulPoints = soulPoints;
 
-          this.players[key] = player; 
+          this.players[key] = player;
         });
 
         if (!this.currentTurn || !this.players[this.currentTurn]) {
@@ -57,7 +57,7 @@ class GameStore {
     try {
       const res = await fetch("/api/cards");
       const data = await res.json();
-      this.deck = data.map(
+      const cards = data.map(
         (cardData: any) =>
           new Card({
             id: cardData.id,
@@ -68,9 +68,15 @@ class GameStore {
             durability: cardData.durability,
             effectId: cardData.effectId,
             effectType: cardData.effectType,
-            soulpts: cardData.soulpts,
+            soulPts: cardData.soulPts,
           })
       );
+
+      runInAction(() => {
+        this.deck = cards;
+      });
+
+      console.log("Cartas cargadas:", this.deck);
     } catch (error) {
       console.error("Error loading cards:", error);
     }

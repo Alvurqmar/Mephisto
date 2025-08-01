@@ -1,11 +1,10 @@
-import bcryptjs from 'bcryptjs';
-import postgres from 'postgres';
-import { cards, users  } from './database';
+import bcryptjs from "bcryptjs";
+import postgres from "postgres";
+import { cards, users } from "./database";
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 async function seedUsers() {
-  
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
   await sql`DROP TABLE IF EXISTS users CASCADE;`;
   await sql`
@@ -25,7 +24,7 @@ async function seedUsers() {
         VALUES (${user.name}, ${user.email}, ${hashedPassword})
         ON CONFLICT DO NOTHING;
       `;
-    }),
+    })
   );
 
   return insertedUsers;
@@ -36,13 +35,22 @@ async function seedCards() {
   SELECT 1 FROM pg_type WHERE typname = 'card_type';
 `;
 
-if (existingType.length === 0) {
-  await sql`
+  if (existingType.length === 0) {
+    await sql`
     CREATE TYPE card_type AS ENUM ('MONSTER', 'ITEM', 'WEAPON', 'SPELL');
   `;
-}
-    await sql`DROP TABLE IF EXISTS cards CASCADE;`;
+  }
+  const existingEffectType = await sql`
+    SELECT 1 FROM pg_type WHERE typname = 'effect_type';
+  `;
+  if (existingEffectType.length === 0) {
     await sql`
+      CREATE TYPE effect_type AS ENUM ('ETB', 'CE', 'AA');
+    `;
+  }
+  await sql`DROP TABLE IF EXISTS cards CASCADE;`;
+  
+  await sql`
     CREATE TABLE IF NOT EXISTS cards (
     id SERIAL PRIMARY KEY UNIQUE,
     name VARCHAR(255) NOT NULL,
@@ -51,18 +59,17 @@ if (existingType.length === 0) {
     attack INTEGER NOT NULL,
     durability INTEGER NOT NULL,
     effectId VARCHAR(255) NOT NULL,
-    effectType VARCHAR(255) NOT NULL,
+    effectType effect_type NOT NULL,
     soulPts INTEGER NOT NULL
   );
 `;
- const insertedCards = await Promise.all(
+  const insertedCards = await Promise.all(
     cards.map(async (card) => {
       return sql`
         INSERT INTO cards (name, type, cost, attack, durability, effectId, effectType, soulPts)
-        VALUES (${card.name}, ${card.type}::card_type, ${card.cost}, ${card.attack}, ${card.durability}, ${card.effectId},${card.effectType}, ${card.soulPts})
-        ON CONFLICT DO NOTHING;
+        VALUES (${card.name}, ${card.type}::card_type, ${card.cost}, ${card.attack}, ${card.durability}, ${card.effectId},${card.effectType}::effect_type, ${card.soulPts})
       `;
-    }),
+    })
   );
 
   return insertedCards;
@@ -76,11 +83,10 @@ export async function GET() {
     });
 
     return Response.json({
-      message: 'La base de datos se ha creado correctamente, dirígete a localhost:3000 para volver al inicio',
+      message:
+        "La base de datos se ha creado correctamente, dirígete a localhost:3000 para volver al inicio",
     });
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }
 }
-
-  
