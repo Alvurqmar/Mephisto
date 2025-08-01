@@ -98,7 +98,7 @@ class FightActions {
     player.updateFP(-favorSpent);
 
     selectedMonsters.forEach((monster) => {
-      player.updateSP(monster.soulpts);
+      player.updateSP(monster.soulPts);
 
       for (const slot of fieldRow) {
         if (slot.card?.id === monster.id) {

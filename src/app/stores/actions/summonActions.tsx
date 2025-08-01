@@ -1,8 +1,13 @@
 import gameStore from "../gameStore";
 import { toast } from "react-toastify";
 import cardActions from "./cardActions";
+import { makeAutoObservable } from "mobx";
 
 class SummonActions {
+
+  constructor(){
+    makeAutoObservable(this);
+  }
 
   summon(row: number, col: number) {
     const slot = gameStore.field.slots[row][col];

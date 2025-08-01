@@ -1,7 +1,13 @@
 import { toast } from "react-toastify";
 import gameStore from "../gameStore";
+import { makeAutoObservable } from "mobx";
 
 class LootActions {
+
+    constructor() {
+      makeAutoObservable(this);
+    }
+    
   lootField(row: number, col: number): boolean {
     const slot = gameStore.field.getSlot(row, col);
     const currentPlayerHand = gameStore.hands[gameStore.currentTurn];

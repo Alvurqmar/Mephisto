@@ -1,7 +1,12 @@
+import { makeAutoObservable } from "mobx";
 import gameStore, { Action } from "../gameStore";
 import { toast } from "react-toastify";
 
 class PhaseActions {
+  constructor() {
+    makeAutoObservable(this);
+  }
+
   setPhaseAction(action: Action) {
     if (
       action === "Summon" &&
@@ -36,6 +41,7 @@ class PhaseActions {
         break;
     }
   }
+
   endTurn() {
     if (gameStore.deck.length > 0) {
       const card = gameStore.deck.shift()!;
@@ -44,6 +50,9 @@ class PhaseActions {
     for (let row = 0; row < gameStore.field.slots.length; row++) {
       for (let col = 0; col < gameStore.field.slots[row].length; col++) {
         const slot = gameStore.field.slots[row][col];
+        if (slot.card && slot.card.isTapped) {
+          slot.card.isTapped = false;
+        }
         if (slot.owner === null && !slot.card && gameStore.deck.length > 0) {
           const card = gameStore.deck.pop()!;
           slot.card = card;
@@ -55,5 +64,6 @@ class PhaseActions {
     toast.success(`Turno finalizado`);
   }
 }
+
 const phaseActions = new PhaseActions();
 export default phaseActions;
