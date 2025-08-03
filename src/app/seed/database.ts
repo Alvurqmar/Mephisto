@@ -51,20 +51,20 @@ export const cards = [
   { name: 'Repeater', type: 'WEAPON', cost: 2, attack: 8, durability: 2, effectId: 'RepeaterE', effectType: 'CE', soulPts: 0 },
   { name: 'Skewer', type: 'WEAPON', cost: 1, attack: 3, durability: 3, effectId: 'SkewerE', effectType: 'CE', soulPts: 0 },
   { name: 'Slingshot', type: 'WEAPON', cost: 1, attack: 4, durability: 3, effectId: 'SlingshotE', effectType: 'ETB', soulPts: 0 },
-  { name: 'Arcanife', type: 'WEAPON', cost: 1, attack: 4, durability: 3, effectId: 'ArcanifeE', effectType: 'AA', soulPts: 0 },
+  { name: 'Arcanife', type: 'WEAPON', cost: 1, attack: 4, durability: 3, effectId: 'ArcanifeE', effectType: 'CE', soulPts: 0 },
 
   // SPELLS
-  { name: 'Blazing', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'BlazingE', effectType: 'AA', soulPts: 0 },
-  { name: 'Illuminate', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'IlluminateE', effectType: 'AA', soulPts: 0 },
-  { name: 'Illuminate', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'IlluminateE', effectType: 'AA', soulPts: 0 },
-  { name: 'Portal', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'PortalE', effectType: 'AA', soulPts: 0 },
-  { name: 'Portal', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'PortalE', effectType: 'AA', soulPts: 0 },
-  { name: 'Transmute', type: 'SPELL', cost: 1, attack: 0, durability: 0, effectId: 'TransmuteE', effectType: 'AA', soulPts: 0 },
-  { name: 'Transmute', type: 'SPELL', cost: 1, attack: 0, durability: 0, effectId: 'TransmuteE', effectType: 'AA', soulPts: 0 },
-  { name: 'Blazing', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'BlazingE', effectType: 'AA', soulPts: 0 },
-  { name: 'Upgrade', type: 'SPELL', cost: 1, attack: 0, durability: 0, effectId: 'UpgradeE', effectType: 'AA', soulPts: 0 },
-  { name: 'Teleport', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'TeleportE', effectType: 'AA', soulPts: 0 },
-  { name: 'Teleport', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'TeleportE', effectType: 'AA', soulPts: 0 },
+  { name: 'Blazing', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'BlazingE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Illuminate', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'IlluminateE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Illuminate', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'IlluminateE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Portal', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'PortalE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Portal', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'PortalE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Transmute', type: 'SPELL', cost: 1, attack: 0, durability: 0, effectId: 'TransmuteE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Transmute', type: 'SPELL', cost: 1, attack: 0, durability: 0, effectId: 'TransmuteE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Blazing', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'BlazingE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Upgrade', type: 'SPELL', cost: 1, attack: 0, durability: 0, effectId: 'UpgradeE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Teleport', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'TeleportE', effectType: 'ETB', soulPts: 0 },
+  { name: 'Teleport', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'TeleportE', effectType: 'ETB', soulPts: 0 },
 ];
 
   export const users = [

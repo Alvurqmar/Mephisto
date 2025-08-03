@@ -17,11 +17,11 @@ class Player {
   }
 
   updateFP(amount: number) {
-    this.favorPoints += amount;
+    this.favorPoints = Math.max(0, this.favorPoints + amount);
   }
 
   updateSP(amount: number) {
-    this.soulPoints += amount;
+    this.soulPoints = Math.max(0, this.soulPoints + amount);
   }
 }
 

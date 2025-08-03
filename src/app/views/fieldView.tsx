@@ -6,71 +6,86 @@ import lootActions from "../stores/actions/lootActions";
 import phaseActions from "../stores/actions/phaseActions";
 import cardActions from "../stores/actions/cardActions";
 import summonActions from "../stores/actions/summonActions";
+import cardSelection from "../stores/cardEffects/cardSelection";
 
 type FieldViewProps = {
   field: Field;
 };
 
 const FieldView = ({ field }: FieldViewProps) => {
-  return (
-    <div className="grid grid-rows-3 grid-cols-6 gap-1">
-      {field.slots.map((row, rowIndex) =>
-        row.map((slot, colIndex) => (
-          <div
-            key={`${rowIndex}-${colIndex}`}
-            className="w-24 h-36 border bg-neutral-700 rounded relative flex items-center justify-center"
-            onClick={() => {
-              const isLoot =
-                gameStore.currentPhase === "Action Phase" &&
-                gameStore.phaseAction === "Loot";
-              const isSummon =
-                gameStore.currentPhase === "Action Phase" &&
-                gameStore.phaseAction === "Summon";
+  const { active: selectionActive, filter: selectionFilter } = cardSelection;
 
-              if (isLoot) {
-                if (
-                  slot.card &&
-                  (!slot.owner || slot.owner === gameStore.currentTurn)
-                ) {
-                  const wasSuccessful = lootActions.lootField(
-                    rowIndex,
-                    colIndex
-                  );
-                  if (wasSuccessful) {
-                    phaseActions.changePhase();
+  return (
+    <div className="grid grid-rows-3 grid-cols-6 gap-x-20 gap-y-4">
+      {field.slots.map((row, rowIndex) =>
+        row.map((slot, colIndex) => {
+          const card = slot.card && typeof slot.card !== "string" ? slot.card : null;
+
+          const isSelectable = selectionActive && card && selectionFilter && selectionFilter(card);
+
+          return (
+            <div
+              key={`${rowIndex}-${colIndex}`}
+              className={`w-24 h-36 border bg-neutral-700 rounded relative flex items-center justify-center
+                ${isSelectable ? "cursor-pointer ring-4 ring-blue-400" : ""}
+              `}
+              onClick={() => {
+                if (isSelectable) {
+                  cardSelection.select(card);
+                } else {
+                  const isLoot =
+                    gameStore.currentPhase === "Action Phase" &&
+                    gameStore.phaseAction === "Loot";
+                  const isSummon =
+                    gameStore.currentPhase === "Action Phase" &&
+                    gameStore.phaseAction === "Summon";
+
+                  if (isLoot) {
+                    if (
+                      card &&
+                      (!slot.owner || slot.owner === gameStore.currentTurn)
+                    ) {
+                      const wasSuccessful = lootActions.lootField(
+                        rowIndex,
+                        colIndex
+                      );
+                      if (wasSuccessful) {
+                        phaseActions.changePhase();
+                      }
+                    }
+                  } else if (isSummon) {
+                    if (
+                      card &&
+                      cardActions.selectedCard &&
+                      cardActions.selectedCard.type === "MONSTER"
+                    ) {
+                      summonActions.summon(rowIndex, colIndex);
+                      phaseActions.changePhase();
+                    }
+                  } else {
+                    if (card) {
+                      cardActions.selectCard(card);
+                    } else if (cardActions.selectedCard) {
+                      cardActions.playCard(rowIndex, colIndex);
+                    }
                   }
                 }
-              } else if (isSummon) {
-                if (
-                  slot.card &&
-                  cardActions.selectedCard &&
-                  cardActions.selectedCard.type === "MONSTER"
-                ) {
-                  summonActions.summon(rowIndex, colIndex);
-                  phaseActions.changePhase();
-                }
-              } else {
-                if (slot.card) {
-                  cardActions.selectCard(slot.card);
-                } else if (cardActions.selectedCard) {
-                  cardActions.playCard(rowIndex, colIndex);
-                }
-              }
-            }}
-          >
-            {slot.card && typeof slot.card !== "string" && (
-              <img
-                src={`/cards/${slot.card.name}.png`}
-                alt={slot.card.name}
-                className="w-full h-full object-cover rounded cursor-pointer"
-              />
-            )}
+              }}
+            >
+              {card && (
+                <img
+                  src={`/cards/${card.name}.png`}
+                  alt={card.name}
+                  className="w-full h-full object-cover rounded"
+                />
+              )}
 
-            <span className="absolute bottom-1 right-1 text-xs px-1 rounded bg-black bg-opacity-60 text-white">
-              {slot.owner ?? ""}
-            </span>
-          </div>
-        ))
+              <span className="absolute bottom-1 right-1 text-xs px-1 rounded bg-black bg-opacity-60 text-white">
+                {slot.owner ?? ""}
+              </span>
+            </div>
+          );
+        })
       )}
     </div>
   );

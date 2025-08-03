@@ -44,7 +44,7 @@ const SidePanelView = () => {
 
         <p className="border text-white bg-neutral-700/70 bg-opacity-70 px-2 rounded flex flex-col">
           <span className="mb-4">
-            Turno: {gameStore.players[gameStore.currentTurn].name}
+            Turno {gameStore.turnCounter}: {gameStore.players[gameStore.currentTurn].name}
           </span>
           <span>Fase actual: {gameStore.currentPhase}</span>
         </p>

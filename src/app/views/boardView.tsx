@@ -10,7 +10,7 @@ import InfoPanelView from "./infoPanelView";
 import DiscardView from "./discardView";
 import cardActions from "../stores/actions/cardActions";
 import ActionsView from "./actionsView";
-
+import cardSelection from "../stores/cardEffects/cardSelection";
 
 const BoardView = observer(() => {
   const [isReady, setIsReady] = useState(false);
@@ -35,19 +35,34 @@ const BoardView = observer(() => {
 
   return (
     <main className="flex flex-col h-screen bg-[url('/GameBg.jpg')] bg-cover bg-no-repeat bg-center">
-      <div className="grid grid-cols-5 gap-1 flex-grow">
-        {/* Col 1*/}
-        <InfoPanelView />
+      <div className="flex flex-grow gap-x-4 px-4">
+        {/* Col 1 - InfoPanelView */}
+        <div className="flex-grow max-w-xs">
+          <InfoPanelView />
+        </div>
 
-        {/* Col 2 */}
-        <div className="flex flex-col justify-end h-180 overflow-visible relative">
+        {/* Col 2 - Mano y ZoomedCard */}
+        <div className="flex-grow max-w-md flex flex-col justify-end relative">
           <p className="flex h-6 bg-neutral-700 justify-center text-m font-bold">
             Mano de {gameStore.players[gameStore.currentTurn].name}
           </p>
 
           <HandView
             hand={gameStore.hands[gameStore.currentTurn]}
-            onCardClick={(card) => cardActions.selectCard(card)}
+            onCardClick={(card) => {
+              if (cardSelection.handActive) {
+                cardSelection.selectFromHand(card);
+              } else if (cardSelection.active) {
+                cardSelection.select(card);
+              } else {
+                cardActions.selectCard(card);
+              }
+            }}
+            selectableFilter={
+              cardSelection.handActive
+                ? cardSelection.handFilter ?? (() => false)
+                : undefined
+            }
           />
 
           {cardActions.selectedCard && (
@@ -58,17 +73,12 @@ const BoardView = observer(() => {
           )}
         </div>
 
-        {/* Col 3 */}
-        <div className="h-full flex justify-center items-center -mr-120 -mt-12">
+        {/* Col 3 - Campo y Acciones */}
+        <div className="flex-grow max-w-lg flex justify-center items-center -mt-12">
           <FieldView field={gameStore.field} />
           <ActionsView />
         </div>
-
-        <div></div>
-        <div></div>
       </div>
-
-
 
       <DiscardView />
       <ToastProvider />

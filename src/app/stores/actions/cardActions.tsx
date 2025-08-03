@@ -1,8 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import gameStore from "../gameStore";
-import Card from "../../models/card";
+import Card, { EffectType } from "../../models/card";
 import { toast } from "react-toastify";
 import discardPile from "../discardPile";
+import effectResolver from "../cardEffects/effectResolver";
 
 class CardActions {
   selectedCard: Card | null = null;
@@ -30,73 +31,69 @@ class CardActions {
     }
   }
 
-  playCard(row: number, col: number) {
-    const slot = gameStore.field.getSlot(row, col);
-    const hand = gameStore.hands[gameStore.currentTurn];
-    const card = this.selectedCard;
+  playCard(row: number, col: number, externalCard?: Card) {
+  const slot = gameStore.field.getSlot(row, col);
+  const hand = gameStore.hands[gameStore.currentTurn];
+  const card = externalCard ?? this.selectedCard;
 
-    if (!slot) {
-      toast.error("No se encontró la casilla en el campo.");
-      return;
-    }
+  if (!slot) {return false;}
+  if (slot.card) {return false;}
 
-    if (slot.card) {
-      toast.error("Esta casilla ya tiene una carta.");
-      return;
-    }
-
-    if (!card) {
-      toast.error("No hay una carta seleccionada.");
-      return;
-    }
-    const isCardInHand = hand.cards.some((c) => c.id === card.id);
-    if (!isCardInHand) {
-      toast.error("Solo puedes jugar cartas que estén en tu mano.");
-      return;
-    }
-
-    if (slot.owner !== card.owner) {
-      toast.error("Solo puedes jugar cartas en tus propias casillas.");
-      return;
-    }
-
-    if (gameStore.currentPhase !== "Main Phase") {
-      toast.error("Solo puedes jugar cartas durante la Fase Principal.");
-      return;
-    }
-
-    if (card.type === "MONSTER") {
-      toast.error("No puedes jugar cartas de tipo MONSTER en esta fase.");
-      return;
-    }
-
-    const cost = card.cost;
-
-    if (card.type === "SPELL") {
-      discardPile.addCards([card]);
-      hand.removeCard(card);
-      this.selectCard(null);
-      toast.success("Carta de hechizo jugada y enviada a descartes.");
-      return;
-    }
-
-    if (cost === 0) {
-      slot.card = card;
-      hand.removeCard(card);
-      this.selectCard(null);
-      return;
-    }
-
-    const otherCards = hand.cards.filter((c) => c.id !== card.id);
-
-    if (otherCards.length < cost) {
-      toast.error(`Necesitas descartar ${cost} cartas para jugar esta carta.`);
-      return;
-    }
-
-    this.pendingSlot = { row, col };
-    this.discardModal = true;
+  if (!card) {
+    toast.error("No hay una carta seleccionada.");
+    return false;
   }
+
+  const isCardInHand = hand.cards.some((c) => c.id === card.id);
+
+  if (!isCardInHand && !externalCard) {
+    toast.error("Solo puedes jugar cartas que estén en tu mano.");
+    return false;
+  }
+
+  if (slot.owner !== card.owner) {
+    toast.error("Solo puedes jugar cartas en tus propias casillas.");
+    return false;
+  }
+
+  if (gameStore.currentPhase !== "Main Phase") {
+    toast.error("Solo puedes jugar cartas durante la Fase Principal.");
+    return false;
+  }
+
+  if (card.type === "MONSTER") {
+    toast.error("No puedes jugar cartas de tipo MONSTER en esta fase.");
+    return false;
+  }
+
+  const cost = card.cost;
+
+  if (card.type === "SPELL") {
+    discardPile.addCards([card]);
+    if (!externalCard) hand.removeCard(card);
+    this.selectCard(null);
+    toast.success("Carta de hechizo jugada y enviada a descartes.");
+    return true;
+  }
+
+  if (cost === 0) {
+    slot.card = card;
+    if (!externalCard) hand.removeCard(card);
+    this.selectCard(null);
+    return true;
+  }
+
+  const otherCards = hand.cards.filter((c) => c.id !== card.id);
+
+  if (otherCards.length < cost) {
+    toast.error(`Necesitas descartar ${cost} cartas para jugar esta carta.`);
+    return false;
+  }
+
+  this.pendingSlot = { row, col };
+  this.discardModal = true;
+  return false;
+}
 
   confirmDiscard(row: number, col: number) {
     const hand = gameStore.hands[gameStore.currentTurn];
@@ -122,7 +119,7 @@ class CardActions {
 
     slot.card = card;
     hand.removeCard(card);
-
+    if(card.effectType== EffectType.ETB){effectResolver.trigger(card);}
     this.discardModal = false;
     this.discardSelection = [];
     this.pendingSlot = null;
@@ -134,6 +131,28 @@ class CardActions {
     this.discardSelection = [];
     this.pendingSlot = null;
   }
+
+  slotIsOwned = (card: Card) => {
+    for (let row = 0; row < gameStore.field.rows; row++) {
+      for (let col = 0; col < gameStore.field.columns; col++) {
+        const slot = gameStore.field.slots[row][col];
+        if (slot.card === card && slot.owner === card.owner) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  cardPos = (card: Card) => {
+    for (let row = 0; row < gameStore.field.rows; row++) {
+      for (let col = 0; col < gameStore.field.columns; col++) {
+        if (gameStore.field.slots[row][col].card === card) {
+          return { row, col };
+        }
+      }
+    }
+  };
 }
 const cardActions = new CardActions();
 export default cardActions;

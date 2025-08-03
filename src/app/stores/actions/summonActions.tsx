@@ -4,8 +4,7 @@ import cardActions from "./cardActions";
 import { makeAutoObservable } from "mobx";
 
 class SummonActions {
-
-  constructor(){
+  constructor() {
     makeAutoObservable(this);
   }
 
@@ -16,12 +15,11 @@ class SummonActions {
     if (!selectedCard || selectedCard.type !== "MONSTER") return;
 
     const previousCard = slot.card;
-    slot.card = selectedCard;
 
     const hand = gameStore.hands[gameStore.currentTurn];
     hand.removeCard(selectedCard);
-    selectedCard.owner=null;
-
+    selectedCard.owner = null;
+    slot.card = selectedCard;
     if (previousCard) {
       gameStore.hands[gameStore.currentTurn].addCard(previousCard);
     }

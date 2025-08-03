@@ -14,8 +14,8 @@ class GameStore {
   currentPhase: Phase = "Main Phase";
   phaseAction: Action = null;
   players: Record<string, Player> = {};
-  field: Field = new Field(6, 4);
-  turnCounter: number = 0;
+  field: Field = new Field(3, 6);
+  turnCounter: number = 1;
 
   constructor() {
     makeAutoObservable(this);
@@ -83,7 +83,6 @@ class GameStore {
   }
   setFieldOwners2P = (field: Field) => {
     const rows = field.rows;
-    const cols = field.columns;
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < 2; col++) {
