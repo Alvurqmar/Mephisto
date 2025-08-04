@@ -1,13 +1,13 @@
 import { makeAutoObservable } from "mobx";
-import gameStore from "../gameStore";
-import Card from "../../models/card";
 import { toast } from "react-toastify";
+import Card from "../../models/card";
 import discardPile from "../discardPile";
+import gameStore from "../gameStore";
 import phaseActions from "./phaseActions";
 
 class FightActions {
   fightState = {
-    selectedRow: null as number | null,
+    targetSlots: [] as { row: number; col: number }[],
     selectedMonsters: [] as Card[],
     selectedWeapons: [] as Card[],
     favorSpent: 0,
@@ -18,9 +18,47 @@ class FightActions {
     makeAutoObservable(this);
   }
 
-  startFight(row: number) {
+  orientation(): { orientation: "rows" | "cols"; validIndexes: number[] } {
+    const playerCount = Object.keys(gameStore.players).length;
+
+    if (playerCount <= 2) {
+      return { orientation: "rows", validIndexes: [0, 1, 2] };
+    }
+
+    let orientation: "rows" | "cols" = "rows";
+    switch (gameStore.currentTurn) {
+      case "p1":
+      case "p3":
+        orientation = "cols";
+        break;
+      case "p2":
+      case "p4":
+        orientation = "rows";
+        break;
+    }
+
+    return { orientation, validIndexes: [2, 3, 4] };
+  }
+
+  startFight(index: number) {
+    const { orientation, validIndexes } = this.orientation();
+    if (!validIndexes.includes(index)) return;
+
+    const targetSlots: { row: number; col: number }[] = [];
+    const { rows, columns } = gameStore.field;
+
+    if (orientation === "rows") {
+      for (let col = 0; col < columns; col++) {
+        targetSlots.push({ row: index, col });
+      }
+    } else {
+      for (let row = 0; row < rows; row++) {
+        targetSlots.push({ row, col: index });
+      }
+    }
+
     this.fightState = {
-      selectedRow: row,
+      targetSlots,
       selectedMonsters: [],
       selectedWeapons: [],
       favorSpent: 0,
@@ -44,28 +82,25 @@ class FightActions {
 
   setFavorSpent(amount: number) {
     const player = gameStore.players[gameStore.currentTurn];
-    if (amount <= player.favorPoints) {
-      this.fightState.favorSpent = amount;
-    } else {
-      toast.error("No tienes suficiente Favor.");
-    }
+    if (amount <= player.favorPoints) this.fightState.favorSpent = amount;
+    else toast.error("No tienes suficiente Favor.");
   }
 
   fight() {
-    const { selectedRow, selectedMonsters, selectedWeapons, favorSpent } =
+    const { targetSlots, selectedMonsters, selectedWeapons, favorSpent } =
       this.fightState;
-    if (selectedRow === null) return;
+    if (targetSlots.length === 0) return;
 
-    const fieldRow = gameStore.field.slots[selectedRow];
     const player = gameStore.players[gameStore.currentTurn];
-    const hand = gameStore.hands[gameStore.currentTurn];
 
-    const validMonsters = fieldRow
-      .map((slot) => slot.card)
-      .filter((card) => card?.type === "MONSTER");
+    const fieldCards = targetSlots
+      .map(({ row, col }) => gameStore.field.slots[row][col].card)
+      .filter(Boolean) as Card[];
+
+    const validMonsters = fieldCards.filter((card) => card.type === "MONSTER");
 
     for (const monster of selectedMonsters) {
-      if (!validMonsters.find((m) => m?.id === monster.id)) {
+      if (!validMonsters.find((m) => m.id === monster.id)) {
         toast.error("Has seleccionado monstruos inválidos.");
         return;
       }
@@ -83,24 +118,10 @@ class FightActions {
       return;
     }
 
-    selectedWeapons.forEach((weapon) => {
-      weapon.durability -= 1;
-      for (const slot of fieldRow ){
-        if (slot.card?.id === weapon.id && weapon.durability <= 0 ) {
-        slot.card = null;
-        discardPile.addCards([weapon]);
-        toast.warning(`${weapon.name} se ha roto y se ha descartado.`);
-      }
-      }
-
-    });
-
-    player.updateFP(-favorSpent);
-
     selectedMonsters.forEach((monster) => {
       player.updateSP(monster.soulPts);
-
-      for (const slot of fieldRow) {
+      for (const { row, col } of targetSlots) {
+        const slot = gameStore.field.slots[row][col];
         if (slot.card?.id === monster.id) {
           slot.card = null;
           discardPile.addCards([monster]);
@@ -108,12 +129,24 @@ class FightActions {
         }
       }
     });
+
     if (selectedMonsters.length > 0) {
       toast.success("¡Combate exitoso! Has obtenido puntos de alma.");
-      
+      player.updateFP(-favorSpent);
+      selectedWeapons.forEach((weapon) => {
+        weapon.durability -= 1;
+        for (const { row, col } of targetSlots) {
+          const slot = gameStore.field.slots[row][col];
+          if (slot.card?.id === weapon.id && weapon.durability <= 0) {
+            slot.card = null;
+            discardPile.addCards([weapon]);
+            toast.warning(`${weapon.name} se ha roto y se ha descartado.`);
+          }
+        }
+      });
       phaseActions.changePhase();
       this.fightState = {
-        selectedRow: null,
+        targetSlots: [],
         selectedMonsters: [],
         selectedWeapons: [],
         favorSpent: 0,
@@ -126,7 +159,7 @@ class FightActions {
 
   cancelFight() {
     this.fightState = {
-      selectedRow: null,
+      targetSlots: [],
       selectedMonsters: [],
       selectedWeapons: [],
       favorSpent: 0,
@@ -134,5 +167,6 @@ class FightActions {
     };
   }
 }
+
 const fightActions = new FightActions();
 export default fightActions;

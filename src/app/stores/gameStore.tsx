@@ -1,8 +1,10 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import Card from "../models/card";
-import Player from "../models/player";
-import Hand from "../models/hand";
 import Field from "../models/field";
+import Hand from "../models/hand";
+import Player from "../models/player";
+import { Slot } from "../models/slot";
+import discardPile from "./discardPile";
 
 export type Phase = "Main Phase" | "Action Phase" | "End Phase";
 export type Action = "Loot" | "Fight" | "Summon" | null;
@@ -81,71 +83,85 @@ class GameStore {
       console.error("Error loading cards:", error);
     }
   }
-  setFieldOwners2P = (field: Field) => {
-    const rows = field.rows;
-
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < 2; col++) {
-        field.setOwner(row, col, "p1");
-      }
-
-      for (let col = 2; col < 4; col++) {
-        field.setOwner(row, col, null);
-      }
-
-      for (let col = 4; col < 6; col++) {
-        field.setOwner(row, col, "p2");
-      }
-    }
-  };
 
   initGame() {
     const playerKeys = Object.keys(this.players);
     const cards: Card[] = this.deck.map((data) => new Card(data));
     const shuffled = [...cards];
+    this.deck = this.shuffle(shuffled);
 
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    this.deck = shuffled;
+    playerKeys.forEach((key, index) => {
+      const player = this.players[key];
+      const hand = new Hand();
+      this.hands[key] = hand;
+
+      hand.setPlayer(player);
+
+      const cardCount =
+        playerKeys.length === 2 ? (index === 0 ? 3 : 4) : index + 2;
+
+      const handCards = this.deck.splice(0, cardCount).map((card) => {
+        card.owner = key;
+        return card;
+      });
+
+      hand.setCards(handCards);
+      player.updateFP(cardCount);
+    });
 
     if (playerKeys.length === 2) {
-      playerKeys.forEach((key, index) => {
-        const player = this.players[key];
-        const hand = new Hand();
-        this.hands[key] = hand;
+      this.field = new Field(3, 6, "2P");
+      this.field.setFieldOwners2P(this.field);
 
-        hand.setPlayer(player);
-        hand.setCards(
-          this.deck.splice(0, index === 0 ? 3 : 4).map((card) => {
-            card.owner = key;
-            return card;
-          })
-        );
-      });
-      this.players["p1"].favorPoints = 3;
-      this.players["p2"].favorPoints = 5;
-
-      this.field = new Field(3, 6);
-      this.setFieldOwners2P(this.field);
-      let cardsToPlace = this.deck.splice(0, 6);
+      const cardsToPlace = this.deck.splice(0, 6);
       let placed = 0;
+
       for (let row = 0; row < this.field.rows; row++) {
         for (let col = 0; col < this.field.columns; col++) {
           const slot = this.field.slots[row][col];
-          if (slot.owner === null && placed < cardsToPlace.length) {
+          if (
+            slot instanceof Slot &&
+            slot.owner === null &&
+            placed < cardsToPlace.length
+          ) {
             this.field.setCard(row, col, cardsToPlace[placed]);
             placed++;
           }
         }
       }
+
+      this.players["p1"].favorPoints = 3;
+      this.players["p2"].favorPoints = 5;
     } else {
-      console.error(
-        "El número de jugadores debe ser 2 para iniciar el juego POR AHORA"
-      );
+      this.field = new Field(7, 7, "3-4P");
+      this.field.setFieldOwners34P(this.field, playerKeys);
+      const cardsToPlace = this.deck.splice(0, 6);
+      let placed = 0;
+
+      for (let row = 0; row < this.field.rows; row++) {
+        for (let col = 0; col < this.field.columns; col++) {
+          const slot = this.field.slots[row][col];
+          if (
+            slot instanceof Slot &&
+            slot.owner === null &&
+            placed < cardsToPlace.length
+          ) {
+            this.field.setCard(row, col, cardsToPlace[placed]);
+            placed++;
+          }
+        }
+      }
     }
   }
+  shuffle(cards: Card[]): Card[] {
+    const shuffled = [...cards];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
   getOpponents(player: Player | string): Player[] {
     const playerKey =
       typeof player === "string"
@@ -157,6 +173,12 @@ class GameStore {
     return Object.entries(this.players)
       .filter(([key]) => key !== playerKey)
       .map(([, opponent]) => opponent);
+  }
+
+  restartDeck() {
+    const discarded = discardPile.getCards;
+    discardPile.clear();
+    this.deck = this.shuffle([...discarded]);
   }
 }
 const gameStore = new GameStore();

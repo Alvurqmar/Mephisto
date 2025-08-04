@@ -7,11 +7,20 @@ class DiscardPile {
   constructor() {
     makeAutoObservable(this);
   }
+
   addCards(cards: Card[]) {
     cards.forEach((card) => {
       card.owner = null;
     });
     this.cards.push(...cards);
+  }
+
+  get getCards(): Card[] {
+    return this.cards;
+  }
+
+  clear() {
+    this.cards = [];
   }
 }
 export default new DiscardPile();

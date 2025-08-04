@@ -1,13 +1,12 @@
+import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 import gameStore from "../gameStore";
-import { makeAutoObservable } from "mobx";
 
 class LootActions {
+  constructor() {
+    makeAutoObservable(this);
+  }
 
-    constructor() {
-      makeAutoObservable(this);
-    }
-    
   lootField(row: number, col: number): boolean {
     const slot = gameStore.field.getSlot(row, col);
     const currentPlayerHand = gameStore.hands[gameStore.currentTurn];
@@ -38,11 +37,16 @@ class LootActions {
     const deck = gameStore.deck;
 
     if (deck.length === 0) {
-      toast.error("El mazo está vacío.");
+      gameStore.restartDeck();
+    }
+
+    const drawnCard = gameStore.deck.shift();
+
+    if (!drawnCard) {
+      toast.error("No hay cartas en el mazo para lootear.");
       return;
     }
 
-    const drawnCard = deck.splice(0, 1)[0];
     currentPlayerHand.addCard(drawnCard);
     toast.success(`Looteaste con éxito`);
   }

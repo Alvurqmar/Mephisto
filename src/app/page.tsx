@@ -69,8 +69,7 @@ export default function Home() {
         >
           Mira las reglas originales aquí
         </a>
-      </footer>
-      <section className="flex flex-col gap-6 items-center">
+              <section className="flex flex-col gap-6 items-center">
           <div className="flex items-center gap-2">
             <span className="text-base tracking-wide text-[#d4af37]">
               Comienza seedeando la base de datos, para que puedas jugar.
@@ -83,6 +82,8 @@ export default function Home() {
             </Link>
           </div>
         </section>
+      </footer>
+
     </div>
   );
 }

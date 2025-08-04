@@ -1,12 +1,9 @@
 import { observer } from "mobx-react";
-import gameStore from "../stores/gameStore";
-
 import React from "react";
+import gameStore from "../stores/gameStore";
 import DiscardPileView from "./discardPileView";
-import phaseActions from "../stores/actions/phaseActions";
-import cardActions from "../stores/actions/cardActions";
 
-const SidePanelView = () => {
+const LeftPanelView = () => {
   return (
     <div className="flex flex-col h-full w-[110px]">
       <div className="h-[100px] border rounded bg-green-800/80 flex flex-col items-center justify-center mb-auto">
@@ -27,28 +24,6 @@ const SidePanelView = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            phaseActions.changePhase();
-            cardActions.selectCard(null);
-          }}
-          className="text-xl font-bold
-            px-6 py-3 rounded
-            bg-red-800 text-white
-            hover:bg-red-600 active:bg-red-900
-            transition-colors duration-150
-            shadow-md"
-        >
-          Pasar Fase
-        </button>
-
-        <p className="border text-white bg-neutral-700/70 bg-opacity-70 px-2 rounded flex flex-col">
-          <span className="mb-4">
-            Turno {gameStore.turnCounter}: {gameStore.players[gameStore.currentTurn].name}
-          </span>
-          <span>Fase actual: {gameStore.currentPhase}</span>
-        </p>
-
         <DiscardPileView />
       </div>
 
@@ -61,4 +36,4 @@ const SidePanelView = () => {
   );
 };
 
-export default observer(SidePanelView);
+export default observer(LeftPanelView);
