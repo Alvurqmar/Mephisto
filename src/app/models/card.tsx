@@ -43,4 +43,17 @@ class Card {
   }
 }
 
+export interface CardData {
+  id: number;
+  name: string;
+  type: CardType;
+  cost: number;
+  attack: number;
+  durability: number;
+  effectId: string;
+  effectType: EffectType;
+  soulPts: number;
+}
+
+
 export default Card;

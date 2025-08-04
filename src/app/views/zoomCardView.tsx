@@ -1,5 +1,5 @@
 import React from "react";
-import Card, { EffectType } from "../models/card";
+import Card from "../models/card";
 import gameStore from "../stores/gameStore";
 import effectResolver from "../stores/cardEffects/effectResolver";
 import cardActions from "../stores/actions/cardActions";

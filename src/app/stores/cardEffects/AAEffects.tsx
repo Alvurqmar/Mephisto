@@ -167,7 +167,7 @@ const AA: Record<
     return true;
   },
 
-  async GrimoireE(triggerCard: Card) {
+  async GrimoireE() {
     const player = gameStore.players[gameStore.currentTurn];
     const slots = gameStore.field.slots;
 
@@ -216,7 +216,7 @@ const AA: Record<
     return await swapCardsHandField(triggerCard, c => c.type === CardType.MONSTER);
   },
 
-  async HookshotE(triggerCard: Card) {
+  async HookshotE() {
     const hand = gameStore.hands[gameStore.currentTurn];
     const targetCard = await selectTarget(card => card.type !== CardType.SPELL);
     if (!targetCard) return false;

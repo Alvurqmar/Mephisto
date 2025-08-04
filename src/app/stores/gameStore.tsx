@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import Card from "../models/card";
+import Card, { CardData } from "../models/card";
 import Field from "../models/field";
 import Hand from "../models/hand";
 import Player from "../models/player";
@@ -59,20 +59,7 @@ class GameStore {
     try {
       const res = await fetch("/api/cards");
       const data = await res.json();
-      const cards = data.map(
-        (cardData: any) =>
-          new Card({
-            id: cardData.id,
-            name: cardData.name,
-            type: cardData.type,
-            cost: cardData.cost,
-            attack: cardData.attack,
-            durability: cardData.durability,
-            effectId: cardData.effectId,
-            effectType: cardData.effectType,
-            soulPts: cardData.soulPts,
-          })
-      );
+      const cards = data.map((cardData: CardData) => new Card(cardData));
 
       runInAction(() => {
         this.deck = cards;

@@ -58,15 +58,15 @@ async function seedCards() {
     cost INTEGER NOT NULL,
     attack INTEGER NOT NULL,
     durability INTEGER NOT NULL,
-    effectId VARCHAR(255) NOT NULL,
-    effectType effect_type NOT NULL,
+    effectid VARCHAR(255) NOT NULL,
+    effecttype effect_type NOT NULL,
     soulPts INTEGER NOT NULL
   );
 `;
   const insertedCards = await Promise.all(
     cards.map(async (card) => {
       return sql`
-        INSERT INTO cards (name, type, cost, attack, durability, effectId, effectType, soulPts)
+        INSERT INTO cards (name, type, cost, attack, durability, effectid, effecttype, soulPts)
         VALUES (${card.name}, ${card.type}::card_type, ${card.cost}, ${card.attack}, ${card.durability}, ${card.effectId},${card.effectType}::effect_type, ${card.soulPts})
       `;
     })

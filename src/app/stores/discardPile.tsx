@@ -23,4 +23,6 @@ class DiscardPile {
     this.cards = [];
   }
 }
-export default new DiscardPile();
+
+const discardPile = new DiscardPile();
+export default discardPile;

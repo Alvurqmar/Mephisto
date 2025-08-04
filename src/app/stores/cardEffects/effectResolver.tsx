@@ -14,17 +14,17 @@ class EffectResolver {
     if (!card.effectId || !card.effectType) return false;
 
     const effectFn = effectMap[card.effectType]?.[card.effectId];
-    if (!effectFn) {
-      console.warn(`Efecto no definido: ${card.effectType} / ${card.effectId}`);
-      return;
-    }
-        const result = await effectFn(card);
+    if (!effectFn) return;
+
+    const result = await effectFn(card);
 
     if (card.effectType === EffectType.AA && result) {
       card.isTapped = true;
     }
+
     return result;
   }
 }
 
-export default new EffectResolver();
+const effectResolver = new EffectResolver();
+export default effectResolver;

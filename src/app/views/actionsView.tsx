@@ -7,7 +7,7 @@ import gameStore from "../stores/gameStore";
 import FightView from "./fightView";
 
 const ActionsView = () => {
-  const { currentPhase, phaseAction, field } = gameStore;
+  const { currentPhase, phaseAction } = gameStore;
 
   if (currentPhase !== "Action Phase") return null;
 
