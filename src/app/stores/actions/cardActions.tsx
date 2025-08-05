@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 import Card, { EffectType } from "../../models/card";
 import effectResolver from "../cardEffects/effectResolver";
-import discardPile from "../discardPile";
+import discardPile from "../../models/discardPile";
 import gameStore from "../gameStore";
 
 class CardActions {

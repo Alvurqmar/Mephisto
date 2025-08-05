@@ -1,3 +1,4 @@
+'use client'
 import { observer } from "mobx-react";
 import Card from "../models/card";
 import Hand from "../models/hand";

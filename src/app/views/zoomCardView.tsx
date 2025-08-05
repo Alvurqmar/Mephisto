@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import Card from "../models/card";
 import gameStore from "../stores/gameStore";

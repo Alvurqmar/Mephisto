@@ -4,7 +4,7 @@ import Field from "../models/field";
 import Hand from "../models/hand";
 import Player from "../models/player";
 import { Slot } from "../models/slot";
-import discardPile from "./discardPile";
+import discardPile from "../models/discardPile";
 
 export type Phase = "Main Phase" | "Action Phase" | "End Phase";
 export type Action = "Loot" | "Fight" | "Summon" | null;

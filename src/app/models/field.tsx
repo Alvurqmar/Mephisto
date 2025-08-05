@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Card from "./card";
 import { EmptySlot, GridSlot, Slot } from "./slot";
+
 class Field {
   slots: GridSlot[][] = [];
   rows: number;

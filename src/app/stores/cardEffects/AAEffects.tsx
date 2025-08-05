@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import cardActions from "../actions/cardActions";
 import gameStore from "../gameStore";
 import { selectCardFromHand, selectCardInRow, selectTarget, swapCardsHandField, } from "./helpers";
-import discardPile from "../discardPile";
+import discardPile from "../../models/discardPile";
 import effectResolver from "./effectResolver";
 
 const AA: Record<

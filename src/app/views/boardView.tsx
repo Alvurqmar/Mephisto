@@ -1,3 +1,4 @@
+'use client'
 import ToastProvider from "@/app/ui/toastProvider";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";

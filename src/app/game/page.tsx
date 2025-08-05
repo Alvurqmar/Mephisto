@@ -1,5 +1,3 @@
-'use client';
-
 import BoardView from '../views/boardView';
 
 export default function Page() {

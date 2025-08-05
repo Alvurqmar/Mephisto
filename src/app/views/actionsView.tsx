@@ -1,3 +1,4 @@
+'use client'
 import { observer } from "mobx-react";
 import React from "react";
 import fightActions from "../stores/actions/fightActions";
