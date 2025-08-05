@@ -86,6 +86,26 @@ const BoardView = observer(() => {
       </div>
       <DiscardView />
       <ToastProvider />
+      {/* Victoria */}
+      {gameStore.status === "Finished" && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-neutral-600 rounded-xl p-6 shadow-lg text-center max-w-md w-full">
+            <h2 className="text-2xl font-bold mb-4">
+              🎉{" "}
+              {Object.values(gameStore.players).find((p) => p.isWinner)?.name}{" "}
+              ha ganado la partida!
+            </h2>
+            <button
+              onClick={() => {
+                window.location.href = "/";
+              }}
+              className="bg-purple-700 hover:bg-purple-800 text-white font-semibold py-2 px-4 rounded mt-4"
+            >
+              Volver al menú principal
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 });

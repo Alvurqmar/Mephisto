@@ -8,6 +8,7 @@ import discardPile from "../models/discardPile";
 
 export type Phase = "Main Phase" | "Action Phase" | "End Phase";
 export type Action = "Loot" | "Fight" | "Summon" | null;
+export type Status = "Playing" | "Finished";
 
 class GameStore {
   deck: Card[] = [];
@@ -18,6 +19,8 @@ class GameStore {
   players: Record<string, Player> = {};
   field: Field = new Field(3, 6);
   turnCounter: number = 1;
+  winningSoulPoints: number = 15;
+  status: Status = "Playing";
 
   constructor() {
     makeAutoObservable(this);
@@ -76,6 +79,7 @@ class GameStore {
     const cards: Card[] = this.deck.map((data) => new Card(data));
     const shuffled = [...cards];
     this.deck = this.shuffle(shuffled);
+    this.winningSoulPoints = playerKeys.length === 2 ? 15 : 12;
 
     playerKeys.forEach((key, index) => {
       const player = this.players[key];
@@ -167,6 +171,14 @@ class GameStore {
     discardPile.clear();
     this.deck = this.shuffle([...discarded]);
   }
+
+  checkVictory(player: Player) {
+  if (player.soulPoints >= this.winningSoulPoints) {
+    player.isWinner = true;
+    this.status = "Finished";
+  }
+}
+
 }
 const gameStore = new GameStore();
 export default gameStore;
