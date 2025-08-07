@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 import { pusher } from "../../../lib/pusher";
 
-export async function GET(
-  _req: NextRequest,
-  context: { params: { gameId: string } }
-) {
+export async function GET(_req: NextRequest, context: any) {
   const { gameId } = context.params;
 
   const players = await prisma.user.findMany({
