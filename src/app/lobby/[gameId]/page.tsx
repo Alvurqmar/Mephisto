@@ -8,7 +8,6 @@ export default function LobbyPage() {
   const [players, setPlayers] = useState<string[]>([]);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [starting, setStarting] = useState(false);
 
   useEffect(() => {
     const savedName = sessionStorage.getItem(`mephisto_name_${gameId}`);

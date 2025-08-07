@@ -3,9 +3,10 @@ import { prisma } from "../../../lib/prisma";
 import { pusher } from "../../../lib/pusher";
 
 export async function GET(
-  { params }: { params: { gameId: string } }
+  _req: NextRequest,
+  context: { params: { gameId: string } }
 ) {
-  const { gameId } = params;
+  const { gameId } = context.params;
 
   const players = await prisma.user.findMany({
     where: { lobbyId: gameId },
