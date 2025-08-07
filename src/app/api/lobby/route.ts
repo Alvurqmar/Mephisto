@@ -1,13 +1,9 @@
-
 import { NextResponse } from 'next/server';
 import { prisma } from '../../lib/prisma';
 
-export async function GET(context: { params: Promise<{ gameId: string }> }) {
-  const { gameId } = await context.params;
-
+export async function GET() {
   try {
-    const lobby = await prisma.lobby.findUnique({
-      where: { id: gameId },
+    const lobby = await prisma.lobby.findFirst({
       include: { users: true },
     });
 

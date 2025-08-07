@@ -3,10 +3,9 @@ import { prisma } from "../../../lib/prisma";
 import { pusher } from "../../../lib/pusher";
 
 export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ gameId: string }> }
+  { params }: { params: { gameId: string } }
 ) {
-  const { gameId } = await context.params;
+  const { gameId } = params;
 
   const players = await prisma.user.findMany({
     where: { lobbyId: gameId },
@@ -16,12 +15,11 @@ export async function GET(
   return NextResponse.json({ players: players.map(p => p.name) });
 }
 
-
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ gameId: string }> }
+  { params }: { params: { gameId: string } }
 ) {
-  const { gameId } = await context.params;
+  const { gameId } = params;
 
   const { name } = await req.json();
 
