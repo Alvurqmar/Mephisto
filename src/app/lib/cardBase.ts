@@ -66,11 +66,3 @@ export const cards = [
   { name: 'Teleport', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'TeleportE', effectType: 'ETB', soulPts: 0 },
   { name: 'Teleport', type: 'SPELL', cost: 0, attack: 0, durability: 0, effectId: 'TeleportE', effectType: 'ETB', soulPts: 0 },
 ];
-
-  export const users = [
-    {
-        name: 'User',
-        email: 'user@nextmail.com',
-        password: '123456',
-      },
-  ]

@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lobby {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  users     User[]
+  game      Game?    @relation("LobbyToGame")
+}
+
+model User {
+  id       String   @id @default(cuid())
+  name     String
+  lobbyId  String?
+  lobby    Lobby?   @relation(fields: [lobbyId], references: [id])
+  player   Player?  @relation("UserToPlayer")
+
+  @@unique([name, lobbyId])
+}
+
+model Game {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  lobbyId   String   @unique
+  lobby     Lobby    @relation("LobbyToGame", fields: [lobbyId], references: [id])
+  players   Player[]
+  state     Json?
+  status    status
+}
+
+enum status {
+  PLAYING 
+  FINISHED 
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String   @unique
+  user      User     @relation("UserToPlayer", fields: [userId], references: [id])
+  gameId    String
+  game      Game     @relation(fields: [gameId], references: [id])
+  favor     Int      @default(0)
+  soul      Int      @default(0)
+  isWinner  Boolean  @default(false)
+}
+
+enum card_type {
+  MONSTER
+  ITEM
+  WEAPON
+  SPELL
+}
+
+enum effect_type {
+  ETB
+  CE
+  AA
+}
+
+model Card {
+  id         Int        @id @default(autoincrement())
+  name       String
+  type       card_type
+  cost       Int
+  attack     Int
+  durability Int
+  effectid   String
+  effecttype effect_type
+  soulPts    Int
+
+  @@map("cards")
+}

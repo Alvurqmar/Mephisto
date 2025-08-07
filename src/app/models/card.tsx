@@ -1,10 +1,9 @@
 import { makeAutoObservable } from "mobx";
 
-
 export enum EffectType {
-  ETB = "ETB", //ENTER THE BATTLEFIELD
-  CE = "CE",  //CONTINUOUS EFFECT
-  AA = "AA",  //ACTIVATED ABILITY
+  ETB = "ETB",
+  CE = "CE",
+  AA = "AA",
 }
 
 export enum CardType {
@@ -54,6 +53,4 @@ export interface CardData {
   effectType: EffectType;
   soulPts: number;
 }
-
-
 export default Card;

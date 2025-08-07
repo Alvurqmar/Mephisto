@@ -1,17 +1,35 @@
+'use client';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
-
-export const metadata = {
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
 
 export default function Home() {
+  const router = useRouter();
+  const [joinGameId, setJoinGameId] = useState("");
+
+  const createGame = async () => {
+    try {
+      const res = await fetch("/api/lobby", { method: "POST" });
+      const { gameId } = await res.json();
+      router.push(`/lobby/${gameId}`);
+    } catch (error) {
+      alert("Error creando la partida");
+    }
+  };
+
+  const joinGame = () => {
+    if (joinGameId.trim() === "") {
+      alert("Ingresa un código de partida válido");
+      return;
+    }
+    router.push(`/lobby/${joinGameId.trim()}`);
+  };
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-uncial-antiqua)] bg-[url('/MephistoBG.jpg')] bg-cover bg-no-repeat bg-center">
       <header>
-        <Image className="w-auto h-auto"
+        <Image
+          className="w-auto h-auto"
           src="/mephisto_title.png"
           alt="Mephisto logo"
           width={300}
@@ -20,7 +38,7 @@ export default function Home() {
         />
       </header>
 
-      <main className="flex flex-col gap-[128px] row-start-2 items-center sm:items-start">
+      <main className="flex flex-col gap-[128px] row-start-2 items-center justify-center sm:items-center">
         <section className="text-center sm:text-left">
           <ul className="list-inside text-sm/6 font-[family-name:var(--font-uncial-antiqua)] text-outline-dark">
             <li className="mb-4 text-2xl tracking-wide text-[#d4af37]">
@@ -41,20 +59,35 @@ export default function Home() {
             </li>
           </ul>
         </section>
-
-        <section className="flex flex-col gap-6 items-center">
-          <Link
-            href="/setPlayers"
-            className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
+        <section className="flex flex-col gap-1 items-center">
+          <button
+            onClick={createGame}
+            className="rounded-full border border-[#d4af37] px-8 py-4 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
           >
-            Comienza a jugar
-          </Link>
+            Crear nueva partida
+          </button>
+
+          <div className="flex gap-4 items-center">
+            <input
+              type="text"
+              placeholder="Código de partida"
+              value={joinGameId}
+              onChange={(e) => setJoinGameId(e.target.value)}
+              className="px-4 py-2 rounded-md bg-black/70 border border-[#d4af37] text-[#d4af37]"
+            />
+            <button
+              onClick={joinGame}
+              className="rounded-full border border-[#d4af37] px-6 py-2 text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition"
+            >
+              Unirse a partida
+            </button>
+          </div>
         </section>
       </main>
 
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-start">
+      <footer className="row-start-3 flex flex-col sm:flex-row gap-6 flex-wrap items-center justify-center sm:justify-start text-center sm:text-left">
         <a
-          className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center bg-[#000000] hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
+          className="rounded-full border border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center bg-[#000000] hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
           href="https://github.com/Alvurqmar/Mephisto"
           target="_blank"
           rel="noopener noreferrer"
@@ -62,28 +95,14 @@ export default function Home() {
           Repositorio de Github
         </a>
         <a
-          className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center bg-[#000000] hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
+          className="rounded-full border border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center bg-[#000000] hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
           href="https://sites.google.com/view/mephisto/home/rules"
           target="_blank"
           rel="noopener noreferrer"
         >
           Mira las reglas originales aquí
         </a>
-              <section className="flex flex-col gap-6 items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-base tracking-wide text-[#d4af37]">
-              Comienza seedeando la base de datos, para que puedas jugar.
-            </span>
-            <Link
-              href="seed"
-              className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
-            >
-              Pulsa aquí 
-            </Link>
-          </div>
-        </section>
       </footer>
-
     </div>
   );
 }
