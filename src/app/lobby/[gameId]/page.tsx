@@ -15,6 +15,8 @@ export default function LobbyPage() {
   }, [gameId]);
 
   useEffect(() => {
+    if (!gameId) return;
+
     const fetchPlayers = async () => {
       const res = await fetch(`/api/lobby/${gameId}`);
       const data = await res.json();
@@ -48,6 +50,7 @@ export default function LobbyPage() {
 
       if (res.ok) {
         sessionStorage.setItem(`mephisto_name_${gameId}`, name.trim());
+        setPlayers(data.players);
       } else {
         alert(data.error || "Error al unirse");
       }
