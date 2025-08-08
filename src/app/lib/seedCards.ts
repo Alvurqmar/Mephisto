@@ -1,44 +1,55 @@
-import { prisma } from "./prisma";
+import { Pool } from "pg";
 import { cards } from "./cardBase";
-import { card_type, effect_type } from "../../generated/prisma";
 
-const cardTypeMap: Record<string, card_type> = {
-  MONSTER: card_type.MONSTER,
-  ITEM: card_type.ITEM,
-  WEAPON: card_type.WEAPON,
-  SPELL: card_type.SPELL,
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const cardTypeMap: Record<string, string> = {
+  MONSTER: "MONSTER",
+  ITEM: "ITEM",
+  WEAPON: "WEAPON",
+  SPELL: "SPELL",
 };
 
-const effectTypeMap: Record<string, effect_type> = {
-  ETB: effect_type.ETB,
-  CE: effect_type.CE,
-  AA: effect_type.AA,
+const effectTypeMap: Record<string, string> = {
+  ETB: "ETB",
+  CE: "CE",
+  AA: "AA",
 };
 
 async function main() {
-  await prisma.card.deleteMany();
+  const client = await pool.connect();
 
-  await prisma.card.createMany({
-    data: cards.map(({ name, type, cost, attack, durability, effectId, effectType, soulPts }) => ({
-      name,
-      type: cardTypeMap[type],
-      cost,
-      attack,
-      durability,
-      effectid: effectId,
-      effecttype: effectTypeMap[effectType],
-      soulPts,
-    })),
-  });
+  try {
+    await client.query("DELETE FROM card");
 
-  console.log("Seed de cartas completado");
+    for (const card of cards) {
+      await client.query(
+        `INSERT INTO card 
+          (name, type, cost, attack, durability, effectid, effecttype, soulpts)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          card.name,
+          cardTypeMap[card.type],
+          card.cost,
+          card.attack,
+          card.durability,
+          card.effectId,
+          effectTypeMap[card.effectType],
+          card.soulPts,
+        ]
+      );
+    }
+
+    console.log("Seed de cartas completado");
+  } catch (error) {
+    console.error("Error en seed:", error);
+    process.exit(1);
+  } finally {
+    client.release();
+    await pool.end();
+  }
 }
 
-main()
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main();

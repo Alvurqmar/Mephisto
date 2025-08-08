@@ -1,0 +1,79 @@
+import { cards } from "@/app/lib/cardBase";
+import { NextResponse } from "next/server";
+import { Pool } from "pg";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const cardTypeMap: Record<string, string> = {
+  MONSTER: "MONSTER",
+  ITEM: "ITEM",
+  WEAPON: "WEAPON",
+  SPELL: "SPELL",
+};
+
+const effectTypeMap: Record<string, string> = {
+  ETB: "ETB",
+  CE: "CE",
+  AA: "AA",
+};
+export async function GET() {
+  const client = await pool.connect();
+  try {
+    const result = await client.query("SELECT * FROM card");
+    return NextResponse.json(result.rows);
+  } catch (error) {
+    console.error("Error obteniendo cartas:", error);
+    return NextResponse.json({ error: "Error al obtener cartas" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+}
+
+
+export async function POST() {
+  const client = await pool.connect();
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS card (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        type VARCHAR(20) NOT NULL,
+        cost INTEGER NOT NULL,
+        attack INTEGER NOT NULL,
+        durability INTEGER NOT NULL,
+        effectid VARCHAR(50),
+        effecttype VARCHAR(10),
+        soulpts INTEGER NOT NULL
+      )
+    `);
+
+    await client.query(`TRUNCATE TABLE card RESTART IDENTITY`);
+
+    for (const card of cards) {
+      await client.query(
+        `INSERT INTO card (name, type, cost, attack, durability, effectid, effecttype, soulpts)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          card.name,
+          cardTypeMap[card.type],
+          card.cost,
+          card.attack,
+          card.durability,
+          card.effectId,
+          effectTypeMap[card.effectType],
+          card.soulPts,
+        ]
+      );
+    }
+
+    return NextResponse.json({ message: "Seed de cartas completado y secuencia reiniciada" });
+  } catch (error) {
+    console.error("Error en seed:", error);
+    return NextResponse.json({ error: "Error en seed" }, { status: 500 });
+  } finally {
+    client.release();
+    await pool.end();
+  }
+}
