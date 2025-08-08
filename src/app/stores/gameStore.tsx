@@ -60,7 +60,7 @@ class GameStore {
 
   async loadCards() {
     try {
-      const res = await fetch("/api/cards");
+      const res = await fetch("/api/seedCards");
       const data = await res.json();
       const cards = data.map((cardData: CardData) => new Card(cardData));
 
