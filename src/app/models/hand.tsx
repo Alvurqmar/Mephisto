@@ -11,7 +11,9 @@ class Hand {
   }
 
   setCards(cards: Card[]) {
-    cards.forEach((card) => {card.owner = this.player.key })
+    cards.forEach((card) => {
+      card.owner = this.player.key;
+    });
     this.cards = cards;
   }
 
@@ -26,8 +28,23 @@ class Hand {
     }
   }
   addCard(card: Card) {
-     card.owner = this.player.key;
+    card.owner = this.player.key;
     this.cards.push(card);
+  }
+
+  serialize() {
+    return {
+      cards: this.cards.map((card) => card.serialize()),
+      player: this.player.serialize(),
+    };
+  }
+
+  static deserialize(data: { cards: any[]; player: any }) {
+    const hand = new Hand();
+    hand.player = Player.deserialize(data.player);
+    hand.cards = data.cards.map((cardData) => Card.deserialize(cardData));
+    hand.cards.forEach((card) => (card.owner = hand.player.key));
+    return hand;
   }
 }
 

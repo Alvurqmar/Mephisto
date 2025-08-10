@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   async function seedDatabase() {
     try {
       const res = await fetch("/api/seedCards", { method: "POST" });
@@ -16,6 +17,19 @@ export default function Home() {
         console.error("Error desconocido en seed:", error);
         alert("Error desconocido en seed");
       }
+    }
+  }
+
+  async function createLobby() {
+    try {
+      const res = await fetch("/api/lobbies/create", { method: "POST" });
+      if (!res.ok) throw new Error("Error al crear el lobby");
+      const data = await res.json();
+      if (!data.lobbyId) throw new Error("Lobby ID no recibido");
+      router.push(`/lobby/${data.lobbyId}`);
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo crear el lobby");
     }
   }
 
@@ -55,12 +69,12 @@ export default function Home() {
         </section>
 
         <section className="flex flex-col gap-6 items-center">
-          <Link
-            href="/setPlayers"
+          <button
+            onClick={createLobby}
             className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
           >
             Comienza a jugar
-          </Link>
+          </button>
         </section>
       </main>
 

@@ -1,9 +1,13 @@
 'use client'
 import React, { useState } from "react";
 import { observer } from "mobx-react";
-import discardPile from "../models/discardPile";
+import DiscardPile from "../models/discardPile";
 
-const DiscardPileView = observer(() => {
+interface DiscardPileViewProps {
+  discardPile: DiscardPile;
+}
+
+const DiscardPileView = observer(({ discardPile }: DiscardPileViewProps) => {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);

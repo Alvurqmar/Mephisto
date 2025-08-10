@@ -26,6 +26,23 @@ class Player {
     this.soulPoints = Math.max(0, this.soulPoints + amount);
     gameStore.checkVictory(this);
   }
+  serialize() {
+    return {
+      key: this.key,
+      name: this.name,
+      favorPoints: this.favorPoints,
+      soulPoints: this.soulPoints,
+      isWinner: this.isWinner,
+    };
+  }
+
+  static deserialize(data: any) {
+    const player = new Player(data.name, data.key);
+    player.favorPoints = data.favorPoints;
+    player.soulPoints = data.soulPoints;
+    player.isWinner = data.isWinner;
+    return player;
+  }
 }
 
 export default Player;

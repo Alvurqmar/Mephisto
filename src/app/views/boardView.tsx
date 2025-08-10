@@ -14,18 +14,17 @@ import LeftPanelView from "./leftPanelView";
 import RightPanelView from "./rightPanelView";
 import ZoomedCardView from "./zoomCardView";
 
-const BoardView = observer(() => {
+const BoardView = observer(({ gameId }: { gameId: string }) => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     async function init() {
       await gameStore.loadCards();
-      gameStore.loadPlayers();
-      gameStore.initGame();
+      await gameStore.loadGameState(gameId);
       setIsReady(true);
     }
     init();
-  }, []);
+  }, [gameId]);
 
   if (!isReady) {
     return (
@@ -48,7 +47,6 @@ const BoardView = observer(() => {
           <p className="flex h-6 bg-neutral-700 justify-center text-m font-bold">
             Mano de {gameStore.players[gameStore.currentTurn].name}
           </p>
-
           <HandView
             hand={gameStore.hands[gameStore.currentTurn]}
             onCardClick={(card) => {
@@ -66,7 +64,6 @@ const BoardView = observer(() => {
                 : undefined
             }
           />
-
           {cardActions.selectedCard && (
             <ZoomedCardView
               card={cardActions.selectedCard}

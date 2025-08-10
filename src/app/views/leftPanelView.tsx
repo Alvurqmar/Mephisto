@@ -25,7 +25,7 @@ const LeftPanelView = () => {
           </div>
         </div>
 
-        <DiscardPileView />
+        <DiscardPileView discardPile={gameStore.discardPile} />
       </div>
 
       <div className="h-[100px] border rounded bg-rose-700/80 flex flex-col items-center justify-center mt-auto">

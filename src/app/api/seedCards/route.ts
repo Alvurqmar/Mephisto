@@ -1,10 +1,6 @@
 import { cards } from "@/app/lib/cardBase";
+import { pool } from "@/app/lib/db";
 import { NextResponse } from "next/server";
-import { Pool } from "pg";
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
 
 const cardTypeMap: Record<string, string> = {
   MONSTER: "MONSTER",
@@ -21,7 +17,7 @@ const effectTypeMap: Record<string, string> = {
 export async function GET() {
   const client = await pool.connect();
   try {
-    const result = await client.query("SELECT * FROM card");
+    const result = await client.query("SELECT * FROM cards");
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error("Error obteniendo cartas:", error);
@@ -36,7 +32,7 @@ export async function POST() {
   const client = await pool.connect();
   try {
     await client.query(`
-      CREATE TABLE IF NOT EXISTS card (
+      CREATE TABLE IF NOT EXISTS cards (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         type VARCHAR(20) NOT NULL,
@@ -49,11 +45,11 @@ export async function POST() {
       )
     `);
 
-    await client.query(`TRUNCATE TABLE card RESTART IDENTITY`);
+    await client.query(`TRUNCATE TABLE cards RESTART IDENTITY`);
 
     for (const card of cards) {
       await client.query(
-        `INSERT INTO card (name, type, cost, attack, durability, effectid, effecttype, soulpts)
+        `INSERT INTO cards (name, type, cost, attack, durability, effectid, effecttype, soulpts)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [
           card.name,
@@ -74,6 +70,5 @@ export async function POST() {
     return NextResponse.json({ error: "Error en seed" }, { status: 500 });
   } finally {
     client.release();
-    await pool.end();
   }
 }

@@ -22,7 +22,16 @@ class DiscardPile {
   clear() {
     this.cards = [];
   }
+
+  serialize() {
+    return this.cards.map((card) => card.serialize());
+  }
+
+  static deserialize(data: any[]): DiscardPile {
+    const discardPile = new DiscardPile();
+    discardPile.cards = data.map((cardData) => Card.deserialize(cardData));
+    return discardPile;
+  }
 }
 
-const discardPile = new DiscardPile();
-export default discardPile;
+export default DiscardPile;

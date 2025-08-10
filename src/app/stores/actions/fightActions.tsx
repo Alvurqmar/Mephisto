@@ -1,9 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 import Card from "../../models/card";
-import discardPile from "../../models/discardPile";
 import gameStore from "../gameStore";
 import phaseActions from "./phaseActions";
+import DiscardPile from "../../models/discardPile";
 
 class FightActions {
   fightState = {
@@ -13,6 +13,7 @@ class FightActions {
     favorSpent: 0,
     isActive: false,
   };
+  discardPile: DiscardPile = new DiscardPile();
 
   constructor() {
     makeAutoObservable(this);
@@ -124,7 +125,7 @@ class FightActions {
         const slot = gameStore.field.slots[row][col];
         if (slot.card?.id === monster.id) {
           slot.card = null;
-          discardPile.addCards([monster]);
+          this.discardPile.addCards([monster]);
           break;
         }
       }
@@ -139,7 +140,7 @@ class FightActions {
           const slot = gameStore.field.slots[row][col];
           if (slot.card?.id === weapon.id && weapon.durability <= 0) {
             slot.card = null;
-            discardPile.addCards([weapon]);
+            this.discardPile.addCards([weapon]);
             toast.warning(`${weapon.name} se ha roto y se ha descartado.`);
           }
         }
