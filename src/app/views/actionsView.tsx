@@ -4,11 +4,11 @@ import React from "react";
 import fightActions from "../stores/actions/fightActions";
 import lootActions from "../stores/actions/lootActions";
 import phaseActions from "../stores/actions/phaseActions";
-import gameStore from "../stores/gameStore";
 import FightView from "./fightView";
+import phaseStore from "../stores/phaseStore";
 
 const ActionsView = () => {
-  const { currentPhase, phaseAction } = gameStore;
+  const { currentPhase, phaseAction } = phaseStore;
 
   if (currentPhase !== "Action Phase") return null;
 

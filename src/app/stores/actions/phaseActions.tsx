@@ -1,6 +1,10 @@
 import { makeAutoObservable } from "mobx";
-import gameStore, { Action } from "../gameStore";
 import { toast } from "react-toastify";
+import handStore from "../handStore";
+import phaseStore, { Action } from "../phaseStore";
+import deckStore from "../deckStore";
+import playerStore from "../playerStore";
+import fieldStore from "../fieldStore";
 
 class PhaseActions {
   constructor() {
@@ -10,51 +14,51 @@ class PhaseActions {
   setPhaseAction(action: Action) {
     if (
       action === "Summon" &&
-      gameStore.hands[gameStore.currentTurn].cards.filter(
+      handStore.hands[phaseStore.currentTurn].cards.filter(
         (c) => c.type === "MONSTER"
       ).length === 0
     ) {
       toast.error("No tienes Monstruos para invocar.");
       return;
     }
-    gameStore.phaseAction = action;
+    phaseStore.phaseAction = action;
   }
 
   changePhase() {
-    const keys = Object.keys(gameStore.players);
-    const currentIndex = keys.indexOf(gameStore.currentTurn);
+    const keys = Object.keys(playerStore.players);
+    const currentIndex = keys.indexOf(phaseStore.currentTurn);
 
-    switch (gameStore.currentPhase) {
+    switch (phaseStore.currentPhase) {
       case "Main Phase":
-        gameStore.currentPhase = "Action Phase";
-        gameStore.phaseAction = null;
+        phaseStore.currentPhase = "Action Phase";
+        phaseStore.phaseAction = null;
         break;
       case "Action Phase":
-        gameStore.phaseAction = null;
-        gameStore.currentPhase = "End Phase";
+        phaseStore.phaseAction = null;
+        phaseStore.currentPhase = "End Phase";
         break;
       case "End Phase":
         this.endTurn();
-        gameStore.turnCounter++;
-        gameStore.currentPhase = "Main Phase";
-        gameStore.currentTurn = keys[(currentIndex + 1) % keys.length];
+        phaseStore.turnCounter++;
+        phaseStore.currentPhase = "Main Phase";
+        phaseStore.currentTurn = keys[(currentIndex + 1) % keys.length];
         break;
     }
   }
 
   endTurn() {
-    if (gameStore.deck.length > 0) {
-      const card = gameStore.deck.shift()!;
-      gameStore.hands[gameStore.currentTurn].addCard(card);
+    if (deckStore.deck.length > 0) {
+      const card = deckStore.deck.shift()!;
+      handStore.hands[phaseStore.currentTurn].addCard(card);
     }
-    for (let row = 0; row < gameStore.field.slots.length; row++) {
-      for (let col = 0; col < gameStore.field.slots[row].length; col++) {
-        const slot = gameStore.field.slots[row][col];
+    for (let row = 0; row < fieldStore.field.slots.length; row++) {
+      for (let col = 0; col < fieldStore.field.slots[row].length; col++) {
+        const slot = fieldStore.field.slots[row][col];
         if (slot.card && slot.card.isTapped) {
           slot.card.isTapped = false;
         }
-        if (slot.owner === null && !slot.card && gameStore.deck.length > 0) {
-          const card = gameStore.deck.pop()!;
+        if (slot.owner === null && !slot.card && deckStore.deck.length > 0) {
+          const card = deckStore.deck.pop()!;
           slot.card = card;
           slot.owner = null;
         }

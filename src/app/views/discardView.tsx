@@ -1,16 +1,16 @@
 'use client'
 import React from "react";
 import { observer } from "mobx-react";
-
-import gameStore from "../stores/gameStore";
 import cardActions from "../stores/actions/cardActions";
+import handStore from "../stores/handStore";
+import phaseStore from "../stores/phaseStore";
 
 const DiscardView = observer(() => {
   const slot = cardActions.pendingSlot;
 
   if (!cardActions.discardModal || !slot) return null;
 
-  const hand = gameStore.hands[gameStore.currentTurn];
+  const hand = handStore.hands[phaseStore.currentTurn];
   const cost = cardActions.selectedCard?.cost ?? 0;
 
   const toggleCard = (cardId: number) => {

@@ -8,7 +8,7 @@ import lootActions from "../stores/actions/lootActions";
 import phaseActions from "../stores/actions/phaseActions";
 import summonActions from "../stores/actions/summonActions";
 import cardSelection from "../stores/cardEffects/cardSelection";
-import gameStore from "../stores/gameStore";
+import phaseStore from "../stores/phaseStore";
 
 type FieldViewProps = {
   field: Field;
@@ -67,16 +67,16 @@ const FieldView = ({ field }: FieldViewProps) => {
                     cardSelection.select(card);
                   } else {
                     const isLoot =
-                      gameStore.currentPhase === "Action Phase" &&
-                      gameStore.phaseAction === "Loot";
+                      phaseStore.currentPhase === "Action Phase" &&
+                      phaseStore.phaseAction === "Loot";
                     const isSummon =
-                      gameStore.currentPhase === "Action Phase" &&
-                      gameStore.phaseAction === "Summon";
+                      phaseStore.currentPhase === "Action Phase" &&
+                      phaseStore.phaseAction === "Summon";
 
                     if (isLoot) {
                       if (
                         card &&
-                        (!slot.owner || slot.owner === gameStore.currentTurn)
+                        (!slot.owner || slot.owner === phaseStore.currentTurn)
                       ) {
                         const wasSuccessful = lootActions.lootField(
                           rowIndex,

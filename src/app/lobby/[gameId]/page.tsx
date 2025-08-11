@@ -18,10 +18,6 @@ export default function LobbyPage() {
   const [players, setPlayers] = useState<Player[]>([]);
 
   async function joinLobby() {
-    if (players.length >= 4) {
-      alert("El lobby está lleno. No se pueden unir más jugadores.");
-      return;
-    }
 
     try {
       const res = await fetch("/api/lobbies/join", {
@@ -34,26 +30,30 @@ export default function LobbyPage() {
         }),
       });
       if (!res.ok) throw new Error("Error al unirse al lobby");
+          const data = await res.json();
+
+    if (data.playerKey) {
+      localStorage.setItem("playerKey", data.playerKey);
+    }
     } catch (err) {
       console.error(err);
       alert("No se pudo unir al lobby");
     }
   }
 
-async function startGame() {
-  try {
-    const res = await fetch("/api/games/start", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lobbyId: gameId }),
-    });
-    if (!res.ok) throw new Error("Error al iniciar la partida");
-
-  } catch (err) {
-    console.error(err);
-    alert("No se pudo iniciar la partida");
+  async function startGame() {
+    try {
+      const res = await fetch("/api/games/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lobbyId: gameId }),
+      });
+      if (!res.ok) throw new Error("Error al iniciar la partida");
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo iniciar la partida");
+    }
   }
-}
 
   useEffect(() => {
     const channel = pusherClient.subscribe(`lobby-${gameId}`);
@@ -82,7 +82,6 @@ async function startGame() {
         onChange={(e) => setName(e.target.value)}
         className="mb-4 p-2 rounded border border-amber-500"
       />
-
       <button
         onClick={joinLobby}
         className="mb-4 rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl hover:bg-[#d4af37] hover:text-black transition-all"

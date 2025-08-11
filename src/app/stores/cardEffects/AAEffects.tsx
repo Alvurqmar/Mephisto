@@ -1,28 +1,31 @@
 import Card, { CardType, EffectType } from "@/app/models/card";
 import { toast } from "react-toastify";
 import cardActions from "../actions/cardActions";
-import gameStore from "../gameStore";
 import { selectCardFromHand, selectCardInRow, selectTarget, swapCardsHandField, } from "./helpers";
-import discardPile from "../../models/discardPile";
 import effectResolver from "./effectResolver";
+import fieldStore from "../fieldStore";
+import handStore from "../handStore";
+import phaseStore from "../phaseStore";
+import playerStore from "../playerStore";
+import deckStore from "../deckStore";
 
 const AA: Record<
   string,
   (triggerCard: Card, originalCard?: Card) => Promise<boolean> | boolean
 > = {
   MPE(triggerCard: Card) {
-    const topCard = gameStore.deck.shift();
+    const topCard = deckStore.deck.shift();
     if (!topCard) return false;
 
     toast.info(`Revelaste: ${topCard.name} (${topCard.type})`);
-    gameStore.deck.push(topCard);
+    deckStore.deck.push(topCard);
 
-    const currentPlayer = gameStore.players[gameStore.currentTurn];
-    const currentHand = gameStore.hands[gameStore.currentTurn];
+    const currentPlayer = playerStore.players[phaseStore.currentTurn];
+    const currentHand = handStore.hands[phaseStore.currentTurn];
 
     switch (topCard.type) {
       case CardType.SPELL:
-        const drawn = gameStore.deck.shift();
+        const drawn = deckStore.deck.shift();
         if (drawn) {
           currentHand.addCard(drawn);
           toast.success(`La carta revelada era un ${topCard.type}, robaste una carta.`);
@@ -46,11 +49,11 @@ const AA: Record<
     const pos = cardActions.cardPos(triggerCard);
     if (!pos) return false;
 
-    const nonMonsters = gameStore.field.slots[pos.row].filter(
+    const nonMonsters = fieldStore.field.slots[pos.row].filter(
       s => s.card && s.card !== triggerCard && s.card.type !== CardType.MONSTER
     ).length;
 
-    gameStore.players[gameStore.currentTurn].updateFP(1 + nonMonsters);
+    playerStore.players[phaseStore.currentTurn].updateFP(1 + nonMonsters);
     toast.success(`Has ganado ${1 + nonMonsters} FP.`);
     return true;
   },
@@ -59,11 +62,11 @@ const AA: Record<
     const pos = cardActions.cardPos(triggerCard);
     if (!pos) return false;
 
-    const monsters = gameStore.field.slots[pos.row].filter(
+    const monsters = fieldStore.field.slots[pos.row].filter(
       s => s.card && s.card !== triggerCard && s.card.type === CardType.MONSTER
     ).length;
 
-    gameStore.players[gameStore.currentTurn].updateFP(1 + monsters * 2);
+    playerStore.players[phaseStore.currentTurn].updateFP(1 + monsters * 2);
     toast.success(`Has ganado ${1 + monsters * 2} FP.`);
     return true;
   },
@@ -84,8 +87,8 @@ const AA: Record<
   },
 
   async TorchE(triggerCard: Card) {
-    const currentPlayer = gameStore.players[gameStore.currentTurn];
-    const topCard = gameStore.deck.shift();
+    const currentPlayer = playerStore.players[phaseStore.currentTurn];
+    const topCard = deckStore.deck.shift();
     if (!topCard) return false;
 
     const pos = cardActions.cardPos(triggerCard);
@@ -102,9 +105,9 @@ const AA: Record<
     const targetPos = cardActions.cardPos(targetCard);
     if (!targetPos) return false;
 
-    gameStore.field.slots[targetPos.row][targetPos.col].card = topCard;
+    fieldStore.field.slots[targetPos.row][targetPos.col].card = topCard;
     if(topCard.effectType == EffectType.ETB){effectResolver.trigger(topCard);}
-    discardPile.addCards([targetCard]);
+    deckStore.discardPile.addCards([targetCard]);
 
     currentPlayer.updateFP(2);
     toast.success(`Se ha puesto ${targetCard.name} al fondo de la biblioteca. Ganas 2 FP.`);
@@ -112,7 +115,7 @@ const AA: Record<
   },
 
   async TCE(triggerCard: Card) {
-    const player = gameStore.players[gameStore.currentTurn];
+    const player = playerStore.players[phaseStore.currentTurn];
     const pos = cardActions.cardPos(triggerCard);
     if (!pos) return false;
 
@@ -123,7 +126,7 @@ const AA: Record<
     }
 
     player.updateFP(-1);
-    const hand = gameStore.hands[gameStore.currentTurn];
+    const hand = handStore.hands[phaseStore.currentTurn];
 
     const targetCard = await selectTarget(card =>
       card && card !== triggerCard &&
@@ -136,7 +139,7 @@ const AA: Record<
     const posTarget = cardActions.cardPos(targetCard);
     if (!posTarget) return false;
 
-    gameStore.field.slots[posTarget.row][posTarget.col].card = null;
+    fieldStore.field.slots[posTarget.row][posTarget.col].card = null;
     hand.addCard(targetCard);
 
     toast.success(`Pagaste 1 FP y robaste ${targetCard.name}`);
@@ -153,23 +156,23 @@ const AA: Record<
     const fieldCard = await selectCardInRow(pos.row, triggerCard);
     if (!fieldCard) return false;
 
-    const hand = gameStore.hands[gameStore.currentTurn];
+    const hand = handStore.hands[phaseStore.currentTurn];
     const posField = cardActions.cardPos(fieldCard);
     if (!posField) return false;
 
     hand.removeCard(handCard);
-    gameStore.field.slots[posField.row][posField.col].card = null;
+    fieldStore.field.slots[posField.row][posField.col].card = null;
 
     hand.addCard(fieldCard);
-    gameStore.field.slots[posField.row][posField.col].card = handCard;
+    fieldStore.field.slots[posField.row][posField.col].card = handCard;
 
     toast.success(`Intercambiaste ${handCard.name} por ${fieldCard.name}`);
     return true;
   },
 
   async GrimoireE() {
-    const player = gameStore.players[gameStore.currentTurn];
-    const slots = gameStore.field.slots;
+    const player = playerStore.players[phaseStore.currentTurn];
+    const slots = fieldStore.field.slots;
 
     const validSpells: Card[] = [];
     for (const row of slots) {
@@ -217,14 +220,14 @@ const AA: Record<
   },
 
   async HookshotE() {
-    const hand = gameStore.hands[gameStore.currentTurn];
+    const hand = handStore.hands[phaseStore.currentTurn];
     const targetCard = await selectTarget(card => card.type !== CardType.SPELL);
     if (!targetCard) return false;
 
     const pos = cardActions.cardPos(targetCard);
     if (!pos) return false;
 
-    gameStore.field.slots[pos.row][pos.col].card = null;
+    fieldStore.field.slots[pos.row][pos.col].card = null;
     hand.addCard(targetCard);
 
     toast.success(`Has añadido ${targetCard.name} a tu mano.`);

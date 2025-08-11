@@ -1,9 +1,11 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 import Card from "../../models/card";
-import gameStore from "../gameStore";
 import phaseActions from "./phaseActions";
 import DiscardPile from "../../models/discardPile";
+import playerStore from "../playerStore";
+import phaseStore from "../phaseStore";
+import fieldStore from "../fieldStore";
 
 class FightActions {
   fightState = {
@@ -20,14 +22,14 @@ class FightActions {
   }
 
   orientation(): { orientation: "rows" | "cols"; validIndexes: number[] } {
-    const playerCount = Object.keys(gameStore.players).length;
+    const playerCount = Object.keys(playerStore.players).length;
 
     if (playerCount <= 2) {
       return { orientation: "rows", validIndexes: [0, 1, 2] };
     }
 
     let orientation: "rows" | "cols" = "rows";
-    switch (gameStore.currentTurn) {
+    switch (phaseStore.currentTurn) {
       case "p1":
       case "p3":
         orientation = "cols";
@@ -46,7 +48,7 @@ class FightActions {
     if (!validIndexes.includes(index)) return;
 
     const targetSlots: { row: number; col: number }[] = [];
-    const { rows, columns } = gameStore.field;
+    const { rows, columns } = fieldStore.field;
 
     if (orientation === "rows") {
       for (let col = 0; col < columns; col++) {
@@ -82,7 +84,7 @@ class FightActions {
   }
 
   setFavorSpent(amount: number) {
-    const player = gameStore.players[gameStore.currentTurn];
+    const player = playerStore.players[phaseStore.currentTurn];
     if (amount <= player.favorPoints) this.fightState.favorSpent = amount;
     else toast.error("No tienes suficiente Favor.");
   }
@@ -92,10 +94,10 @@ class FightActions {
       this.fightState;
     if (targetSlots.length === 0) return;
 
-    const player = gameStore.players[gameStore.currentTurn];
+    const player = playerStore.players[phaseStore.currentTurn];
 
     const fieldCards = targetSlots
-      .map(({ row, col }) => gameStore.field.slots[row][col].card)
+      .map(({ row, col }) => fieldStore.field.slots[row][col].card)
       .filter(Boolean) as Card[];
 
     const validMonsters = fieldCards.filter((card) => card.type === "MONSTER");
@@ -122,7 +124,7 @@ class FightActions {
     selectedMonsters.forEach((monster) => {
       player.updateSP(monster.soulPts);
       for (const { row, col } of targetSlots) {
-        const slot = gameStore.field.slots[row][col];
+        const slot = fieldStore.field.slots[row][col];
         if (slot.card?.id === monster.id) {
           slot.card = null;
           this.discardPile.addCards([monster]);
@@ -137,7 +139,7 @@ class FightActions {
       selectedWeapons.forEach((weapon) => {
         weapon.durability -= 1;
         for (const { row, col } of targetSlots) {
-          const slot = gameStore.field.slots[row][col];
+          const slot = fieldStore.field.slots[row][col];
           if (slot.card?.id === weapon.id && weapon.durability <= 0) {
             slot.card = null;
             this.discardPile.addCards([weapon]);

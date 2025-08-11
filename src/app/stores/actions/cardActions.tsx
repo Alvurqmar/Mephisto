@@ -3,7 +3,9 @@ import { toast } from "react-toastify";
 import Card, { EffectType } from "../../models/card";
 import effectResolver from "../cardEffects/effectResolver";
 import DiscardPile from "../../models/discardPile";
-import gameStore from "../gameStore";
+import fieldStore from "../fieldStore";
+import handStore from "../handStore";
+import phaseStore from "../phaseStore";
 
 class CardActions {
   selectedCard: Card | null = null;
@@ -33,8 +35,8 @@ class CardActions {
   }
 
   playCard(row: number, col: number, externalCard?: Card) {
-    const slot = gameStore.field.getSlot(row, col);
-    const hand = gameStore.hands[gameStore.currentTurn];
+    const slot = fieldStore.field.getSlot(row, col);
+    const hand = handStore.hands[phaseStore.currentTurn];
     const card = externalCard ?? this.selectedCard;
 
     if (!slot) {
@@ -61,7 +63,7 @@ class CardActions {
       return false;
     }
 
-    if (gameStore.currentPhase !== "Main Phase") {
+    if (phaseStore.currentPhase !== "Main Phase") {
       toast.error("Solo puedes jugar cartas durante la Fase Principal.");
       return false;
     }
@@ -101,9 +103,9 @@ class CardActions {
   }
 
   confirmDiscard(row: number, col: number) {
-    const hand = gameStore.hands[gameStore.currentTurn];
+    const hand = handStore.hands[phaseStore.currentTurn];
     const card = this.selectedCard;
-    const slot = gameStore.field.getSlot(row, col);
+    const slot = fieldStore.field.getSlot(row, col);
 
     if (!card || !slot) return;
 
@@ -140,9 +142,9 @@ class CardActions {
   }
 
   slotIsOwned = (card: Card) => {
-    for (let row = 0; row < gameStore.field.rows; row++) {
-      for (let col = 0; col < gameStore.field.columns; col++) {
-        const slot = gameStore.field.slots[row][col];
+    for (let row = 0; row < fieldStore.field.rows; row++) {
+      for (let col = 0; col < fieldStore.field.columns; col++) {
+        const slot = fieldStore.field.slots[row][col];
         if (slot.card === card && slot.owner === card.owner) {
           return true;
         }
@@ -152,9 +154,9 @@ class CardActions {
   };
 
   cardPos = (card: Card) => {
-    for (let row = 0; row < gameStore.field.rows; row++) {
-      for (let col = 0; col < gameStore.field.columns; col++) {
-        if (gameStore.field.slots[row][col].card === card) {
+    for (let row = 0; row < fieldStore.field.rows; row++) {
+      for (let col = 0; col < fieldStore.field.columns; col++) {
+        if (fieldStore.field.slots[row][col].card === card) {
           return { row, col };
         }
       }

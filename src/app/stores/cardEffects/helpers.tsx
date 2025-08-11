@@ -1,8 +1,10 @@
 import Card from "../../models/card";
 import cardSelection from "./cardSelection";
 import cardActions from "../actions/cardActions";
-import gameStore from "../gameStore";
 import { toast } from "react-toastify";
+import fieldStore from "../fieldStore";
+import phaseStore from "../phaseStore";
+import handStore from "../handStore";
 
 export function selectTarget(
   filter: (card: Card) => boolean,
@@ -38,7 +40,7 @@ export async function swapCardsHandField(
   triggerCard: Card,
   handFilter: (c: Card) => boolean
 ): Promise<boolean> {
-  const hand = gameStore.hands[gameStore.currentTurn];
+  const hand = handStore.hands[phaseStore.currentTurn];
   const pos = cardActions.cardPos(triggerCard);
   if (!pos) return false;
 
@@ -58,10 +60,10 @@ export async function swapCardsHandField(
   if (!fieldCardPos) return false;
 
   hand.removeCard(handCard);
-  gameStore.field.slots[fieldCardPos.row][fieldCardPos.col].card = null;
+  fieldStore.field.slots[fieldCardPos.row][fieldCardPos.col].card = null;
 
   hand.addCard(fieldCard);
-  gameStore.field.slots[fieldCardPos.row][fieldCardPos.col].card = handCard;
+  fieldStore.field.slots[fieldCardPos.row][fieldCardPos.col].card = handCard;
 
   toast.success(`Intercambiaste ${handCard.name} por ${fieldCard.name} en la fila ${pos.row + 1}`);
   return true;

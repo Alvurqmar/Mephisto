@@ -1,9 +1,9 @@
 'use client'
 import React from "react";
 import Card from "../models/card";
-import gameStore from "../stores/gameStore";
 import effectResolver from "../stores/cardEffects/effectResolver";
 import cardActions from "../stores/actions/cardActions";
+import phaseStore from "../stores/phaseStore";
 
 type ZoomedCardViewProps = {
   card: Card;
@@ -68,8 +68,8 @@ const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
             </p>
           )}
           {effectType === "AA" &&
-            gameStore.currentPhase === "Main Phase" &&
-            !isTapped && cardActions.slotIsOwned(card) && owner == gameStore.currentTurn &&(
+            phaseStore.currentPhase === "Main Phase" &&
+            !isTapped && cardActions.slotIsOwned(card) && owner == phaseStore.currentTurn &&(
               <button
                 className="bg-indigo-600 text-white px-4 py-2 rounded mt-4 hover:bg-indigo-700 transition pointer-events-auto"
                 onClick={() => {

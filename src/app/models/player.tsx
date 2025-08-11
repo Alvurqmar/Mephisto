@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import gameStore from "../stores/gameStore";
+import playerStore from "../stores/playerStore";
+import phaseStore from "../stores/phaseStore";
 
 class Player {
   key: string = "";
@@ -24,7 +25,7 @@ class Player {
 
   updateSP(amount: number) {
     this.soulPoints = Math.max(0, this.soulPoints + amount);
-    gameStore.checkVictory(this);
+    playerStore.checkVictory(this.key, phaseStore.winningSoulPoints);
   }
   serialize() {
     return {

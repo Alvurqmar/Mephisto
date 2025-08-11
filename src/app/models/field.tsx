@@ -157,11 +157,9 @@ class Field {
 
     field.slots = data.slots.map((row) =>
       row.map((slotData) => {
-        // Si hay carta, siempre es un Slot con carta
         if (slotData.card) {
           return Slot.deserialize(slotData);
         }
-        // Si no hay carta y el owner es "Empty", es un EmptySlot
         if (slotData.owner === "Empty") {
           return EmptySlot.deserialize(slotData);
         }

@@ -1,7 +1,10 @@
-import gameStore from "../gameStore";
 import { toast } from "react-toastify";
 import cardActions from "./cardActions";
 import { makeAutoObservable } from "mobx";
+import fieldStore from "../fieldStore";
+import handStore from "../handStore";
+import phaseStore from "../phaseStore";
+import playerStore from "../playerStore";
 
 class SummonActions {
   constructor() {
@@ -9,22 +12,22 @@ class SummonActions {
   }
 
   summon(row: number, col: number) {
-    const slot = gameStore.field.slots[row][col];
+    const slot = fieldStore.field.slots[row][col];
     const selectedCard = cardActions.selectedCard;
 
     if (!selectedCard || selectedCard.type !== "MONSTER") return;
 
     const previousCard = slot.card;
 
-    const hand = gameStore.hands[gameStore.currentTurn];
+    const hand = handStore.hands[phaseStore.currentTurn];
     hand.removeCard(selectedCard);
     selectedCard.owner = null;
     slot.card = selectedCard;
     if (previousCard) {
-      gameStore.hands[gameStore.currentTurn].addCard(previousCard);
+      handStore.hands[phaseStore.currentTurn].addCard(previousCard);
     }
 
-    gameStore.players[gameStore.currentTurn].updateFP(3);
+    playerStore.players[phaseStore.currentTurn].updateFP(3);
     toast.success(`Invocaste con éxito, ganas 3 puntos de favor`);
   }
 }

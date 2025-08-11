@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     );
     const playersCount = parseInt(playersCountResult.rows[0].count, 10);
 
-    // Validación para limitar a 4 jugadores
     if (playersCount >= 4) {
       return NextResponse.json(
         { error: "El lobby está lleno. No se pueden unir más jugadores." },

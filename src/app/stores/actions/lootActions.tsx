@@ -1,6 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
-import gameStore from "../gameStore";
+import fieldStore from "../fieldStore";
+import handStore from "../handStore";
+import phaseStore from "../phaseStore";
+import deckStore from "../deckStore";
 
 class LootActions {
   constructor() {
@@ -8,15 +11,15 @@ class LootActions {
   }
 
   lootField(row: number, col: number): boolean {
-    const slot = gameStore.field.getSlot(row, col);
-    const currentPlayerHand = gameStore.hands[gameStore.currentTurn];
+    const slot = fieldStore.field.getSlot(row, col);
+    const currentPlayerHand = handStore.hands[phaseStore.currentTurn];
 
     if (!slot || !slot.card) {
       toast.error("No hay carta en esa posición.");
       return false;
     }
 
-    if (slot.owner !== null && slot.owner !== gameStore.currentTurn) {
+    if (slot.owner !== null && slot.owner !== phaseStore.currentTurn) {
       toast.error("No puedes robar cartas del lado de otro jugador.");
       return false;
     }
@@ -33,14 +36,14 @@ class LootActions {
   }
 
   lootDeck() {
-    const currentPlayerHand = gameStore.hands[gameStore.currentTurn];
-    const deck = gameStore.deck;
+    const currentPlayerHand = handStore.hands[phaseStore.currentTurn];
+    const deck = deckStore.deck;
 
     if (deck.length === 0) {
-      gameStore.restartDeck();
+      deckStore.restartDeck();
     }
 
-    const drawnCard = gameStore.deck.shift();
+    const drawnCard = deckStore.deck.shift();
 
     if (!drawnCard) {
       toast.error("No hay cartas en el mazo para lootear.");

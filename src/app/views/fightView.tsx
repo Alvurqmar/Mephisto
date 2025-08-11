@@ -2,12 +2,14 @@
 import { observer } from "mobx-react";
 import React from "react";
 import fightActions from "../stores/actions/fightActions";
-import gameStore from "../stores/gameStore";
+import playerStore from "../stores/playerStore";
+import phaseStore from "../stores/phaseStore";
+import fieldStore from "../stores/fieldStore";
 
 const FightView = observer(() => {
   const { targetSlots, selectedMonsters, selectedWeapons, favorSpent } =
     fightActions.fightState;
-  const player = gameStore.players[gameStore.currentTurn];
+  const player = playerStore.players[phaseStore.currentTurn];
 
   const handleFavorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
@@ -15,7 +17,7 @@ const FightView = observer(() => {
   };
 
   const cardsInTargets = targetSlots.map(
-    ({ row, col }) => gameStore.field.slots[row][col]
+    ({ row, col }) => fieldStore.field.slots[row][col]
   );
 
   const monsters = cardsInTargets
@@ -25,7 +27,7 @@ const FightView = observer(() => {
   const weapons = cardsInTargets
     .filter(
       (slot) =>
-        slot.owner === gameStore.currentTurn && slot.card?.type === "WEAPON"
+        slot.owner === phaseStore.currentTurn && slot.card?.type === "WEAPON"
     )
     .map((slot) => slot.card!) as typeof selectedWeapons;
 
