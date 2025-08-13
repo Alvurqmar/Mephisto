@@ -1,9 +1,6 @@
-'use client'
+'use client';
 import React from "react";
 import Card from "../models/card";
-import effectResolver from "../stores/cardEffects/effectResolver";
-import cardActions from "../stores/actions/cardActions";
-import phaseStore from "../stores/phaseStore";
 
 type ZoomedCardViewProps = {
   card: Card;
@@ -11,8 +8,16 @@ type ZoomedCardViewProps = {
 };
 
 const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
-  const { name, type, cost, soulPts, attack, durability, owner, effectType, isTapped } =
-    card;
+  const {
+    name,
+    type,
+    cost,
+    soulPts,
+    attack,
+    durability,
+    owner,
+    isTapped,
+  } = card;
 
   return (
     <div
@@ -28,11 +33,7 @@ const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
           />
           {isTapped && (
             <div className="absolute bottom-1 right-1 p-1 rounded-full">
-              <img
-                src="/tapIcon.png"
-                alt="Carta tapada"
-                className="w-6 h-6"
-              />
+              <img src="/tapIcon.png" alt="Carta tapada" className="w-6 h-6" />
             </div>
           )}
         </div>
@@ -62,25 +63,11 @@ const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
               <strong>🛡️ Durabilidad:</strong> {durability}
             </p>
           )}
-          {isTapped && (
+          {owner !== null && (
             <p>
-              <strong> (Girada)</strong>
+              <strong>👤 Propietario:</strong> {owner}
             </p>
           )}
-          {effectType === "AA" &&
-            phaseStore.currentPhase === "Main Phase" &&
-            !isTapped && cardActions.slotIsOwned(card) && owner == phaseStore.currentTurn &&(
-              <button
-                className="bg-indigo-600 text-white px-4 py-2 rounded mt-4 hover:bg-indigo-700 transition pointer-events-auto"
-                onClick={() => {
-                  effectResolver.trigger(card);
-                  card.durability += -1;
-                  onClose();
-                }}
-              >
-                Activar habilidad
-              </button>
-            )}
         </div>
       </div>
     </div>

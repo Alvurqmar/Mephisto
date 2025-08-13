@@ -1,35 +1,41 @@
 import { toast } from "react-toastify";
-import cardActions from "./cardActions";
 import { makeAutoObservable } from "mobx";
-import fieldStore from "../fieldStore";
-import handStore from "../handStore";
+import cardActions from "./cardActions";
 import phaseStore from "../phaseStore";
-import playerStore from "../playerStore";
 
 class SummonActions {
   constructor() {
     makeAutoObservable(this);
   }
 
-  summon(row: number, col: number) {
-    const slot = fieldStore.field.slots[row][col];
+  async summon(gameId: string, row: number, col: number) {
     const selectedCard = cardActions.selectedCard;
+    const playerId = phaseStore.currentTurn;
 
-    if (!selectedCard || selectedCard.type !== "MONSTER") return;
-
-    const previousCard = slot.card;
-
-    const hand = handStore.hands[phaseStore.currentTurn];
-    hand.removeCard(selectedCard);
-    selectedCard.owner = null;
-    slot.card = selectedCard;
-    if (previousCard) {
-      handStore.hands[phaseStore.currentTurn].addCard(previousCard);
+    if (!selectedCard) {
+      toast.error("No hay carta seleccionada.");
+      return;
     }
 
-    playerStore.players[phaseStore.currentTurn].updateFP(3);
-    toast.success(`Invocaste con éxito, ganas 3 puntos de favor`);
+    const res = await fetch(`/api/games/${gameId}/actions/summon`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        row,
+        col,
+        cardId: selectedCard.id,
+        playerId,
+      }),
+    });
+
+    if (res.ok) {
+      toast.success(`Invocaste con éxito, ganas 3 puntos de favor`);
+    } else {
+      const errorData = await res.json();
+      toast.error(errorData.error);
+    }
   }
 }
+
 const summonActions = new SummonActions();
 export default summonActions;

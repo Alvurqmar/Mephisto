@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { observer } from "mobx-react";
 import React from "react";
 import fightActions from "../stores/actions/fightActions";
@@ -6,7 +6,11 @@ import playerStore from "../stores/playerStore";
 import phaseStore from "../stores/phaseStore";
 import fieldStore from "../stores/fieldStore";
 
-const FightView = observer(() => {
+type FightProps = {
+  gameId: string;
+};
+
+const FightView = observer(({ gameId }: FightProps) => {
   const { targetSlots, selectedMonsters, selectedWeapons, favorSpent } =
     fightActions.fightState;
   const player = playerStore.players[phaseStore.currentTurn];
@@ -102,7 +106,7 @@ const FightView = observer(() => {
             Cancelar
           </button>
           <button
-            onClick={() => fightActions.fight()}
+            onClick={() => fightActions.fight(gameId, phaseStore.currentTurn)}
             className="px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white"
           >
             Confirmar Combate

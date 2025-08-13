@@ -1,18 +1,16 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
-import Card, { EffectType } from "../../models/card";
-import effectResolver from "../cardEffects/effectResolver";
-import DiscardPile from "../../models/discardPile";
+import Card from "../../models/card";
 import fieldStore from "../fieldStore";
 import handStore from "../handStore";
 import phaseStore from "../phaseStore";
+import deckStore from "../deckStore";
 
 class CardActions {
   selectedCard: Card | null = null;
   discardSelection: Card[] = [];
   discardModal = false;
   pendingSlot: { row: number; col: number } | null = null;
-  discardPile: DiscardPile = new DiscardPile();
 
   constructor() {
     makeAutoObservable(this);
@@ -25,7 +23,7 @@ class CardActions {
   }
 
   toggleDiscardCard(card: Card) {
-    if (this.discardSelection.includes(card)) {
+    if (this.discardSelection.some((c) => c.id === card.id)) {
       this.discardSelection = this.discardSelection.filter(
         (c) => c.id !== card.id
       );
@@ -34,15 +32,21 @@ class CardActions {
     }
   }
 
-  playCard(row: number, col: number, externalCard?: Card) {
+  playCard(row: number, col: number, gameId: string, externalCard?: Card) {
     const slot = fieldStore.field.getSlot(row, col);
     const hand = handStore.hands[phaseStore.currentTurn];
     const card = externalCard ?? this.selectedCard;
+    console.log("Click en:", row, col);
+    console.log("Slot obtenido:", fieldStore.field.getSlot(row, col));
+    console.log("Tipo:", fieldStore.field.slots[row]?.[col]?.constructor.name);
 
     if (!slot) {
+      toast.error("Casilla inválida o vacía.");
       return false;
     }
+
     if (slot.card) {
+      toast.error("Ya hay una carta en esta casilla.");
       return false;
     }
 
@@ -52,7 +56,6 @@ class CardActions {
     }
 
     const isCardInHand = hand.cards.some((c) => c.id === card.id);
-
     if (!isCardInHand && !externalCard) {
       toast.error("Solo puedes jugar cartas que estén en tu mano.");
       return false;
@@ -74,9 +77,9 @@ class CardActions {
     }
 
     const cost = card.cost;
-    //TODO Si el hechizo tiene coste debe pagarse
+
     if (card.type === "SPELL") {
-      this.discardPile.addCards([card]);
+      deckStore.discardPile.addCards([card]);
       if (!externalCard) hand.removeCard(card);
       this.selectCard(null);
       toast.success("Carta de hechizo jugada y enviada a descartes.");
@@ -84,16 +87,16 @@ class CardActions {
     }
 
     if (cost === 0) {
-      slot.card = card;
-      if (!externalCard) hand.removeCard(card);
-      this.selectCard(null);
+      this.pendingSlot = { row, col };
+      this.discardModal = false;
+      this.sendPlayRequest(row, col, gameId, []);
       return true;
     }
 
     const otherCards = hand.cards.filter((c) => c.id !== card.id);
 
     if (otherCards.length < cost) {
-      toast.error(`Necesitas descartar ${cost} cartas para jugar esta carta.`);
+      toast.error(`Necesitas descartar ${cost} carta/s para jugar esta carta.`);
       return false;
     }
 
@@ -102,66 +105,51 @@ class CardActions {
     return false;
   }
 
-  confirmDiscard(row: number, col: number) {
-    const hand = handStore.hands[phaseStore.currentTurn];
-    const card = this.selectedCard;
-    const slot = fieldStore.field.getSlot(row, col);
+  async sendPlayRequest(
+    row: number,
+    col: number,
+    gameId: string,
+    discardIds: number[]
+  ) {
+    if (!this.selectedCard) return;
 
-    if (!card || !slot) return;
+    const res = await fetch(`/api/games/${gameId}/actions/playDiscard`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        playerId: phaseStore.currentTurn,
+        cardId: this.selectedCard.id,
+        row,
+        col,
+        discardIds,
+      }),
+    });
 
-    const cost = card.cost;
-
-    const isCardInHand = hand.cards.some((c) => c.id === card.id);
-    if (!isCardInHand) {
-      toast.error("Solo puedes jugar cartas que estén en tu mano.");
-      return;
+    if (res.ok) {
+      toast.success("Carta jugada correctamente.");
+      this.selectCard(null);
+      this.discardSelection = [];
+      this.pendingSlot = null;
+      this.discardModal = false;
+    } else {
+      const error = await res.json();
+      toast.error(error.error);
     }
-    if (this.discardSelection.length !== cost) {
-      alert(`Debes seleccionar exactamente ${cost} cartas para descartar.`);
-      return;
-    }
-
-    this.discardSelection.forEach((c) => hand.removeCard(c));
-    this.discardPile.addCards(this.discardSelection);
-
-    slot.card = card;
-    hand.removeCard(card);
-    if (card.effectType == EffectType.ETB) {
-      effectResolver.trigger(card);
-    }
-    this.discardModal = false;
-    this.discardSelection = [];
-    this.pendingSlot = null;
-    this.selectCard(null);
   }
 
-  cancelDiscard() {
-    this.discardModal = false;
-    this.discardSelection = [];
-    this.pendingSlot = null;
+  confirmDiscard(gameId: string) {
+    if (!this.pendingSlot) return;
+    const { row, col } = this.pendingSlot;
+    const discardIds = this.discardSelection.map((c) => c.id);
+    this.sendPlayRequest(row, col, gameId, discardIds);
   }
 
-  slotIsOwned = (card: Card) => {
-    for (let row = 0; row < fieldStore.field.rows; row++) {
-      for (let col = 0; col < fieldStore.field.columns; col++) {
-        const slot = fieldStore.field.slots[row][col];
-        if (slot.card === card && slot.owner === card.owner) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
-  cardPos = (card: Card) => {
-    for (let row = 0; row < fieldStore.field.rows; row++) {
-      for (let col = 0; col < fieldStore.field.columns; col++) {
-        if (fieldStore.field.slots[row][col].card === card) {
-          return { row, col };
-        }
-      }
-    }
+  cancelDiscard = () => {
+    this.discardSelection = [];
+    this.discardModal = false;
+    this.pendingSlot = null;
   };
 }
+
 const cardActions = new CardActions();
 export default cardActions;

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { observer } from "mobx-react";
 import React from "react";
 import Field from "../models/field";
@@ -10,11 +10,12 @@ import summonActions from "../stores/actions/summonActions";
 import cardSelection from "../stores/cardEffects/cardSelection";
 import phaseStore from "../stores/phaseStore";
 
-type FieldViewProps = {
+type FieldProps = {
   field: Field;
+  gameId: string;
 };
 
-const FieldView = ({ field }: FieldViewProps) => {
+const FieldView = ({ field, gameId }: FieldProps) => {
   const { active: selectionActive, filter: selectionFilter } = cardSelection;
 
   return (
@@ -62,7 +63,7 @@ const FieldView = ({ field }: FieldViewProps) => {
                   position: "relative",
                   zIndex: field.rows - rowIndex,
                 }}
-                onClick={() => {
+                onClick={async () => {
                   if (isSelectable) {
                     cardSelection.select(card);
                   } else {
@@ -78,11 +79,14 @@ const FieldView = ({ field }: FieldViewProps) => {
                         card &&
                         (!slot.owner || slot.owner === phaseStore.currentTurn)
                       ) {
-                        const wasSuccessful = lootActions.lootField(
+                        const wasSuccessful = await lootActions.lootField(
                           rowIndex,
-                          colIndex
+                          colIndex,
+                          gameId,
+                          phaseStore.currentTurn
                         );
-                        if (wasSuccessful) phaseActions.changePhase();
+
+                        if (wasSuccessful) phaseActions.changePhase(gameId,phaseStore.currentTurn);
                       }
                     } else if (isSummon) {
                       if (
@@ -90,14 +94,14 @@ const FieldView = ({ field }: FieldViewProps) => {
                         cardActions.selectedCard &&
                         cardActions.selectedCard.type === "MONSTER"
                       ) {
-                        summonActions.summon(rowIndex, colIndex);
-                        phaseActions.changePhase();
+                        summonActions.summon(gameId,rowIndex, colIndex);
+                        phaseActions.changePhase(gameId,phaseStore.currentTurn);
                       }
                     } else {
                       if (card) {
                         cardActions.selectCard(card);
                       } else if (cardActions.selectedCard) {
-                        cardActions.playCard(rowIndex, colIndex);
+                        cardActions.playCard(rowIndex, colIndex, gameId);
                       }
                     }
                   }

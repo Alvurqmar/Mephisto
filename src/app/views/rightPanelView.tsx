@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { observer } from "mobx-react";
 import React from "react";
 import cardActions from "../stores/actions/cardActions";
@@ -6,7 +6,10 @@ import phaseActions from "../stores/actions/phaseActions";
 import playerStore from "../stores/playerStore";
 import phaseStore from "../stores/phaseStore";
 
-const RightPanelView = () => {
+type PanelProps = {
+  gameId: string;
+};
+const RightPanelView = ({ gameId }: PanelProps) => {
   const playerCount = Object.keys(playerStore.players).length;
 
   return (
@@ -20,7 +23,7 @@ const RightPanelView = () => {
       )}
       <button
         onClick={() => {
-          phaseActions.changePhase();
+          phaseActions.changePhase(gameId,phaseStore.currentTurn);
           cardActions.selectCard(null);
         }}
         className="text-xl font-bold

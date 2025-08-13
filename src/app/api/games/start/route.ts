@@ -1,5 +1,5 @@
 import { pool } from "@/app/lib/db";
-import { getLobbyPlayers, loadCardsFromDB } from "@/app/lib/dbHelpers";
+import { getLobbyPlayers, loadCardsFromDB } from "@/app/lib/Helpers";
 import { generateInitialDeck, initGameState } from "@/app/lib/gameInit";
 import { pusher } from "@/app/lib/pusher";
 

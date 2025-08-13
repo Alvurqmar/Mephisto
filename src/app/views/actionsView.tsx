@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { observer } from "mobx-react";
 import React from "react";
 import fightActions from "../stores/actions/fightActions";
@@ -7,7 +7,10 @@ import phaseActions from "../stores/actions/phaseActions";
 import FightView from "./fightView";
 import phaseStore from "../stores/phaseStore";
 
-const ActionsView = () => {
+type ActionProps = {
+  gameId: string;
+};
+const ActionsView = ({ gameId }: ActionProps) => {
   const { currentPhase, phaseAction } = phaseStore;
 
   if (currentPhase !== "Action Phase") return null;
@@ -20,19 +23,25 @@ const ActionsView = () => {
         </h1>
         <div className="flex gap-4 justify-center">
           <button
-            onClick={() => phaseActions.setPhaseAction("Loot")}
+            onClick={() =>
+              phaseActions.setAction(gameId, phaseStore.currentTurn, "Loot")
+            }
             className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
             Loot
           </button>
           <button
-            onClick={() => phaseActions.setPhaseAction("Summon")}
+            onClick={() =>
+              phaseActions.setAction(gameId, phaseStore.currentTurn, "Summon")
+            }
             className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
           >
             Summon
           </button>
           <button
-            onClick={() => phaseActions.setPhaseAction("Fight")}
+            onClick={() =>
+              phaseActions.setAction(gameId, phaseStore.currentTurn, "Fight")
+            }
             className="bg-orange-700 text-white px-4 py-2 rounded hover:bg-orange-800"
           >
             Fight
@@ -44,7 +53,7 @@ const ActionsView = () => {
 
   if (phaseAction === "Fight") {
     if (fightActions.fightState.isActive) {
-      return <FightView />;
+      return <FightView gameId={gameId} />;
     } else {
       const { orientation, validIndexes } = fightActions.orientation();
       const isRows = orientation === "rows";
@@ -66,7 +75,9 @@ const ActionsView = () => {
               </button>
             ))}
             <button
-              onClick={() => phaseActions.setPhaseAction(null)}
+              onClick={() =>
+                phaseActions.setAction(gameId, phaseStore.currentTurn, null)
+              }
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
             >
               Cambiar acción
@@ -88,8 +99,7 @@ const ActionsView = () => {
         <div className="flex justify-between mt-4">
           <button
             onClick={() => {
-              lootActions.lootDeck();
-              phaseActions.changePhase();
+              lootActions.lootDeck(gameId, phaseStore.currentTurn);
             }}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
@@ -97,7 +107,9 @@ const ActionsView = () => {
           </button>
 
           <button
-            onClick={() => phaseActions.setPhaseAction(null)}
+            onClick={() =>
+              phaseActions.setAction(gameId, phaseStore.currentTurn, null)
+            }
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
             Cambiar acción
@@ -116,7 +128,9 @@ const ActionsView = () => {
 
         <div className="flex justify-end mt-4">
           <button
-            onClick={() => phaseActions.setPhaseAction(null)}
+            onClick={() =>
+              phaseActions.setAction(gameId, phaseStore.currentTurn, null)
+            }
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
             Cambiar acción

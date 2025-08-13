@@ -19,26 +19,37 @@ import phaseStore from "../stores/phaseStore";
 import playerStore from "../stores/playerStore";
 import handStore from "../stores/handStore";
 import fieldStore from "../stores/fieldStore";
+import { pusherClient } from "../lib/pusherClient";
 
-type BoardViewProps = {
+ type BoardViewProps = {
   gameId: string;
 };
 
 const BoardView = observer(({ gameId }: BoardViewProps) => {
-  
-
-
-
   const [isReady, setIsReady] = useState(false);
 
-  useEffect(() => {
-    async function init() {
-      await deckStore.loadCards();
-      await gameStore.loadGameState(gameId);
-      setIsReady(true);
-    }
-    init();
-  }, [gameId]);
+useEffect(() => {
+  async function init() {
+    await deckStore.loadCards();
+    await gameStore.loadGameState(gameId);
+    setIsReady(true);
+  }
+  init();
+
+  const channel = pusherClient.subscribe(`game-${gameId}`);
+
+  const onStateUpdated = () => {
+    gameStore.loadGameState(gameId);
+  };
+
+  channel.bind("state-updated", onStateUpdated);
+
+  return () => {
+    channel.unbind("state-updated", onStateUpdated);
+    pusherClient.unsubscribe(`game-${gameId}`);
+  };
+}, [gameId]);
+
 
   if (!isReady) {
     return (
@@ -49,8 +60,12 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
   }
 
   const currentPlayerKey = phaseStore.currentTurn;
-  const currentPlayer = currentPlayerKey ? playerStore.players[currentPlayerKey] : null;
-  const currentHand = currentPlayerKey ? handStore.hands[currentPlayerKey] : null;
+  const currentPlayer = currentPlayerKey
+    ? playerStore.players[currentPlayerKey]
+    : null;
+  const currentHand = currentPlayerKey
+    ? handStore.hands[currentPlayerKey]
+    : null;
 
   return (
     <main className="flex flex-col h-screen max-w-screen overflow-hidden bg-[url('/GameBg.jpg')] bg-cover bg-no-repeat bg-center">
@@ -93,21 +108,21 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
             />
           )}
 
-          <ActionsView />
+          <ActionsView gameId={gameId}/>
         </div>
 
         {/* Col 3 - Campo */}
         <div className="flex-grow flex justify-center items-center h-full min-h-0 overflow-hidden">
-          <FieldView field={fieldStore.field} />
+          <FieldView field={fieldStore.field} gameId={gameId}/>
         </div>
 
         {/* Col 4 - RightPanelView */}
         <div className="flex-none w-32 max-h-screen">
-          <RightPanelView />
+          <RightPanelView gameId={gameId} />
         </div>
       </div>
 
-      <DiscardView />
+      <DiscardView gameId={gameId} />
       <ToastProvider />
 
       {/* Victoria */}
@@ -115,7 +130,9 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-neutral-600 rounded-xl p-6 shadow-lg text-center max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
-              🎉 {Object.values(playerStore.players).find((p) => p.isWinner)?.name} ha ganado la partida!
+              🎉{" "}
+              {Object.values(playerStore.players).find((p) => p.isWinner)?.name}{" "}
+              ha ganado la partida!
             </h2>
             <button
               onClick={() => {

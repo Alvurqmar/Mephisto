@@ -1,57 +1,63 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
-import fieldStore from "../fieldStore";
-import handStore from "../handStore";
+import gameStore from "../gameStore";
+import phaseActions from "./phaseActions";
 import phaseStore from "../phaseStore";
-import deckStore from "../deckStore";
 
 class LootActions {
   constructor() {
     makeAutoObservable(this);
   }
 
-  lootField(row: number, col: number): boolean {
-    const slot = fieldStore.field.getSlot(row, col);
-    const currentPlayerHand = handStore.hands[phaseStore.currentTurn];
+  async lootField(row: number, col: number, gameId: string, playerId: string) {
+    try {
+      const res = await fetch(`/api/games/${gameId}/actions/lootField`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ row, col, playerId }),
+      });
 
-    if (!slot || !slot.card) {
-      toast.error("No hay carta en esa posición.");
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error);
+        return false;
+      }
+
+      await gameStore.loadGameState(gameId);
+
+      toast.success("Carta robada con éxito");
+      return true;
+    } catch (e) {
+      toast.error("Error de conexión");
       return false;
     }
-
-    if (slot.owner !== null && slot.owner !== phaseStore.currentTurn) {
-      toast.error("No puedes robar cartas del lado de otro jugador.");
-      return false;
-    }
-
-    if (slot.owner === null && slot.card.type === "MONSTER") {
-      toast.error("No puedes robar monstruos.");
-      return false;
-    }
-
-    currentPlayerHand.addCard(slot.card);
-    slot.card = null;
-    toast.success(`Looteaste con éxito`);
-    return true;
   }
 
-  lootDeck() {
-    const currentPlayerHand = handStore.hands[phaseStore.currentTurn];
-    const deck = deckStore.deck;
+  async lootDeck(gameId: string, playerId: string) {
+    try {
+      const res = await fetch(`/api/games/${gameId}/actions/lootDeck`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId }),
+      });
 
-    if (deck.length === 0) {
-      deckStore.restartDeck();
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error);
+        return false;
+      }
+
+      await gameStore.loadGameState(gameId);
+
+      toast.success("Carta robada del mazo con éxito");
+      phaseActions.changePhase(gameId, playerId);
+      return true;
+    } catch (e) {
+      toast.error("Error de conexión");
+      return false;
     }
-
-    const drawnCard = deckStore.deck.shift();
-
-    if (!drawnCard) {
-      toast.error("No hay cartas en el mazo para lootear.");
-      return;
-    }
-
-    currentPlayerHand.addCard(drawnCard);
-    toast.success(`Looteaste con éxito`);
   }
 }
 const lootActions = new LootActions();
