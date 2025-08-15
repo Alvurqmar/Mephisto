@@ -1,8 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 import gameStore from "../gameStore";
-import phaseActions from "./phaseActions";
-import phaseStore from "../phaseStore";
 
 class LootActions {
   constructor() {
@@ -52,7 +50,6 @@ class LootActions {
       await gameStore.loadGameState(gameId);
 
       toast.success("Carta robada del mazo con éxito");
-      phaseActions.changePhase(gameId, playerId);
       return true;
     } catch (e) {
       toast.error("Error de conexión");

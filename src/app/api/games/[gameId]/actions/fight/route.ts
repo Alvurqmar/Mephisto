@@ -6,11 +6,15 @@ export async function POST(
   request: Request,
   { params }: { params: { gameId: string } }
 ) {
-  const { gameId } = params;
+  const { gameId } = await params;
   const { playerId, results, favorSpent, gainedSP, discardedCards } =
     await request.json();
 
   const gameState = await loadGameState(gameId);
+
+  if (playerId !== gameState.currentTurn) {
+    return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
+  }
 
   results.forEach((res: any) => {
     const slot = gameState.field.slots[res.row][res.col];
@@ -30,8 +34,10 @@ export async function POST(
     gameState.discardPile.push(...discardedCards);
   }
 
-  await saveGameState(gameId, gameState);
+  gameState.currentPhase = "End Phase";
+  gameState.phaseAction = null;
 
+  await saveGameState(gameId, gameState);
   await pusher.trigger(`game-${gameId}`, "state-updated", {});
 
   return NextResponse.json({ success: true });

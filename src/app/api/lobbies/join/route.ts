@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { lobbyId, userId, name, playerKey } = await request.json();
+    const { lobbyId, userId, name } = await request.json();
 
     if (!lobbyId || !userId || !name) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -23,12 +23,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const assignedPlayerKey = playerKey ?? `p${playersCount + 1}`;
+    const playerKey = `p${playersCount + 1}`;
 
     await pool.query(
       `INSERT INTO lobby_players (lobby_id, user_id, name, player_key)
        VALUES ($1, $2, $3, $4)`,
-      [lobbyId, userId, name, assignedPlayerKey]
+      [lobbyId, userId, name, playerKey]
     );
 
     const playersResult = await pool.query(
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       players: playersResult.rows,
     });
 
-    return NextResponse.json({ success: true, assignedPlayerKey }, { status: 200 });
+    return NextResponse.json({ success: true, playerKey }, { status: 200 });
   } catch (err) {
     let errorMessage = "Unknown error";
     if (err instanceof Error) errorMessage = err.message;

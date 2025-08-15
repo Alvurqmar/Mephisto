@@ -57,9 +57,8 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
         }
       }
     }
-
-    players["p1"].favorPoints = 3;
-    players["p2"].favorPoints = 5;
+      players[playerKeys[0]].favorPoints = 3;
+      players[playerKeys[1]].favorPoints = 5;
   } else {
     field = new Field(7, 7, "3-4P");
     field.setFieldOwners34P(field, playerKeys);

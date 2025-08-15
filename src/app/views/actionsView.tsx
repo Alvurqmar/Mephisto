@@ -9,13 +9,14 @@ import phaseStore from "../stores/phaseStore";
 
 type ActionProps = {
   gameId: string;
+  myPlayerKey: string;
 };
-const ActionsView = ({ gameId }: ActionProps) => {
+const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
   const { currentPhase, phaseAction } = phaseStore;
 
   if (currentPhase !== "Action Phase") return null;
 
-  if (!phaseAction) {
+  if (!phaseAction && myPlayerKey === phaseStore.currentTurn) {
     return (
       <div className="absolute top-6 bg-neutral-400 px-6 py-4 rounded shadow-md text-neutral-800">
         <h1 className="font-bold mb-2 text-center">

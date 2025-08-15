@@ -21,35 +21,34 @@ import handStore from "../stores/handStore";
 import fieldStore from "../stores/fieldStore";
 import { pusherClient } from "../lib/pusherClient";
 
- type BoardViewProps = {
+type BoardViewProps = {
   gameId: string;
 };
-
+const myPlayerKey = sessionStorage.getItem("playerKey");
 const BoardView = observer(({ gameId }: BoardViewProps) => {
   const [isReady, setIsReady] = useState(false);
 
-useEffect(() => {
-  async function init() {
-    await deckStore.loadCards();
-    await gameStore.loadGameState(gameId);
-    setIsReady(true);
-  }
-  init();
+  useEffect(() => {
+    async function init() {
+      await deckStore.loadCards();
+      await gameStore.loadGameState(gameId);
+      setIsReady(true);
+    }
+    init();
 
-  const channel = pusherClient.subscribe(`game-${gameId}`);
+    const channel = pusherClient.subscribe(`game-${gameId}`);
 
-  const onStateUpdated = () => {
-    gameStore.loadGameState(gameId);
-  };
+    const onStateUpdated = () => {
+      gameStore.loadGameState(gameId);
+    };
 
-  channel.bind("state-updated", onStateUpdated);
+    channel.bind("state-updated", onStateUpdated);
 
-  return () => {
-    channel.unbind("state-updated", onStateUpdated);
-    pusherClient.unsubscribe(`game-${gameId}`);
-  };
-}, [gameId]);
-
+    return () => {
+      channel.unbind("state-updated", onStateUpdated);
+      pusherClient.unsubscribe(`game-${gameId}`);
+    };
+  }, [gameId]);
 
   if (!isReady) {
     return (
@@ -59,13 +58,9 @@ useEffect(() => {
     );
   }
 
-  const currentPlayerKey = phaseStore.currentTurn;
-  const currentPlayer = currentPlayerKey
-    ? playerStore.players[currentPlayerKey]
-    : null;
-  const currentHand = currentPlayerKey
-    ? handStore.hands[currentPlayerKey]
-    : null;
+  const myPlayer = myPlayerKey ? playerStore.players[myPlayerKey] : null;
+
+  const myHand = myPlayerKey ? handStore.hands[myPlayerKey] : null;
 
   return (
     <main className="flex flex-col h-screen max-w-screen overflow-hidden bg-[url('/GameBg.jpg')] bg-cover bg-no-repeat bg-center">
@@ -78,12 +73,12 @@ useEffect(() => {
         {/* Col 2 - Mano , ZoomedCard y Acciones */}
         <div className="flex-none w-96 flex flex-col justify-end relative">
           <p className="flex h-6 bg-neutral-700 justify-center text-m font-bold">
-            Mano de {currentPlayer ? currentPlayer.name : "Jugador"}
+            Mano de {myPlayer ? myPlayer.name : "Jugador"}
           </p>
 
-          {currentHand && (
+          {myHand && (
             <HandView
-              hand={currentHand}
+              hand={myHand}
               onCardClick={(card) => {
                 if (cardSelection.handActive) {
                   cardSelection.selectFromHand(card);
@@ -108,17 +103,21 @@ useEffect(() => {
             />
           )}
 
-          <ActionsView gameId={gameId}/>
+          {myPlayerKey && (
+            <ActionsView gameId={gameId} myPlayerKey={myPlayerKey} />
+          )}
         </div>
 
         {/* Col 3 - Campo */}
         <div className="flex-grow flex justify-center items-center h-full min-h-0 overflow-hidden">
-          <FieldView field={fieldStore.field} gameId={gameId}/>
+          <FieldView field={fieldStore.field} gameId={gameId} />
         </div>
 
         {/* Col 4 - RightPanelView */}
         <div className="flex-none w-32 max-h-screen">
-          <RightPanelView gameId={gameId} />
+          {myPlayerKey && (
+            <RightPanelView gameId={gameId} myPlayerKey={myPlayerKey} />
+          )}
         </div>
       </div>
 

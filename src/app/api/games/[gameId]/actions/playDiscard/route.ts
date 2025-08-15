@@ -4,14 +4,17 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ gameId: string }> }
+  { params }: { params: { gameId: string } }
 ) {
   const { gameId } = await params;
   const { playerId, cardId, row, col, discardIds } = await request.json();
-
   const gameState = await loadGameState(gameId);
   const hand = gameState.hands[playerId];
   const slot = gameState.field.slots[row]?.[col];
+
+  if (playerId !== gameState.currentTurn) {
+    return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
+  }
 
   if (!slot) {
     return NextResponse.json({ error: "Posición inválida." }, { status: 400 });

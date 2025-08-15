@@ -11,6 +11,10 @@ export async function POST(
     const { gameId } = await params;
     const gameState = await loadGameState(gameId);
 
+    if (playerId !== gameState.currentTurn) {
+      return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
+    }
+
     if (
       action === "Summon" &&
       !gameState.hands[playerId].some((card: any) => card.type === "MONSTER")
@@ -24,7 +28,6 @@ export async function POST(
     gameState.phaseAction = action;
 
     await saveGameState(gameId, gameState);
-
     await pusher.trigger(`game-${gameId}`, "state-updated", {});
 
     return NextResponse.json({ success: true });

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ gameId: string }> }
+  { params }: { params: { gameId: string } }
 ) {
   const { gameId } = await params;
   const { row, col, cardId, playerId } = await request.json();
@@ -14,6 +14,10 @@ export async function POST(
   const selectedCard = hand[cardIndex];
   const slot = gameState.field.slots[row]?.[col];
   const previousCard = slot.card || null;
+
+  if (playerId !== gameState.currentTurn) {
+    return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
+  }
 
   if (cardIndex === -1) {
     return NextResponse.json(
@@ -43,7 +47,9 @@ export async function POST(
   }
 
   gameState.players[playerId].favorPoints += 3;
-
+  gameState.currentPhase = "End Phase";
+  gameState.phaseAction = null;
+  
   await saveGameState(gameId, gameState);
   await pusher.trigger(`game-${gameId}`, "state-updated", {});
 

@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 import Card from "../../models/card";
-import phaseActions from "./phaseActions";
 import DiscardPile from "../../models/discardPile";
 import playerStore from "../playerStore";
 import phaseStore from "../phaseStore";
@@ -148,7 +147,7 @@ class FightActions {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          playerId: phaseStore.currentTurn,
+          playerId,
           results,
           favorSpent,
           gainedSP,
@@ -157,7 +156,6 @@ class FightActions {
       });
 
       toast.success("¡Ganaste el combate!");
-      phaseActions.changePhase(gameId, playerId);
 
       this.fightState = {
         targetSlots: [],

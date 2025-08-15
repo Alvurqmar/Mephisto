@@ -8,8 +8,9 @@ import phaseStore from "../stores/phaseStore";
 
 type PanelProps = {
   gameId: string;
+  myPlayerKey: string;
 };
-const RightPanelView = ({ gameId }: PanelProps) => {
+const RightPanelView = ({ gameId, myPlayerKey}: PanelProps) => {
   const playerCount = Object.keys(playerStore.players).length;
 
   return (
@@ -21,9 +22,10 @@ const RightPanelView = ({ gameId }: PanelProps) => {
           <p>✨FP: {playerStore.players["p3"].favorPoints}</p>
         </div>
       )}
+      {myPlayerKey === phaseStore.currentTurn && (
       <button
         onClick={() => {
-          phaseActions.changePhase(gameId,phaseStore.currentTurn);
+          phaseActions.changePhase(gameId,myPlayerKey);
           cardActions.selectCard(null);
         }}
         className="text-xl font-bold
@@ -35,7 +37,7 @@ const RightPanelView = ({ gameId }: PanelProps) => {
       >
         Pasar Fase
       </button>
-
+    )}
       <p className="border text-white bg-neutral-700/70 bg-opacity-70 px-2 rounded flex flex-col mt-4">
         <span className="mb-4">
           Turno {phaseStore.turnCounter}:{" "}

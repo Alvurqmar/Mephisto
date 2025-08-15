@@ -5,7 +5,6 @@ import Field from "../models/field";
 import { EmptySlot } from "../models/slot";
 import cardActions from "../stores/actions/cardActions";
 import lootActions from "../stores/actions/lootActions";
-import phaseActions from "../stores/actions/phaseActions";
 import summonActions from "../stores/actions/summonActions";
 import cardSelection from "../stores/cardEffects/cardSelection";
 import phaseStore from "../stores/phaseStore";
@@ -79,14 +78,12 @@ const FieldView = ({ field, gameId }: FieldProps) => {
                         card &&
                         (!slot.owner || slot.owner === phaseStore.currentTurn)
                       ) {
-                        const wasSuccessful = await lootActions.lootField(
+                        lootActions.lootField(
                           rowIndex,
                           colIndex,
                           gameId,
                           phaseStore.currentTurn
                         );
-
-                        if (wasSuccessful) phaseActions.changePhase(gameId,phaseStore.currentTurn);
                       }
                     } else if (isSummon) {
                       if (
@@ -95,7 +92,6 @@ const FieldView = ({ field, gameId }: FieldProps) => {
                         cardActions.selectedCard.type === "MONSTER"
                       ) {
                         summonActions.summon(gameId,rowIndex, colIndex);
-                        phaseActions.changePhase(gameId,phaseStore.currentTurn);
                       }
                     } else {
                       if (card) {

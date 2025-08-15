@@ -55,12 +55,6 @@ class CardActions {
       return false;
     }
 
-    const isCardInHand = hand.cards.some((c) => c.id === card.id);
-    if (!isCardInHand && !externalCard) {
-      toast.error("Solo puedes jugar cartas que estén en tu mano.");
-      return false;
-    }
-
     if (slot.owner !== card.owner) {
       toast.error("Solo puedes jugar cartas en tus propias casillas.");
       return false;

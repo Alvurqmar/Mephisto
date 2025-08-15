@@ -4,14 +4,17 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  context: { params: { gameId: string } }
+  { params }: { params: { gameId: string } }
 ) {
   try {
-    const { params } = await context;
     const { row, col, playerId } = await request.json();
     const { gameId } = await params;
     const gameState = await loadGameState(gameId);
     const slot = gameState.field.slots[row]?.[col];
+
+    if (playerId !== gameState.currentTurn) {
+      return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
+    }
 
     if (!slot || !slot.card) {
       return NextResponse.json(
@@ -39,6 +42,8 @@ export async function POST(
 
     gameState.hands[playerId].push(slot.card);
     slot.card = null;
+    gameState.currentPhase = "End Phase";
+    gameState.phaseAction = null;
 
     await saveGameState(gameId, gameState);
     await pusher.trigger(`game-${gameId}`, "state-updated", { updated: true });

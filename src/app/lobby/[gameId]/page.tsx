@@ -18,7 +18,6 @@ export default function LobbyPage() {
   const [players, setPlayers] = useState<Player[]>([]);
 
   async function joinLobby() {
-
     try {
       const res = await fetch("/api/lobbies/join", {
         method: "POST",
@@ -30,11 +29,12 @@ export default function LobbyPage() {
         }),
       });
       if (!res.ok) throw new Error("Error al unirse al lobby");
-          const data = await res.json();
+      const data = await res.json();
 
-    if (data.playerKey) {
-      localStorage.setItem("playerKey", data.playerKey);
-    }
+      let storedKey = sessionStorage.getItem("playerKey");
+      if (!storedKey && data.playerKey) {
+        sessionStorage.setItem("playerKey", data.playerKey);
+      }
     } catch (err) {
       console.error(err);
       alert("No se pudo unir al lobby");

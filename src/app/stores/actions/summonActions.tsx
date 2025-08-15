@@ -27,7 +27,6 @@ class SummonActions {
         playerId,
       }),
     });
-
     if (res.ok) {
       toast.success(`Invocaste con éxito, ganas 3 puntos de favor`);
     } else {
