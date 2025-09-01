@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import Card from "../models/card";
 import DiscardPile from "../models/discardPile";
+import Hand from "../models/hand";
 
 class DeckStore {
   deck: Card[] = [];
@@ -12,7 +13,7 @@ class DeckStore {
 
     async loadCards() {
     try {
-      const res = await fetch("/api/seedCards");
+      const res = await fetch("/api/cards");
       const data = await res.json();
       const cards = data.map(Card.deserialize);
       runInAction(() => {
@@ -46,6 +47,16 @@ class DeckStore {
     this.discardPile.clear();
     this.deck = discarded;
     this.shuffle();
+  }
+
+  drawCard(hand: Hand){
+    if(this.deck.length === 0) {
+      this.restartDeck();
+    }else{
+      const card = this.deck.shift();
+      hand.addCard(card!);
+    }
+
   }
 }
 

@@ -14,9 +14,24 @@ function shuffle<T>(array: T[]): T[] {
 
 export function generateInitialDeck(cardsData: CardData[]): Card[] {
   const cards = cardsData.map((data) => Card.deserialize(data));
-  return shuffle(cards);
+  return cards;
 }
-
+export function initCardsField(cards: Card[], field: Field): void{
+    let placed = 0;
+    for (let row = 0; row < field.rows; row++) {
+      for (let col = 0; col < field.columns; col++) {
+        const slot = field.slots[row][col];
+        if (
+          slot instanceof Slot &&
+          slot.owner === null &&
+          placed < cards.length
+        ) {
+          field.setCard(row, col, cards[placed]);
+          placed++;
+        }
+      }
+    }
+}
 export function initGameState(players: Record<string, Player>, deck: Card[]) {
   const playerKeys = Object.keys(players);
   const shuffledDeck = shuffle([...deck]);
@@ -43,20 +58,8 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
     field.setFieldOwners2P(field);
 
     const cardsToPlace = shuffledDeck.splice(0, 6);
-    let placed = 0;
-    for (let row = 0; row < field.rows; row++) {
-      for (let col = 0; col < field.columns; col++) {
-        const slot = field.slots[row][col];
-        if (
-          slot instanceof Slot &&
-          slot.owner === null &&
-          placed < cardsToPlace.length
-        ) {
-          field.setCard(row, col, cardsToPlace[placed]);
-          placed++;
-        }
-      }
-    }
+    initCardsField(cardsToPlace, field);
+
       players[playerKeys[0]].favorPoints = 3;
       players[playerKeys[1]].favorPoints = 5;
   } else {
@@ -64,20 +67,7 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
     field.setFieldOwners34P(field, playerKeys);
 
     const cardsToPlace = shuffledDeck.splice(0, 6);
-    let placed = 0;
-    for (let row = 0; row < field.rows; row++) {
-      for (let col = 0; col < field.columns; col++) {
-        const slot = field.slots[row][col];
-        if (
-          slot instanceof Slot &&
-          slot.owner === null &&
-          placed < cardsToPlace.length
-        ) {
-          field.setCard(row, col, cardsToPlace[placed]);
-          placed++;
-        }
-      }
-    }
+    initCardsField(cardsToPlace, field);
   }
 
   return {

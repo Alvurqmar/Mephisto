@@ -5,9 +5,7 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import cardActions from "../stores/actions/cardActions";
-import cardSelection from "../stores/cardEffects/cardSelection";
 import gameStore from "../stores/gameStore";
-import deckStore from "../stores/deckStore";
 import ActionsView from "./actionsView";
 import DiscardView from "./discardView";
 import FieldView from "./fieldView";
@@ -30,7 +28,6 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
 
   useEffect(() => {
     async function init() {
-      await deckStore.loadCards();
       await gameStore.loadGameState(gameId);
       setIsReady(true);
     }
@@ -80,26 +77,18 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
             <HandView
               hand={myHand}
               onCardClick={(card) => {
-                if (cardSelection.handActive) {
-                  cardSelection.selectFromHand(card);
-                } else if (cardSelection.active) {
-                  cardSelection.select(card);
-                } else {
                   cardActions.selectCard(card);
                 }
-              }}
-              selectableFilter={
-                cardSelection.handActive
-                  ? cardSelection.handFilter ?? (() => false)
-                  : undefined
               }
             />
           )}
 
-          {cardActions.selectedCard && (
+          {cardActions.selectedCard && myPlayerKey && (
             <ZoomedCardView
               card={cardActions.selectedCard}
               onClose={() => cardActions.selectCard(null)}
+              gameId={gameId}
+              myPlayerKey={myPlayerKey}
             />
           )}
 

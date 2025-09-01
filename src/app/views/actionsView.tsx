@@ -52,7 +52,7 @@ const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
     );
   }
 
-  if (phaseAction === "Fight") {
+  if (phaseAction === "Fight" && myPlayerKey === phaseStore.currentTurn) {
     if (fightActions.fightState.isActive) {
       return <FightView gameId={gameId} />;
     } else {
@@ -89,7 +89,7 @@ const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
     }
   }
 
-  if (phaseAction === "Loot") {
+  if (phaseAction === "Loot" && myPlayerKey === phaseStore.currentTurn) {
     return (
       <div className="absolute top-4 z-50 bg-neutral-400 px-6 py-3 rounded shadow-md text-neutral-800 w-max">
         <h1 className="mb-2 text-center font-semibold">
@@ -120,7 +120,7 @@ const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
     );
   }
 
-  if (phaseAction === "Summon") {
+  if (phaseAction === "Summon" && myPlayerKey === phaseStore.currentTurn) {
     return (
       <div className="absolute top-4 z-50 bg-neutral-400 px-6 py-3 rounded shadow-md text-neutral-800 w-max">
         <h1 className="mb-2 text-center font-semibold">

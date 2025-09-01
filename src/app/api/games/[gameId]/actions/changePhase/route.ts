@@ -11,8 +11,7 @@ export async function POST(
   const gameState = await loadGameState(gameId);
   const keys = Object.keys(gameState.players);
   const turn = keys.indexOf(gameState.currentTurn);
-  const drawnCard = gameState.deck.shift();
-  
+
   if (playerId !== gameState.currentTurn) {
     return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
   }
@@ -27,6 +26,13 @@ export async function POST(
       gameState.currentPhase = "End Phase";
       break;
     case "End Phase":
+      const drawnCard = gameState.deck.shift();
+      if (!drawnCard) {
+        return NextResponse.json(
+          { error: "El mazo está vacío" },
+          { status: 400 }
+        );
+      }
       gameState.hands[playerId].push(drawnCard);
 
       for (let row = 0; row < gameState.field.slots.length; row++) {
@@ -36,7 +42,7 @@ export async function POST(
             slot.card.isTapped = false;
           }
           if (!slot.card && slot.owner === null && gameState.deck.length > 0) {
-            const card = gameState.deck.pop();
+            const card = gameState.deck.pop() ?? null;
             slot.card = card;
             slot.owner = null;
           }

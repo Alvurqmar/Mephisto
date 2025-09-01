@@ -1,14 +1,25 @@
-'use client';
+"use client";
 import React from "react";
-import Card from "../models/card";
+import Card, { EffectType } from "../models/card";
+import phaseStore from "../stores/phaseStore";
+import { findCardById, loadGameState } from "../lib/Helpers";
+import { toast } from "react-toastify";
 
 type ZoomedCardViewProps = {
   card: Card;
   onClose: () => void;
+  gameId: string;
+  myPlayerKey: string;
 };
 
-const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
+const ZoomedCardView = ({
+  card,
+  onClose,
+  gameId,
+  myPlayerKey,
+}: ZoomedCardViewProps) => {
   const {
+    id,
     name,
     type,
     cost,
@@ -16,9 +27,10 @@ const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
     attack,
     durability,
     owner,
+    effectType,
+    effectId,
     isTapped,
   } = card;
-
   return (
     <div
       className="absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -68,6 +80,43 @@ const ZoomedCardView = ({ card, onClose }: ZoomedCardViewProps) => {
               <strong>👤 Propietario:</strong> {owner}
             </p>
           )}
+          {effectType === EffectType.AA &&
+            !isTapped &&
+            owner === myPlayerKey &&
+            phaseStore.currentPhase === "Main Phase" && (
+              <button
+                className="px-3 py-2 bg-blue-600 rounded-lg hover:bg-blue-500 transition text-sm font-semibold"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(
+                      `/api/games/${gameId}/actions/cardEffect`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          playerId: card.owner,
+                          cardId: card.id,
+                          effectId: effectId,
+                          effectType: effectType,
+                        }),
+                      }
+                    );
+
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error);
+                    if (data.message) {
+                      toast.success(data.message);
+                    }
+                  } catch (err) {
+                    console.error(err);
+                  }
+                }}
+              >
+                Activar habilidad
+              </button>
+            )}
         </div>
       </div>
     </div>

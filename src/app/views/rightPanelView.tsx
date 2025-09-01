@@ -44,6 +44,11 @@ const RightPanelView = ({ gameId, myPlayerKey}: PanelProps) => {
           {playerStore.players[phaseStore.currentTurn].name}
         </span>
         <span>Fase actual: {phaseStore.currentPhase}</span>
+        {phaseStore.phaseAction && (
+          <span className="mt-2">
+            Acción: {phaseStore.phaseAction}
+          </span>
+        )}
       </p>
 
       {playerCount === 4 && (

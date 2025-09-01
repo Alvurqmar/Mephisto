@@ -1,0 +1,11 @@
+import "./implementations/AA/MPE"
+import "./implementations/AA/PE"
+import "./implementations/AA/GrimoireE"
+import "./implementations/AA/HookshotE"
+import "./implementations/AA/KeyE"
+import "./implementations/AA/ShovelE"
+import "./implementations/AA/StewE"
+import "./implementations/AA/TalismanE"
+import "./implementations/AA/TCE"
+import "./implementations/AA/TorchE"
+// import other effects here, e.g.:

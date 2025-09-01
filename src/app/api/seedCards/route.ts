@@ -14,19 +14,6 @@ const effectTypeMap: Record<string, string> = {
   CE: "CE",
   AA: "AA",
 };
-export async function GET() {
-  const client = await pool.connect();
-  try {
-    const result = await client.query("SELECT * FROM cards");
-    return NextResponse.json(result.rows);
-  } catch (error) {
-    console.error("Error obteniendo cartas:", error);
-    return NextResponse.json({ error: "Error al obtener cartas" }, { status: 500 });
-  } finally {
-    client.release();
-  }
-}
-
 
 export async function POST() {
   const client = await pool.connect();
@@ -45,12 +32,15 @@ export async function POST() {
       )
     `);
 
-    await client.query(`TRUNCATE TABLE cards RESTART IDENTITY`);
+    const cardCount = await client.query("SELECT COUNT(*) FROM cards");
+    if (parseInt(cardCount.rows[0].count) > 0) {
+      return NextResponse.json({ message: "Cartas ya cargadas" });
+    }
 
     for (const card of cards) {
       await client.query(
         `INSERT INTO cards (name, type, cost, attack, durability, effectid, effecttype, soulpts)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
         [
           card.name,
           cardTypeMap[card.type],
@@ -64,7 +54,7 @@ export async function POST() {
       );
     }
 
-    return NextResponse.json({ message: "Seed de cartas completado y secuencia reiniciada" });
+    return NextResponse.json({ message: "Seed de cartas completado" });
   } catch (error) {
     console.error("Error en seed:", error);
     return NextResponse.json({ error: "Error en seed" }, { status: 500 });

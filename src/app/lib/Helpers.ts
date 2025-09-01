@@ -1,5 +1,6 @@
 import Card from "../models/card";
 import Field from "../models/field";
+import { GameState } from "../models/gameState";
 import Player from "../models/player";
 import { pool } from "./db";
 
@@ -50,7 +51,7 @@ export async function loadCardsFromDB(): Promise<Card[]> {
   }
 }
 
-export async function loadGameState(gameId: string) {
+export async function loadGameState(gameId: string): Promise<GameState> {
   const res = await pool.query("SELECT * FROM games WHERE id = $1", [gameId]);
 
   if (res.rowCount === 0) {
@@ -84,7 +85,7 @@ export async function loadGameState(gameId: string) {
   };
 }
 
-export async function saveGameState(gameId: string, gameState: any) {
+export async function saveGameState(gameId: string, gameState: GameState): Promise<void> {
   await pool.query(
     `
     UPDATE games
@@ -118,4 +119,21 @@ export async function saveGameState(gameId: string, gameState: any) {
       gameId,
     ]
   );
+}
+
+export function findCardById(gameState: any, cardId: number) {
+  for (const row of gameState.field.slots) {
+    for (const slot of row) {
+      if (slot.card && slot.card.id === cardId) {
+        return slot.card;
+      }
+    }
+  }
+
+  for (const playerId of Object.keys(gameState.hands)) {
+    const card = gameState.hands[playerId].find((c: any) => c.id === cardId);
+    if (card) return card;
+  }
+
+  return null;
 }

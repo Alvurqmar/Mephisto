@@ -6,7 +6,9 @@ class Hand {
   cards: Card[] = [];
   player: Player = new Player("", "");
 
-  constructor() {
+  constructor(cards: Card[] = [], player: Player = new Player("", "")) {
+    this.cards = cards;
+    this.player = player;
     makeAutoObservable(this);
   }
 

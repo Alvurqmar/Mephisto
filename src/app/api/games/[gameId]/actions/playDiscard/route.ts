@@ -52,7 +52,7 @@ export async function POST(
   );
 
   gameState.discardPile.push(...discardCards);
-
+  card.owner = playerId;
   slot.card = card;
 
   await saveGameState(gameId, gameState);

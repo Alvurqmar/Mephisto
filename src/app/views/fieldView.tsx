@@ -6,7 +6,6 @@ import { EmptySlot } from "../models/slot";
 import cardActions from "../stores/actions/cardActions";
 import lootActions from "../stores/actions/lootActions";
 import summonActions from "../stores/actions/summonActions";
-import cardSelection from "../stores/cardEffects/cardSelection";
 import phaseStore from "../stores/phaseStore";
 
 type FieldProps = {
@@ -15,7 +14,6 @@ type FieldProps = {
 };
 
 const FieldView = ({ field, gameId }: FieldProps) => {
-  const { active: selectionActive, filter: selectionFilter } = cardSelection;
 
   return (
     <div className="w-full h-full max-w-screen max-h-screen mx-auto p-2 overflow-y-auto overflow-x-hidden flex justify-center items-start pt-20">
@@ -43,17 +41,11 @@ const FieldView = ({ field, gameId }: FieldProps) => {
 
             const card =
               slot.card && typeof slot.card !== "string" ? slot.card : null;
-            const isSelectable =
-              selectionActive &&
-              card &&
-              selectionFilter &&
-              selectionFilter(card);
 
             return (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`border bg-neutral-700 rounded relative flex items-center justify-center
-                  ${isSelectable ? "cursor-pointer ring-4 ring-blue-400" : ""}`}
+                className={`border bg-neutral-700 rounded relative flex items-center justify-center`}
                 style={{
                   width: "6rem",
                   height: "9rem",
@@ -63,9 +55,6 @@ const FieldView = ({ field, gameId }: FieldProps) => {
                   zIndex: field.rows - rowIndex,
                 }}
                 onClick={async () => {
-                  if (isSelectable) {
-                    cardSelection.select(card);
-                  } else {
                     const isLoot =
                       phaseStore.currentPhase === "Action Phase" &&
                       phaseStore.phaseAction === "Loot";
@@ -101,7 +90,7 @@ const FieldView = ({ field, gameId }: FieldProps) => {
                       }
                     }
                   }
-                }}
+                }
               >
                 {card && (
                   <img
