@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -9,7 +9,7 @@ export default function Home() {
 
     async function seedDatabase() {
     try {
-      const res = await fetch("/api/seedCards", { method: "POST" });
+      const res = await fetch("/api/cards/seed", { method: "POST" });
       if (!res.ok) throw new Error("Error al sembrar la base");
       alert("Seed completado!");
     } catch (error: unknown) {

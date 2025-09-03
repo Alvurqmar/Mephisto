@@ -36,9 +36,6 @@ class CardActions {
     const slot = fieldStore.field.getSlot(row, col);
     const hand = handStore.hands[phaseStore.currentTurn];
     const card = externalCard ?? this.selectedCard;
-    console.log("Click en:", row, col);
-    console.log("Slot obtenido:", fieldStore.field.getSlot(row, col));
-    console.log("Tipo:", fieldStore.field.slots[row]?.[col]?.constructor.name);
 
     if (!slot) {
       toast.error("Casilla inválida o vacía.");
