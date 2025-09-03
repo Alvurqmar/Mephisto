@@ -1,9 +1,9 @@
-"use client";
+'use client';
 import React from "react";
 import Card, { EffectType } from "../models/card";
 import phaseStore from "../stores/phaseStore";
-import { findCardById, loadGameState } from "../lib/Helpers";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 type ZoomedCardViewProps = {
   card: Card;
@@ -19,7 +19,6 @@ const ZoomedCardView = ({
   myPlayerKey,
 }: ZoomedCardViewProps) => {
   const {
-    id,
     name,
     type,
     cost,
@@ -38,14 +37,21 @@ const ZoomedCardView = ({
     >
       <div className="flex items-start gap-6 bg-black/85 p-6 rounded-xl text-white shadow-2xl pointer-events-auto w-[400px]">
         <div className="relative w-48 h-64 rounded shadow-lg overflow-hidden">
-          <img
+          <Image
             src={`/cards/${name}.png`}
             alt={name}
-            className={`w-full h-full object-cover transition-transform duration-300`}
+            fill
+            className="object-cover transition-transform duration-300"
+            sizes="200px"
           />
           {isTapped && (
             <div className="absolute bottom-1 right-1 p-1 rounded-full">
-              <img src="/tapIcon.png" alt="Carta tapada" className="w-6 h-6" />
+              <Image
+                src="/tapIcon.png"
+                alt="Carta tapada"
+                width={24}
+                height={24}
+              />
             </div>
           )}
         </div>

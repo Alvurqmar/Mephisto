@@ -16,6 +16,25 @@ export default function LobbyPage() {
   const [name, setName] = useState("");
   const [userId] = useState(() => crypto.randomUUID());
   const [players, setPlayers] = useState<Player[]>([]);
+  const [lobbyCode, setLobbyCode] = useState<string>("");
+
+  useEffect(() => {
+    async function fetchLobbyCode() {
+      try {
+        const res = await fetch("/api/lobbies/getById", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lobbyId: gameId }),
+        });
+        if (!res.ok) throw new Error("No se pudo obtener el código del lobby");
+        const data = await res.json();
+        setLobbyCode(data.code);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchLobbyCode();
+  }, [gameId]);
 
   async function joinLobby() {
     try {
@@ -31,7 +50,7 @@ export default function LobbyPage() {
       if (!res.ok) throw new Error("Error al unirse al lobby");
       const data = await res.json();
 
-      let storedKey = sessionStorage.getItem("playerKey");
+      const storedKey = sessionStorage.getItem("playerKey");
       if (!storedKey && data.playerKey) {
         sessionStorage.setItem("playerKey", data.playerKey);
       }
@@ -72,8 +91,13 @@ export default function LobbyPage() {
   }, [gameId, router]);
 
   return (
-    <div className="flex flex-col items-center p-8 text-[#d4af37]">
-      <h1 className="text-3xl mb-4">Lobby Id: {gameId}</h1>
+    <div
+      className="flex flex-col items-center p-8 text-[#d4af37] min-h-screen bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/MephistoBG.jpg')" }}
+    >
+      <h1 className="text-3xl mb-4">
+        Código del Lobby: {lobbyCode || "Cargando..."}
+      </h1>
 
       <input
         type="text"

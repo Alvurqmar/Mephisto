@@ -7,6 +7,7 @@ import cardActions from "../stores/actions/cardActions";
 import lootActions from "../stores/actions/lootActions";
 import summonActions from "../stores/actions/summonActions";
 import phaseStore from "../stores/phaseStore";
+import Image from "next/image";
 
 type FieldProps = {
   field: Field;
@@ -14,14 +15,13 @@ type FieldProps = {
 };
 
 const FieldView = ({ field, gameId }: FieldProps) => {
-
   return (
     <div className="w-full h-full max-w-screen max-h-screen mx-auto p-2 overflow-y-auto overflow-x-hidden flex justify-center items-start pt-20">
       <div
         className="grid gap-2"
         style={{
-          gridTemplateColumns: `repeat(${field.columns}, 6rem)`,
-          gridTemplateRows: `repeat(${field.rows}, 9rem)`,
+          gridTemplateColumns: `repeat(${field.columns}, 8rem)`,
+          gridTemplateRows: `repeat(${field.rows}, 12rem)`,
           minWidth: "100%",
           minHeight: field.rows * 144,
           boxSizing: "content-box",
@@ -55,49 +55,52 @@ const FieldView = ({ field, gameId }: FieldProps) => {
                   zIndex: field.rows - rowIndex,
                 }}
                 onClick={async () => {
-                    const isLoot =
-                      phaseStore.currentPhase === "Action Phase" &&
-                      phaseStore.phaseAction === "Loot";
-                    const isSummon =
-                      phaseStore.currentPhase === "Action Phase" &&
-                      phaseStore.phaseAction === "Summon";
+                  const isLoot =
+                    phaseStore.currentPhase === "Action Phase" &&
+                    phaseStore.phaseAction === "Loot";
+                  const isSummon =
+                    phaseStore.currentPhase === "Action Phase" &&
+                    phaseStore.phaseAction === "Summon";
 
-                    if (isLoot) {
-                      if (
-                        card &&
-                        (!slot.owner || slot.owner === phaseStore.currentTurn)
-                      ) {
-                        lootActions.lootField(
-                          rowIndex,
-                          colIndex,
-                          gameId,
-                          phaseStore.currentTurn
-                        );
-                      }
-                    } else if (isSummon) {
-                      if (
-                        card &&
-                        cardActions.selectedCard &&
-                        cardActions.selectedCard.type === "MONSTER"
-                      ) {
-                        summonActions.summon(gameId,rowIndex, colIndex);
-                      }
-                    } else {
-                      if (card) {
-                        cardActions.selectCard(card);
-                      } else if (cardActions.selectedCard) {
-                        cardActions.playCard(rowIndex, colIndex, gameId);
-                      }
+                  if (isLoot) {
+                    if (
+                      card &&
+                      (!slot.owner || slot.owner === phaseStore.currentTurn)
+                    ) {
+                      lootActions.lootField(
+                        rowIndex,
+                        colIndex,
+                        gameId,
+                        phaseStore.currentTurn
+                      );
+                    }
+                  } else if (isSummon) {
+                    if (
+                      card &&
+                      cardActions.selectedCard &&
+                      cardActions.selectedCard.type === "MONSTER"
+                    ) {
+                      summonActions.summon(gameId, rowIndex, colIndex);
+                    }
+                  } else {
+                    if (card) {
+                      cardActions.selectCard(card);
+                    } else if (cardActions.selectedCard) {
+                      cardActions.playCard(rowIndex, colIndex, gameId);
                     }
                   }
-                }
+                }}
               >
                 {card && (
-                  <img
-                    src={`/cards/${card.name}.png`}
-                    alt={card.name}
-                    className="w-full h-full object-cover rounded pointer-events-none"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={`/cards/${card.name}.png`}
+                      alt={card.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 400px"
+                      className="object-cover rounded pointer-events-none"
+                    />
+                  </div>
                 )}
 
                 <span className="absolute bottom-1 right-1 text-xs px-1 rounded bg-black bg-opacity-60 text-white select-none">

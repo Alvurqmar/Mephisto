@@ -1,10 +1,13 @@
 "use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
   const router = useRouter();
-  async function seedDatabase() {
+  const [joinCode, setJoinCode] = useState("");
+
+    async function seedDatabase() {
     try {
       const res = await fetch("/api/seedCards", { method: "POST" });
       if (!res.ok) throw new Error("Error al sembrar la base");
@@ -19,17 +22,34 @@ export default function Home() {
       }
     }
   }
-
   async function createLobby() {
     try {
       const res = await fetch("/api/lobbies/create", { method: "POST" });
       if (!res.ok) throw new Error("Error al crear el lobby");
       const data = await res.json();
-      if (!data.lobbyId) throw new Error("Lobby ID no recibido");
+      if (!data.lobbyId || !data.code)
+        throw new Error("Datos del lobby no recibidos");
       router.push(`/lobby/${data.lobbyId}`);
     } catch (err) {
       console.error(err);
       alert("No se pudo crear el lobby");
+    }
+  }
+
+  async function joinLobbyByCode() {
+    if (!joinCode) return alert("Introduce un código de lobby");
+    try {
+      const res = await fetch("/api/lobbies/findCode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: joinCode.toUpperCase() }),
+      });
+      if (!res.ok) throw new Error("Lobby no encontrado");
+      const data = await res.json();
+      router.push(`/lobby/${data.lobbyId}`);
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo encontrar el lobby con ese código");
     }
   }
 
@@ -73,7 +93,23 @@ export default function Home() {
             onClick={createLobby}
             className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
           >
-            Comienza a jugar
+            Crear lobby
+          </button>
+        </section>
+
+        <section className="flex flex-col gap-4 items-center">
+          <input
+            type="text"
+            placeholder="Código del lobby"
+            value={joinCode}
+            onChange={(e) => setJoinCode(e.target.value)}
+            className="rounded border border-amber-500 px-4 py-2 text-xl text-center"
+          />
+          <button
+            onClick={joinLobbyByCode}
+            className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
+          >
+            Unirse al lobby
           </button>
         </section>
       </main>
@@ -95,7 +131,7 @@ export default function Home() {
         >
           Mira las reglas originales aquí
         </a>
-        <section className="flex flex-col gap-6 items-center">
+                <section className="flex flex-col gap-6 items-center">
           <div className="flex items-center gap-2">
             <span className="text-base tracking-wide text-[#d4af37]">
               Comienza seedeando la base de datos, para que puedas jugar.

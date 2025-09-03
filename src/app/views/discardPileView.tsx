@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react";
 import DiscardPile from "../models/discardPile";
+import Image from "next/image";
 
 interface DiscardPileViewProps {
   discardPile: DiscardPile;
@@ -20,10 +21,12 @@ const DiscardPileView = observer(({ discardPile }: DiscardPileViewProps) => {
 
   return (
     <div className="mt-4 relative flex flex-col items-center">
-      <img
+      <Image
         src={lastCard}
         alt="Última descartada"
-        className="w-24 h-36 rounded shadow cursor-pointer"
+        width={96}
+        height={144}
+        className="rounded shadow cursor-pointer"
         onClick={handleOpen}
       />
       <div className="absolute top-14 bg-neutral-500/50 text-white px-2 rounded flex flex-col items-center">
@@ -37,10 +40,12 @@ const DiscardPileView = observer(({ discardPile }: DiscardPileViewProps) => {
             <h2 className="text-xl font-bold mb-4">Cartas descartadas</h2>
             <div className="flex flex-wrap justify-center gap-2">
               {discardPile.cards.map((card, index) => (
-                <img
+                <Image
                   key={`${card.id}-${index}`}
                   src={`/cards/${card.name}.png`}
                   alt={card.name}
+                  width={80} 
+                  height={112} 
                   className="w-20 h-28"
                 />
               ))}

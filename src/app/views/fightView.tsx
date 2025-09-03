@@ -5,6 +5,7 @@ import fightActions from "../stores/actions/fightActions";
 import playerStore from "../stores/playerStore";
 import phaseStore from "../stores/phaseStore";
 import fieldStore from "../stores/fieldStore";
+import Image from "next/image";
 
 type FightProps = {
   gameId: string;
@@ -49,11 +50,13 @@ const FightView = observer(({ gameId }: FightProps) => {
             <h3 className="font-semibold mb-2">Monstruos:</h3>
             <div className="flex flex-wrap gap-2">
               {monsters.map((monster) => (
-                <img
+                <Image
                   key={monster.id}
                   src={`/cards/${monster.name}.png`}
                   alt={monster.name}
-                  className={`w-20 h-28 rounded cursor-pointer border-4 ${
+                  width={80}
+                  height={112}
+                  className={`rounded cursor-pointer border-4 ${
                     selectedMonsters.includes(monster)
                       ? "border-red-500"
                       : "border-transparent"
@@ -68,11 +71,13 @@ const FightView = observer(({ gameId }: FightProps) => {
             <h3 className="font-semibold mb-2">Tus armas:</h3>
             <div className="flex flex-wrap gap-2">
               {weapons.map((weapon) => (
-                <img
+                <Image
                   key={weapon.id}
                   src={`/cards/${weapon.name}.png`}
                   alt={weapon.name}
-                  className={`w-20 h-28 rounded cursor-pointer border-4 ${
+                  width={80} 
+                  height={112} 
+                  className={`rounded cursor-pointer border-4 ${
                     selectedWeapons.includes(weapon)
                       ? "border-blue-500"
                       : "border-transparent"

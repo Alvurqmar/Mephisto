@@ -4,6 +4,7 @@ import React from "react";
 import DiscardPileView from "./discardPileView";
 import playerStore from "../stores/playerStore";
 import deckStore from "../stores/deckStore";
+import Image from "next/image";
 
 const LeftPanelView = () => {
   return (
@@ -16,10 +17,12 @@ const LeftPanelView = () => {
 
       <div className="flex flex-col items-center gap-3">
         <div className="relative inline-block">
-          <img
+          <Image
             src="/cards/CardBack.png"
             alt="Deck"
-            className="w-24 h-36 rounded shadow-lg"
+            width={96}
+            height={144}
+            className="rounded shadow-lg"
           />
           <div className="absolute top-14 left-2.5 bg-neutral-500/50 text-white px-2 rounded">
             Deck: {deckStore.deck.length}

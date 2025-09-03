@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import cardActions from "../stores/actions/cardActions";
 import handStore from "../stores/handStore";
 import phaseStore from "../stores/phaseStore";
+import Image from "next/image";
 
 type DiscardProps = {
   gameId: string;
@@ -32,13 +33,17 @@ const DiscardView = observer(({ gameId }: DiscardProps) => {
           {hand.cards
             .filter((c) => c.id !== cardActions.selectedCard?.id)
             .map((card) => {
-              const isSelected = cardActions.discardSelection.some((c) => c.id === card.id);
+              const isSelected = cardActions.discardSelection.some(
+                (c) => c.id === card.id
+              );
               return (
-                <img
+                <Image
                   key={card.id}
                   src={`/cards/${card.name}.png`}
                   alt={card.name}
-                  className={`w-20 h-28 rounded cursor-pointer border-4 transition ${
+                  width={80} 
+                  height={112}
+                  className={`rounded cursor-pointer border-4 transition ${
                     isSelected ? "border-red-600" : "border-transparent"
                   }`}
                   onClick={() => toggleCard(card.id)}
