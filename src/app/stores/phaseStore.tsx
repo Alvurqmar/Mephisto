@@ -21,4 +21,5 @@ class PhaseStore {
   }
 }
 
-export default new PhaseStore();
+const phaseStore = new PhaseStore();
+export default phaseStore;

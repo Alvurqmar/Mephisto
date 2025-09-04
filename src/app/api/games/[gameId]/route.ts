@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/app/lib/db";
-import Card from "@/app/models/card";
+import Card, { CardData } from "@/app/models/card";
 import Field from "@/app/models/field";
-import Player from "@/app/models/player";
+import Player, { PlayerData } from "@/app/models/player";
 
 export async function GET(
   _request: NextRequest,
@@ -35,7 +35,7 @@ export async function GET(
       hands: Object.fromEntries(
         Object.entries(
           typeof game.hands === "string" ? JSON.parse(game.hands) : game.hands
-        ).map(([key, cards]) => [key, (cards as any[]).map(Card.deserialize)])
+        ).map(([key, cards]) => [key, (cards as CardData[]).map(Card.deserialize)])
       ),
 
       field: Field.deserialize(
@@ -49,7 +49,7 @@ export async function GET(
           typeof game.players === "string"
             ? JSON.parse(game.players)
             : game.players
-        ).map(([key, playerData]) => [key, Player.deserialize(playerData)])
+        ).map(([key, playerData]) => [key, Player.deserialize(key, playerData as PlayerData)])
       ),
       turnCounter: game.turn_counter,
       winningSoulPoints: game.winning_soul_points,

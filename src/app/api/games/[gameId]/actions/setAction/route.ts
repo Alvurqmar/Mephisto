@@ -1,5 +1,6 @@
 import { loadGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
+import Card from "@/app/models/card";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -17,7 +18,7 @@ export async function POST(
 
     if (
       action === "Summon" &&
-      !gameState.hands[playerId].some((card: any) => card.type === "MONSTER")
+      !gameState.hands[playerId].some((card: Card) => card.type === "MONSTER")
     ) {
       return NextResponse.json(
         { error: "No tienes Monstruos para invocar." },

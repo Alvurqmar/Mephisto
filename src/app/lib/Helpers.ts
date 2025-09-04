@@ -1,7 +1,7 @@
-import Card from "../models/card";
+import Card, { CardData } from "../models/card";
 import Field from "../models/field";
 import { GameState } from "../models/gameState";
-import Player from "../models/player";
+import Player, { PlayerData } from "../models/player";
 import { pool } from "./db";
 
 export async function getLobbyPlayers(lobbyId: string) {
@@ -51,6 +51,11 @@ export async function loadCardsFromDB(): Promise<Card[]> {
   }
 }
 
+export function loadDeck(cardsData: CardData[]): Card[] {
+  const cards = cardsData.map((data) => Card.deserialize(data));
+  return cards;
+}
+
 export async function loadGameState(gameId: string): Promise<GameState> {
   const res = await pool.query("SELECT * FROM games WHERE id = $1", [gameId]);
 
@@ -60,24 +65,38 @@ export async function loadGameState(gameId: string): Promise<GameState> {
 
   const game = res.rows[0];
 
+  const deckData: CardData[] =
+    typeof game.deck === "string" ? JSON.parse(game.deck) : game.deck;
+
+  const handsData: Record<string, CardData[]> =
+    typeof game.hands === "string" ? JSON.parse(game.hands) : game.hands;
+
+  const playersData: Record<string, PlayerData> =
+    typeof game.players === "string" ? JSON.parse(game.players) : game.players;
+
+  const fieldData =
+    typeof game.field === "string" ? JSON.parse(game.field) : game.field;
+
   return {
     id: game.id,
     lobbyId: game.lobby_id,
-    deck: (typeof game.deck === "string" ? JSON.parse(game.deck) : game.deck).map(Card.deserialize),
+    deck: deckData.map((cardData) => Card.deserialize(cardData)),
     discardPile: (typeof game.discard_pile === "string" ? JSON.parse(game.discard_pile) : game.discard_pile).map(Card.deserialize),
     hands: Object.fromEntries(
-      Object.entries(
-        typeof game.hands === "string" ? JSON.parse(game.hands) : game.hands
-      ).map(([key, cards]) => [key, (cards as any[]).map(Card.deserialize)])
+      Object.entries(handsData).map(([key, cards]) => [
+        key,
+        cards.map((c) => Card.deserialize(c)),
+      ])
     ),
-    field: Field.deserialize(typeof game.field === "string" ? JSON.parse(game.field) : game.field),
+    field: Field.deserialize(fieldData),
     currentTurn: game.current_turn,
     currentPhase: game.current_phase,
     phaseAction: game.phase_action,
     players: Object.fromEntries(
-      Object.entries(
-        typeof game.players === "string" ? JSON.parse(game.players) : game.players
-      ).map(([key, playerData]) => [key, Player.deserialize(playerData)])
+      Object.entries(playersData).map(([key, playerData]) => [
+        key,
+        Player.deserialize(key, playerData),
+      ])
     ),
     turnCounter: game.turn_counter,
     winningSoulPoints: game.winning_soul_points,

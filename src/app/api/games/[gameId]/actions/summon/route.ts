@@ -1,5 +1,6 @@
 import { loadGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
+import Card from "@/app/models/card";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -10,7 +11,7 @@ export async function POST(
   const { row, col, cardId, playerId } = await request.json();
   const gameState = await loadGameState(gameId);
   const hand = gameState.hands[playerId];
-  const cardIndex = hand.findIndex((c: any) => c.id === cardId);
+  const cardIndex = hand.findIndex((c: Card) => c.id === cardId);
   const selectedCard = hand[cardIndex];
   const slot = gameState.field.slots[row]?.[col];
   const previousCard = slot.card || null;

@@ -26,7 +26,7 @@ class LootActions {
 
       toast.success("Carta robada con éxito");
       return true;
-    } catch (e) {
+    } catch {
       toast.error("Error de conexión");
       return false;
     }
@@ -51,7 +51,7 @@ class LootActions {
 
       toast.success("Carta robada del mazo con éxito");
       return true;
-    } catch (e) {
+    } catch {
       toast.error("Error de conexión");
       return false;
     }

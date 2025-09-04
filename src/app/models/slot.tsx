@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import Card from "./card";
+import Card, { CardData } from "./card";
 
 export class Slot {
   card: Card | null = null;
@@ -24,7 +24,7 @@ export class Slot {
     };
   }
 
-  static deserialize(data: { card: any | null; owner: string | null }) {
+  static deserialize(data: { card: CardData | null; owner: string | null }) {
     const slot = new Slot();
     slot.owner = data.owner;
     slot.card = data.card ? Card.deserialize(data.card) : null;
@@ -42,7 +42,7 @@ export class EmptySlot {
       owner: this.owner,
     };
   }
-  static deserialize(_data: { card: any; owner: string | null }) {
+  static deserialize() {
     const emptySlot = new EmptySlot();
     emptySlot.owner = "Empty";
     return emptySlot;

@@ -1,6 +1,6 @@
 import { pool } from "@/app/lib/db";
-import { getLobbyPlayers, loadCardsFromDB } from "@/app/lib/Helpers";
-import { generateInitialDeck, initGameState } from "@/app/lib/gameInit";
+import { getLobbyPlayers, loadCardsFromDB, loadDeck } from "@/app/lib/Helpers";
+import { initGameState } from "@/app/lib/gameInit";
 import { pusher } from "@/app/lib/pusher";
 
 export async function POST(request: Request) {
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const players = await getLobbyPlayers(lobbyId);
     const cardsData = await loadCardsFromDB();
 
-    const deck = generateInitialDeck(cardsData);
+    const deck = loadDeck(cardsData);
     const gameState = initGameState(players, deck);
 
     const result = await pool.query(

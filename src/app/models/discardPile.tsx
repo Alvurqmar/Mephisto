@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import Card from "../models/card";
+import Card, { CardData } from "../models/card";
 
 class DiscardPile {
   cards: Card[] = [];
@@ -27,7 +27,7 @@ class DiscardPile {
     return this.cards.map((card) => card.serialize());
   }
 
-  static deserialize(data: any[]): DiscardPile {
+  static deserialize(data: CardData[]): DiscardPile {
     const discardPile = new DiscardPile();
     discardPile.cards = data.map((cardData) => Card.deserialize(cardData));
     return discardPile;

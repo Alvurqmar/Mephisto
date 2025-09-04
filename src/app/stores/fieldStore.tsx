@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import Field from "../models/field";
 
+
 class FieldStore {
   field: Field = new Field(3, 6);
 
@@ -8,9 +9,11 @@ class FieldStore {
     makeAutoObservable(this);
   }
 
-  setField(fieldData: any) {
+  setField(fieldData: Field) {
     this.field = Field.deserialize(fieldData);
   }
+
 }
 
-export default new FieldStore();
+const fieldStore = new FieldStore();
+export default fieldStore;

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import Card from "./card";
+import Card, { CardData } from "./card";
 import { EmptySlot, GridSlot, Slot } from "./slot";
 
 class Field {
@@ -151,7 +151,7 @@ class Field {
   static deserialize(data: {
     rows: number;
     columns: number;
-    slots: { card: any | null; owner: string | null }[][];
+    slots: { card: CardData | null; owner: string | null }[][];
   }) {
     const field = new Field(data.rows, data.columns);
 
@@ -161,7 +161,7 @@ class Field {
           return Slot.deserialize(slotData);
         }
         if (slotData.owner === "Empty") {
-          return EmptySlot.deserialize(slotData);
+          return EmptySlot.deserialize();
         }
         return Slot.deserialize({ ...slotData, card: null });
       })

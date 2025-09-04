@@ -59,23 +59,21 @@ class Card {
     };
   }
 
-  static deserialize(data: any): Card {
-    const normalized = {
-      id: data.id,
-      name: data.name,
-      type: data.type,
-      cost: data.cost,
-      attack: data.attack,
-      durability: data.durability,
-      effectId: data.effectId ?? data.effectid ?? "",
-      effectType: data.effectType ?? data.effecttype ?? "",
-      soulPts: data.soulPts ?? data.soulpts ?? 0,
-      owner: data.owner ?? null,
-      isTapped: data.isTapped ?? data.istapped ?? false,
-    };
-
-    return new Card(normalized);
-  }
+static deserialize(data: CardData): Card {
+  return new Card({
+    id: data.id,
+    name: data.name,
+    type: data.type,
+    cost: data.cost,
+    attack: data.attack,
+    durability: data.durability,
+    effectId: data.effectid,
+    effectType: data.effecttype as EffectType,
+    soulPts: data.soulpts,
+    owner: data.owner ?? null,
+    isTapped: data.istapped ?? false,
+  });
+}
 }
 
 export interface CardData {
@@ -85,8 +83,10 @@ export interface CardData {
   cost: number;
   attack: number;
   durability: number;
-  effectId: string;
-  effectType: EffectType;
-  soulPts: number;
+  effectid: string;
+  effecttype: string;
+  soulpts: number;
+  owner?: string | null;
+  istapped?: boolean;
 }
 export default Card;

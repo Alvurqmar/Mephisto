@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import Card from "../models/card";
+import Card, { CardData } from "../models/card";
 import DiscardPile from "../models/discardPile";
 import Hand from "../models/hand";
 
@@ -24,11 +24,11 @@ class DeckStore {
     }
   }
 
-  setDeck(deckData: any[]) {
+  setDeck(deckData: CardData[]) {
     this.deck = deckData.map(Card.deserialize);
   }
 
-  setDiscardPile(discardData: any[]) {
+  setDiscardPile(discardData: CardData[]) {
     this.discardPile.clear();
     this.discardPile.addCards(discardData.map(Card.deserialize));
   }
@@ -60,4 +60,5 @@ class DeckStore {
   }
 }
 
-export default new DeckStore();
+const deckStore = new DeckStore();
+export default deckStore;

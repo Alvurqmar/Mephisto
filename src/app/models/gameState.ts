@@ -1,7 +1,6 @@
 import Card from "./card";
 import DiscardPile from "./discardPile";
 import Field from "./field";
-import Hand from "./hand";
 import Player from "./player";
 
 export interface GameState {

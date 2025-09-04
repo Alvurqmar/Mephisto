@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import Card from "./card";
-import Player from "./player";
+import Card, { CardData } from "./card";
+import Player, { PlayerData } from "./player";
 
 class Hand {
   cards: Card[] = [];
@@ -41,9 +41,13 @@ class Hand {
     };
   }
 
-  static deserialize(data: { cards: any[]; player: any }) {
+  static deserialize(data: {
+    cards: CardData[];
+    playerKey: string;
+    playerData: PlayerData;
+  }) {
     const hand = new Hand();
-    hand.player = Player.deserialize(data.player);
+    hand.player = Player.deserialize(data.playerKey, data.playerData);
     hand.cards = data.cards.map((cardData) => Card.deserialize(cardData));
     hand.cards.forEach((card) => (card.owner = hand.player.key));
     return hand;

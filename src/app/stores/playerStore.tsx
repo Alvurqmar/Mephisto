@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import Player from "../models/player";
+import Player, { PlayerData } from "../models/player";
 
 class PlayerStore {
   players: Record<string, Player> = {};
@@ -8,17 +8,17 @@ class PlayerStore {
     makeAutoObservable(this);
   }
 
-  setPlayers(playersData: Record<string, any>) {
+  setPlayers(playersData: Record<string, PlayerData>) {
     this.players = Object.fromEntries(
       Object.entries(playersData).map(([key, playerData]) => [
         key,
-        Player.deserialize(playerData),
+        Player.deserialize(key, playerData),
       ])
     );
   }
 
-  updatePlayer(key: string, playerData: any) {
-    this.players[key] = Player.deserialize(playerData);
+  updatePlayer(key: string, playerData: PlayerData) {
+    this.players[key] = Player.deserialize(key, playerData);
   }
 
   getOpponents(playerKey: string): Player[] {
@@ -40,4 +40,5 @@ class PlayerStore {
 
 }
 
-export default new PlayerStore();
+const playerStore = new PlayerStore();
+export default playerStore;

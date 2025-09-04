@@ -6,6 +6,11 @@ import playerStore from "../playerStore";
 import phaseStore from "../phaseStore";
 import fieldStore from "../fieldStore";
 
+export interface Result {
+  row: number;
+  col: number;
+  card: Card | null;
+}
 class FightActions {
   fightState = {
     targetSlots: [] as { row: number; col: number }[],
@@ -22,7 +27,8 @@ class FightActions {
 
   orientation(): { orientation: "rows" | "cols"; validIndexes: number[] } {
     const playerCount = Object.keys(playerStore.players).length;
-    if (playerCount <= 2) return { orientation: "rows", validIndexes: [0, 1, 2] };
+    if (playerCount <= 2)
+      return { orientation: "rows", validIndexes: [0, 1, 2] };
 
     let orientation: "rows" | "cols" = "rows";
     switch (phaseStore.currentTurn) {
@@ -47,9 +53,11 @@ class FightActions {
     const { rows, columns } = fieldStore.field;
 
     if (orientation === "rows") {
-      for (let col = 0; col < columns; col++) targetSlots.push({ row: index, col });
+      for (let col = 0; col < columns; col++)
+        targetSlots.push({ row: index, col });
     } else {
-      for (let row = 0; row < rows; row++) targetSlots.push({ row, col: index });
+      for (let row = 0; row < rows; row++)
+        targetSlots.push({ row, col: index });
     }
 
     this.fightState = {
@@ -64,13 +72,21 @@ class FightActions {
   selectMonster(card: Card) {
     const selected = this.fightState.selectedMonsters;
     const index = selected.findIndex((c) => c.id === card.id);
-    index !== -1 ? selected.splice(index, 1) : selected.push(card);
+    if (index !== -1) {
+      selected.splice(index, 1);
+    } else {
+      selected.push(card);
+    }
   }
 
   selectWeapon(card: Card) {
     const selected = this.fightState.selectedWeapons;
     const index = selected.findIndex((c) => c.id === card.id);
-    index !== -1 ? selected.splice(index, 1) : selected.push(card);
+    if (index !== -1) {
+      selected.splice(index, 1);
+    } else {
+      selected.push(card);
+    }
   }
 
   setFavorSpent(amount: number) {
@@ -80,10 +96,9 @@ class FightActions {
   }
 
   async fight(gameId: string, playerId: string) {
-    const { targetSlots, selectedMonsters, selectedWeapons, favorSpent } = this.fightState;
+    const { targetSlots, selectedMonsters, selectedWeapons, favorSpent } =
+      this.fightState;
     if (targetSlots.length === 0) return;
-
-    const player = playerStore.players[phaseStore.currentTurn];
 
     const fieldCards = targetSlots
       .map(({ row, col }) => fieldStore.field.slots[row][col].card)
@@ -100,7 +115,10 @@ class FightActions {
 
     const weaponAttack = selectedWeapons.reduce((sum, w) => sum + w.attack, 0);
     const totalAttack = weaponAttack + favorSpent;
-    const totalMonsterAttack = selectedMonsters.reduce((sum, m) => sum + m.attack, 0);
+    const totalMonsterAttack = selectedMonsters.reduce(
+      (sum, m) => sum + m.attack,
+      0
+    );
 
     if (totalAttack < totalMonsterAttack) {
       toast.error("Tu ataque no es suficiente.");
@@ -164,7 +182,7 @@ class FightActions {
         favorSpent: 0,
         isActive: false,
       };
-    } catch (err) {
+    } catch {
       toast.error("Error al sincronizar combate.");
     }
   }

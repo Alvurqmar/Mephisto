@@ -1,4 +1,4 @@
-import Card, { CardData } from "../models/card";
+import Card from "../models/card";
 import Field from "../models/field";
 import Player from "../models/player";
 import { Slot } from "../models/slot";
@@ -12,10 +12,6 @@ function shuffle<T>(array: T[]): T[] {
   return shuffled;
 }
 
-export function generateInitialDeck(cardsData: CardData[]): Card[] {
-  const cards = cardsData.map((data) => Card.deserialize(data));
-  return cards;
-}
 export function initCardsField(cards: Card[], field: Field): void{
     let placed = 0;
     for (let row = 0; row < field.rows; row++) {
@@ -39,15 +35,22 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
   const winningSoulPoints = playerKeys.length === 2 ? 15 : 12;
   const discards: Card[] = [];
 
-  playerKeys.forEach((key, index) => {
-    const cardCount =
-      playerKeys.length === 2 ? (index === 0 ? 3 : 4) : index + 2;
+  if (playerKeys.length === 2) {
+    players[playerKeys[0]].setOrientation("horizontal");
+    players[playerKeys[1]].setOrientation("horizontal");
+  } else {
+    players["p1"].setOrientation("vertical");
+    players["p2"].setOrientation("horizontal");
+    players["p3"].setOrientation("vertical");
+    if (playerKeys.includes("p4")) players["p4"].setOrientation("horizontal");
+  }
 
+  playerKeys.forEach((key, index) => {
+    const cardCount = playerKeys.length === 2 ? (index === 0 ? 3 : 4) : index + 2;
     const handCards = shuffledDeck.splice(0, cardCount).map((card) => {
       card.owner = key;
       return card;
     });
-
     hands[key] = handCards;
     players[key].favorPoints = cardCount;
   });
@@ -56,16 +59,14 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
   if (playerKeys.length === 2) {
     field = new Field(3, 6, "2P");
     field.setFieldOwners2P(field);
-
     const cardsToPlace = shuffledDeck.splice(0, 6);
     initCardsField(cardsToPlace, field);
 
-      players[playerKeys[0]].favorPoints = 3;
-      players[playerKeys[1]].favorPoints = 5;
+    players[playerKeys[0]].favorPoints = 3;
+    players[playerKeys[1]].favorPoints = 5;
   } else {
     field = new Field(7, 7, "3-4P");
     field.setFieldOwners34P(field, playerKeys);
-
     const cardsToPlace = shuffledDeck.splice(0, 6);
     initCardsField(cardsToPlace, field);
   }
@@ -74,10 +75,7 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
     deck: shuffledDeck.map((card) => card.serialize()),
     discardPile: discards.map((card) => card.serialize()),
     hands: Object.fromEntries(
-      Object.entries(hands).map(([key, cards]) => [
-        key,
-        cards.map((card) => card.serialize()),
-      ])
+      Object.entries(hands).map(([key, cards]) => [key, cards.map((card) => card.serialize())])
     ),
     field: field.serialize(),
     current_turn: playerKeys[0],
@@ -91,3 +89,4 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
     status: "in_progress",
   };
 }
+

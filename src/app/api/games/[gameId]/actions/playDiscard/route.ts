@@ -1,5 +1,6 @@
 import { loadGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
+import Card from "@/app/models/card";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -23,7 +24,7 @@ export async function POST(
     return NextResponse.json({ error: "Casilla ocupada." }, { status: 400 });
   }
 
-  const cardIndex = hand.findIndex((c: any) => c.id === cardId);
+  const cardIndex = hand.findIndex((c: Card) => c.id === cardId);
   if (cardIndex === -1) {
     return NextResponse.json(
       { error: "Carta no encontrada en mano." },
@@ -39,8 +40,8 @@ export async function POST(
     );
   }
 
-  const discardCards = discardIds.map((id: any) => {
-    const idx = hand.findIndex((c: any) => c.id === id);
+  const discardCards = discardIds.map((id: number) => {
+    const idx = hand.findIndex((c: Card) => c.id === id);
     if (idx === -1) {
       throw new Error(`Carta con id ${id} no encontrada en mano.`);
     }
@@ -48,7 +49,7 @@ export async function POST(
   });
 
   gameState.hands[playerId] = hand.filter(
-    (c: any) => !discardIds.includes(c.id) && c.id !== cardId
+    (c: Card) => !discardIds.includes(c.id) && c.id !== cardId
   );
 
   gameState.discardPile.push(...discardCards);

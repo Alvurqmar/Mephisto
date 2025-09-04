@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
+import { Result } from "@/app/stores/actions/fightActions";
 
 export async function POST(
   request: Request,
@@ -16,7 +17,7 @@ export async function POST(
     return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
   }
 
-  results.forEach((res: any) => {
+  results.forEach((res: Result) => {
     const slot = gameState.field.slots[res.row][res.col];
     if (slot) slot.card = res.card ?? null;
   });
@@ -30,7 +31,6 @@ export async function POST(
   }
 
   if (discardedCards && discardedCards.length > 0) {
-    if (!gameState.discardPile) gameState.discardPile = [];
     gameState.discardPile.push(...discardedCards);
   }
 
