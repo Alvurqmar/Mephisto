@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { pusherClient } from "@/app/lib/pusherClient";
 
 type Player = {
-  user_id: string;
   name: string;
   player_key: string | null;
 };
@@ -14,12 +13,11 @@ export default function LobbyPage() {
   const router = useRouter();
 
   const [name, setName] = useState("");
-  const [userId] = useState(() => crypto.randomUUID());
   const [players, setPlayers] = useState<Player[]>([]);
   const [lobbyCode, setLobbyCode] = useState<string>("");
 
   useEffect(() => {
-    async function fetchLobbyCode() {
+    async function fetchLobbyData() {
       try {
         const res = await fetch("/api/lobbies/getById", {
           method: "POST",
@@ -29,11 +27,12 @@ export default function LobbyPage() {
         if (!res.ok) throw new Error("No se pudo obtener el código del lobby");
         const data = await res.json();
         setLobbyCode(data.code);
+        setPlayers(data.players.rows);
       } catch (err) {
         console.error(err);
       }
     }
-    fetchLobbyCode();
+    fetchLobbyData();
   }, [gameId]);
 
   async function joinLobby() {
@@ -43,17 +42,15 @@ export default function LobbyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lobbyId: gameId,
-          userId,
           name,
         }),
       });
       if (!res.ok) throw new Error("Error al unirse al lobby");
       const data = await res.json();
 
-      const storedKey = sessionStorage.getItem("playerKey");
-      if (!storedKey && data.playerKey) {
-        sessionStorage.setItem("playerKey", data.playerKey);
-      }
+      const players = JSON.parse(localStorage.getItem("players") || "{}");
+      players[gameId] = data.playerKey;
+      localStorage.setItem("players", JSON.stringify(players));
     } catch (err) {
       console.error(err);
       alert("No se pudo unir al lobby");
@@ -105,13 +102,22 @@ export default function LobbyPage() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="mb-4 p-2 rounded border border-amber-500"
+        disabled={players.length >= 4}
       />
-      <button
-        onClick={joinLobby}
-        className="mb-4 rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl hover:bg-[#d4af37] hover:text-black transition-all"
-      >
-        Unirse al Lobby
-      </button>
+
+      {players.length >= 4 ? (
+        <div className="mb-4 p-3 bg-red-900 border border-red-600 rounded text-center">
+          <p className="text-white">El lobby está lleno</p>
+        </div>
+      ) : (
+        <button
+          onClick={joinLobby}
+          disabled={!name.trim()}
+          className="mb-4 rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl hover:bg-[#d4af37] hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#d4af37]"
+        >
+          Unirse al Lobby
+        </button>
+      )}
 
       <button
         onClick={startGame}
@@ -121,10 +127,12 @@ export default function LobbyPage() {
       </button>
 
       <div className="mt-8 w-full max-w-md">
-        <h2 className="text-2xl mb-4">Jugadores en el lobby:</h2>
+        <h2 className="text-2xl mb-4">
+          Jugadores en el lobby: {players.length}/4
+        </h2>
         <ul className="list-disc pl-5">
           {players.map((p) => (
-            <li key={p.user_id}>{p.name}</li>
+            <li key={p.player_key}>{p.name}</li>
           ))}
         </ul>
       </div>

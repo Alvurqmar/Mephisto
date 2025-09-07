@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { lobbyId, userId, name } = await request.json();
+    const { lobbyId, name } = await request.json();
 
-    if (!lobbyId || !userId || !name) {
+    if (!lobbyId || !name) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -26,13 +26,20 @@ export async function POST(request: Request) {
     const playerKey = `p${playersCount + 1}`;
 
     await pool.query(
-      `INSERT INTO lobby_players (lobby_id, user_id, name, player_key)
-       VALUES ($1, $2, $3, $4)`,
-      [lobbyId, userId, name, playerKey]
+      `INSERT INTO lobby_players (lobby_id, name, player_key)
+       VALUES ($1, $2, $3)`,
+      [lobbyId, name, playerKey]
     );
 
+      if (playersCount === 3) {
+      await pool.query(
+        `UPDATE lobbies SET status = 'full' WHERE id = $1`,
+        [lobbyId]
+      );
+    }
+
     const playersResult = await pool.query(
-      `SELECT user_id, name, player_key FROM lobby_players WHERE lobby_id = $1`,
+      `SELECT name, player_key FROM lobby_players WHERE lobby_id = $1`,
       [lobbyId]
     );
 

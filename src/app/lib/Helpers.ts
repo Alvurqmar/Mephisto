@@ -7,7 +7,7 @@ import { pool } from "./db";
 export async function getLobbyPlayers(lobbyId: string) {
   const res = await pool.query(
     `
-    SELECT user_id, name, player_key
+    SELECT name, player_key
     FROM lobby_players
     WHERE lobby_id = $1
     ORDER BY player_key ASC
@@ -140,7 +140,7 @@ export async function saveGameState(gameId: string, gameState: GameState): Promi
   );
 }
 
-export function findCardById(gameState: any, cardId: number) {
+export function findCardById(gameState: GameState, cardId: number) {
   for (const row of gameState.field.slots) {
     for (const slot of row) {
       if (slot.card && slot.card.id === cardId) {
@@ -150,7 +150,7 @@ export function findCardById(gameState: any, cardId: number) {
   }
 
   for (const playerId of Object.keys(gameState.hands)) {
-    const card = gameState.hands[playerId].find((c: any) => c.id === cardId);
+    const card = gameState.hands[playerId].find((c: Card) => c.id === cardId);
     if (card) return card;
   }
 

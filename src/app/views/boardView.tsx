@@ -1,5 +1,4 @@
 'use client';
-
 import ToastProvider from "@/app/ui/toastProvider";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
@@ -22,9 +21,11 @@ import { pusherClient } from "../lib/pusherClient";
 type BoardViewProps = {
   gameId: string;
 };
-const myPlayerKey = sessionStorage.getItem("playerKey");
 const BoardView = observer(({ gameId }: BoardViewProps) => {
   const [isReady, setIsReady] = useState(false);
+  const players = JSON.parse(localStorage.getItem("players") || "{}");
+  const myPlayerKey = players[gameId];
+  console.log("My Player Key:", myPlayerKey);
 
   useEffect(() => {
     async function init() {

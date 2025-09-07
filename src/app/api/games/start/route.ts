@@ -16,12 +16,13 @@ export async function POST(request: Request) {
     const result = await pool.query(
       `
   INSERT INTO games 
-    (lobby_id, deck, discard_pile, hands, field, current_turn, current_phase, phase_action, players, turn_counter, winning_soul_points, status)
+    (id, lobby_id, deck, discard_pile, hands, field, current_turn, current_phase, phase_action, players, turn_counter, winning_soul_points, status)
   VALUES
-    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
   RETURNING id
   `,
       [
+        lobbyId,
         lobbyId,
         JSON.stringify(gameState.deck),
         JSON.stringify(gameState.discardPile),
@@ -37,10 +38,8 @@ export async function POST(request: Request) {
       ]
     );
 
-    const newGameId = result.rows[0].id;
-
     await pusher.trigger(`lobby-${lobbyId}`, "game-started", {
-      gameId: newGameId,
+      gameId: lobbyId,
     });
 
     return Response.json({ gameId: result.rows[0].id });

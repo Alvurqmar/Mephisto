@@ -1,4 +1,3 @@
-// /app/api/lobbies/getById/route.ts
 import { pool } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 
@@ -13,6 +12,10 @@ export async function POST(req: Request) {
       );
     }
 
+    const players = await pool.query(
+      `SELECT name, player_key FROM lobby_players WHERE lobby_id = $1`,
+      [lobbyId]
+    );
     const result = await pool.query(
       `SELECT code FROM lobbies WHERE id = $1`,
       [lobbyId]
@@ -26,7 +29,7 @@ export async function POST(req: Request) {
     }
 
     const code = result.rows[0].code;
-    return NextResponse.json({ code }, { status: 200 });
+    return NextResponse.json({ code, players }, { status: 200 });
 
   } catch (err) {
     let errorMessage = "Unknown error";
