@@ -2,8 +2,9 @@ import { pool } from "@/app/lib/db";
 import { getLobbyPlayers, loadCardsFromDB, loadDeck } from "@/app/lib/Helpers";
 import { initGameState } from "@/app/lib/gameInit";
 import { pusher } from "@/app/lib/pusher";
+import { NextRequest } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { lobbyId } = await request.json();
 

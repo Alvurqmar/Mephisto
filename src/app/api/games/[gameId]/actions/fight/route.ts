@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { Result } from "@/app/stores/actions/fightActions";
 import { updateFP, updateSP } from "@/app/lib/gameHelpers/player";
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { gameId: string } }
 ) {
   const { gameId } = await params;

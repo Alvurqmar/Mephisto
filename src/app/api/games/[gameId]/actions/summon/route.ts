@@ -2,10 +2,10 @@ import { updateFP } from "@/app/lib/gameHelpers/player";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import Card from "@/app/models/card";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { gameId: string } }
 ) {
   const { gameId } = await params;

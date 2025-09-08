@@ -1,10 +1,10 @@
 
 import { pool } from "@/app/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const { code } = await req.json();
+    const { code } = await request.json();
 
     if (!code) {
       return NextResponse.json(

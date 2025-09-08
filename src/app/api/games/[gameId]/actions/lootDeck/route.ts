@@ -1,10 +1,10 @@
 import { drawCard } from "@/app/lib/gameHelpers/deck";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { gameId: string } }
 ) {
   try {
