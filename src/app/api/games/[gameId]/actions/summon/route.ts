@@ -1,4 +1,5 @@
-import { loadGameState, saveGameState } from "@/app/lib/Helpers";
+import { updateFP } from "@/app/lib/gameHelpers/player";
+import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import Card from "@/app/models/card";
 import { NextResponse } from "next/server";
@@ -9,7 +10,7 @@ export async function POST(
 ) {
   const { gameId } = await params;
   const { row, col, cardId, playerId } = await request.json();
-  const gameState = await loadGameState(gameId);
+  const gameState = await fetchGameState(gameId);
   const hand = gameState.hands[playerId];
   const cardIndex = hand.findIndex((c: Card) => c.id === cardId);
   const selectedCard = hand[cardIndex];
@@ -47,7 +48,7 @@ export async function POST(
     previousCard.owner = playerId;
   }
 
-  gameState.players[playerId].favorPoints += 3;
+  updateFP(gameState, playerId, 3);
   gameState.currentPhase = "End Phase";
   gameState.phaseAction = null;
   

@@ -1,4 +1,4 @@
-import { loadGameState, saveGameState } from "@/app/lib/Helpers";
+import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import Card from "@/app/models/card";
 import { NextResponse } from "next/server";
@@ -10,7 +10,7 @@ export async function POST(
   try {
     const { playerId, action } = await request.json();
     const { gameId } = await params;
-    const gameState = await loadGameState(gameId);
+    const gameState = await fetchGameState(gameId);
 
     if (playerId !== gameState.currentTurn) {
       return NextResponse.json({ error: "No es tu turno" }, { status: 403 });

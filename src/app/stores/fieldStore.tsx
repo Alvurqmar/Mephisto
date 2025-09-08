@@ -12,7 +12,6 @@ class FieldStore {
   setField(fieldData: Field) {
     this.field = Field.deserialize(fieldData);
   }
-
 }
 
 const fieldStore = new FieldStore();

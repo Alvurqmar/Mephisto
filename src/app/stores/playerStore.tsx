@@ -16,28 +16,6 @@ class PlayerStore {
       ])
     );
   }
-
-  updatePlayer(key: string, playerData: PlayerData) {
-    this.players[key] = Player.deserialize(key, playerData);
-  }
-
-  getOpponents(playerKey: string): Player[] {
-  return Object.entries(this.players)
-    .filter(([key]) => key !== playerKey)
-    .map(([, player]) => player);
-}
-
-  checkVictory(playerKey: string, winningSoulPoints: number): boolean {
-    const player = this.players[playerKey];
-    if (!player) return false;
-
-    if (player.soulPoints >= winningSoulPoints) {
-      player.isWinner = true;
-      return true;
-    }
-    return false;
-  }
-
 }
 
 const playerStore = new PlayerStore();

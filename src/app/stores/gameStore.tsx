@@ -19,7 +19,7 @@ class GameStore {
     this.playersStore.setPlayers(gameData.players);
     this.handsStore.setHands(gameData.hands, this.playersStore.players);
     this.deckStore.setDeck(gameData.deck);
-    this.deckStore.setDiscardPile(gameData.discardPile || []);
+    this.deckStore.setDiscardPile(gameData.discardPile);
     this.fieldStore.setField(gameData.field);
     this.phaseStore.setPhaseData({
       currentTurn: gameData.currentTurn,

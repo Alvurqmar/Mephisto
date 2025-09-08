@@ -20,14 +20,6 @@ class HandStore {
       })
     );
   }
-
-  updateHand(playerKey: string, cardsData: CardData[], player: Player) {
-    const hand = new Hand();
-    const cards: Card[] = cardsData.map(Card.deserialize);
-    hand.setPlayer(player);
-    hand.setCards(cards);
-    this.hands[playerKey] = hand;
-  }
 }
 
 const handStore = new HandStore();

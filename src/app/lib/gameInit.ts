@@ -2,15 +2,7 @@ import Card from "../models/card";
 import Field from "../models/field";
 import Player from "../models/player";
 import { Slot } from "../models/slot";
-
-function shuffle<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
+import { shuffle } from "./gameHelpers/deck";
 
 export function initCardsField(cards: Card[], field: Field): void{
     let placed = 0;
@@ -86,7 +78,7 @@ export function initGameState(players: Record<string, Player>, deck: Card[]) {
     ),
     turn_counter: 1,
     winning_soul_points: winningSoulPoints,
-    status: "in_progress",
+    status: "playing",
   };
 }
 

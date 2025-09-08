@@ -25,7 +25,6 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
   const [isReady, setIsReady] = useState(false);
   const players = JSON.parse(localStorage.getItem("players") || "{}");
   const myPlayerKey = players[gameId];
-  console.log("My Player Key:", myPlayerKey);
 
   useEffect(() => {
     async function init() {

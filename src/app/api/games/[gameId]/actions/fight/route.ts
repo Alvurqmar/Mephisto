@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { loadGameState, saveGameState } from "@/app/lib/Helpers";
+import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { Result } from "@/app/stores/actions/fightActions";
+import { updateFP, updateSP } from "@/app/lib/gameHelpers/player";
 
 export async function POST(
   request: Request,
@@ -11,7 +12,7 @@ export async function POST(
   const { playerId, results, favorSpent, gainedSP, discardedCards } =
     await request.json();
 
-  const gameState = await loadGameState(gameId);
+  const gameState = await fetchGameState(gameId);
 
   if (playerId !== gameState.currentTurn) {
     return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
@@ -23,15 +24,15 @@ export async function POST(
   });
 
   if (favorSpent) {
-    gameState.players[playerId].favorPoints -= favorSpent;
+    updateFP(gameState, playerId, -favorSpent);
   }
 
   if (gainedSP) {
-    gameState.players[playerId].soulPoints += gainedSP;
+    updateSP(gameState, playerId, gainedSP);
   }
 
   if (discardedCards && discardedCards.length > 0) {
-    gameState.discardPile.push(...discardedCards);
+    gameState.discardPile.addCards(discardedCards);
   }
 
   gameState.currentPhase = "End Phase";

@@ -1,4 +1,4 @@
-import { loadGameState, saveGameState } from "@/app/lib/Helpers";
+import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { NextResponse } from "next/server";
 
@@ -9,7 +9,7 @@ export async function POST(
   try {
     const { row, col, playerId } = await request.json();
     const { gameId } = await params;
-    const gameState = await loadGameState(gameId);
+    const gameState = await fetchGameState(gameId);
     const slot = gameState.field.slots[row]?.[col];
 
     if (playerId !== gameState.currentTurn) {

@@ -116,15 +116,6 @@ class Field {
     }
   }
 
-  slotClick(row: number, col: number) {
-    if (this.isSlot(row, col)) {
-      const slot = this.slots[row][col] as Slot;
-      if (slot.card) {
-        slot.setCard(null);
-      }
-    }
-  }
-
   getSlot(row: number, col: number): Slot | null {
     if (this.isSlot(row, col)) {
       return this.slots[row][col] as Slot;

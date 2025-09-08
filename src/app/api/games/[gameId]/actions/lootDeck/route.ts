@@ -1,4 +1,5 @@
-import { loadGameState, saveGameState } from "@/app/lib/Helpers";
+import { drawCard } from "@/app/lib/gameHelpers/deck";
+import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { NextResponse } from "next/server";
 
@@ -9,8 +10,7 @@ export async function POST(
   try {
     const { playerId } = await request.json();
     const { gameId } = await params;
-    const gameState = await loadGameState(gameId);
-    const drawnCard = gameState.deck.shift();
+    const gameState = await fetchGameState(gameId);
 
     if (playerId !== gameState.currentTurn) {
       return NextResponse.json({ error: "No es tu turno" }, { status: 403 });
@@ -26,14 +26,8 @@ export async function POST(
       );
     }
 
-    if (!drawnCard) {
-      return NextResponse.json(
-        { error: "El mazo está vacío" },
-        { status: 400 }
-      );
-    }
+    drawCard(gameState, playerId);
 
-    gameState.hands[playerId].push(drawnCard);
     gameState.currentPhase = "End Phase";
     gameState.phaseAction = null;
 

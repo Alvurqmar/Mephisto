@@ -1,4 +1,5 @@
 import Card, { CardData } from "../models/card";
+import DiscardPile from "../models/discardPile";
 import Field from "../models/field";
 import { GameState } from "../models/gameState";
 import Player, { PlayerData } from "../models/player";
@@ -56,7 +57,7 @@ export function loadDeck(cardsData: CardData[]): Card[] {
   return cards;
 }
 
-export async function loadGameState(gameId: string): Promise<GameState> {
+export async function fetchGameState(gameId: string): Promise<GameState> {
   const res = await pool.query("SELECT * FROM games WHERE id = $1", [gameId]);
 
   if (res.rowCount === 0) {
@@ -67,6 +68,11 @@ export async function loadGameState(gameId: string): Promise<GameState> {
 
   const deckData: CardData[] =
     typeof game.deck === "string" ? JSON.parse(game.deck) : game.deck;
+
+  const discardPileData: CardData[] =
+  typeof game.discard_pile === "string"
+    ? JSON.parse(game.discard_pile)
+    : game.discard_pile;
 
   const handsData: Record<string, CardData[]> =
     typeof game.hands === "string" ? JSON.parse(game.hands) : game.hands;
@@ -81,7 +87,7 @@ export async function loadGameState(gameId: string): Promise<GameState> {
     id: game.id,
     lobbyId: game.lobby_id,
     deck: deckData.map((cardData) => Card.deserialize(cardData)),
-    discardPile: (typeof game.discard_pile === "string" ? JSON.parse(game.discard_pile) : game.discard_pile).map(Card.deserialize),
+    discardPile: DiscardPile.deserialize(discardPileData),
     hands: Object.fromEntries(
       Object.entries(handsData).map(([key, cards]) => [
         key,
@@ -125,7 +131,7 @@ export async function saveGameState(gameId: string, gameState: GameState): Promi
     `,
     [
       JSON.stringify(gameState.deck),
-      JSON.stringify(gameState.discardPile),
+      JSON.stringify(gameState.discardPile.cards),
       JSON.stringify(gameState.hands),
       JSON.stringify(gameState.field),
       gameState.currentTurn,
@@ -140,19 +146,3 @@ export async function saveGameState(gameId: string, gameState: GameState): Promi
   );
 }
 
-export function findCardById(gameState: GameState, cardId: number) {
-  for (const row of gameState.field.slots) {
-    for (const slot of row) {
-      if (slot.card && slot.card.id === cardId) {
-        return slot.card;
-      }
-    }
-  }
-
-  for (const playerId of Object.keys(gameState.hands)) {
-    const card = gameState.hands[playerId].find((c: Card) => c.id === cardId);
-    if (card) return card;
-  }
-
-  return null;
-}

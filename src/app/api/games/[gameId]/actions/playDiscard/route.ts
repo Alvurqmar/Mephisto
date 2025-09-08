@@ -1,4 +1,4 @@
-import { loadGameState, saveGameState } from "@/app/lib/Helpers";
+import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import Card from "@/app/models/card";
 import { NextResponse } from "next/server";
@@ -9,7 +9,7 @@ export async function POST(
 ) {
   const { gameId } = await params;
   const { playerId, cardId, row, col, discardIds } = await request.json();
-  const gameState = await loadGameState(gameId);
+  const gameState = await fetchGameState(gameId);
   const hand = gameState.hands[playerId];
   const slot = gameState.field.slots[row]?.[col];
 
@@ -52,7 +52,7 @@ export async function POST(
     (c: Card) => !discardIds.includes(c.id) && c.id !== cardId
   );
 
-  gameState.discardPile.push(...discardCards);
+  gameState.discardPile.addCards(discardCards);
   card.owner = playerId;
   slot.card = card;
 

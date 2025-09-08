@@ -1,4 +1,5 @@
-import { loadGameState, saveGameState } from "@/app/lib/Helpers";
+import { drawCard, restartDeck } from "@/app/lib/gameHelpers/deck";
+import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { NextResponse } from "next/server";
 
@@ -8,7 +9,7 @@ export async function POST(
 ) {
   const { playerId } = await request.json();
   const { gameId } = await params;
-  const gameState = await loadGameState(gameId);
+  const gameState = await fetchGameState(gameId);
   const keys = Object.keys(gameState.players);
   const turn = keys.indexOf(gameState.currentTurn);
 
@@ -26,22 +27,20 @@ export async function POST(
       gameState.currentPhase = "End Phase";
       break;
     case "End Phase":
-      const drawnCard = gameState.deck.shift();
-      if (!drawnCard) {
-        return NextResponse.json(
-          { error: "El mazo está vacío" },
-          { status: 400 }
-        );
-      }
-      gameState.hands[playerId].push(drawnCard);
+      drawCard(gameState, playerId);
 
+      if (gameState.deck.length <= 0) {
+        restartDeck(gameState);
+      }
+      
       for (let row = 0; row < gameState.field.slots.length; row++) {
         for (let col = 0; col < gameState.field.slots[row].length; col++) {
           const slot = gameState.field.slots[row][col];
           if (slot.card && slot.card.isTapped) {
             slot.card.isTapped = false;
           }
-          if (!slot.card && slot.owner === null && gameState.deck.length > 0) {
+
+          if (!slot.card && slot.owner === null) {
             const card = gameState.deck.pop() ?? null;
             slot.card = card;
             slot.owner = null;

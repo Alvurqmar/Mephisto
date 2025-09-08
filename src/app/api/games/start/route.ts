@@ -8,9 +8,9 @@ export async function POST(request: Request) {
     const { lobbyId } = await request.json();
 
     const players = await getLobbyPlayers(lobbyId);
-    const cardsData = await loadCardsFromDB();
+    const cards = await loadCardsFromDB();
 
-    const deck = loadDeck(cardsData);
+    const deck = loadDeck(cards);
     const gameState = initGameState(players, deck);
 
     const result = await pool.query(
