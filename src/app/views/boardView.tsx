@@ -17,6 +17,7 @@ import playerStore from "../stores/playerStore";
 import handStore from "../stores/handStore";
 import fieldStore from "../stores/fieldStore";
 import { pusherClient } from "../lib/pusherClient";
+import TargetView from "./targetView";
 
 type BoardViewProps = {
   gameId: string;
@@ -111,6 +112,7 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
       </div>
 
       <DiscardView gameId={gameId} />
+      <TargetView field={fieldStore.field} />
       <ToastProvider />
 
       {/* Victoria */}
@@ -132,6 +134,8 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
             </button>
           </div>
         </div>
+
+        
       )}
     </main>
   );

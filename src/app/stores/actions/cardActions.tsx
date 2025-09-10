@@ -1,10 +1,15 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
-import Card from "../../models/card";
+import Card, { EffectType } from "../../models/card";
 import fieldStore from "../fieldStore";
 import handStore from "../handStore";
 import phaseStore from "../phaseStore";
-import deckStore from "../deckStore";
+import {
+  effects,
+  EffectWithTargets,
+  fetchCardEffect,
+} from "@/app/lib/gameHelpers/effects/cardEffect";
+import targetStore from "../targetStore";
 
 class CardActions {
   selectedCard: Card | null = null;
@@ -14,6 +19,54 @@ class CardActions {
 
   constructor() {
     makeAutoObservable(this);
+  }
+
+  private async handleETBEffect(card: Card, gameId: string) {
+    if (!card.effectId) {
+      console.warn("Card has no effect ID.");
+      return;
+    }
+
+    const effect = effects[
+      card.effectId as keyof typeof effects
+    ] as EffectWithTargets;
+
+    if (!effect) {
+      console.warn(`Effect ${card.effectId} not found.`);
+      return;
+    }
+
+    if (effect.requiresTarget) {
+      targetStore.openTargetModal(
+        effect.targetRequirements!,
+        async (targets: Card[]) => {
+          try {
+            await fetchCardEffect(
+              phaseStore.currentTurn,
+              card.effectId,
+              card.id.toString(),
+              gameId,
+              targets
+            );
+          } catch (error) {
+            console.error("Failed to activate effect:", error);
+            toast.error("Error al activar el efecto de la carta.");
+          }
+        }
+      );
+    } else {
+      try {
+        await fetchCardEffect(
+          phaseStore.currentTurn,
+          card.effectId,
+          card.id.toString(),
+          gameId
+        );
+      } catch (error) {
+        console.error("Failed to activate effect:", error);
+        toast.error("Error al activar el efecto de la carta.");
+      }
+    }
   }
 
   selectCard(card: Card | null) {
@@ -61,21 +114,11 @@ class CardActions {
       toast.error("Solo puedes jugar cartas durante la Fase Principal.");
       return false;
     }
-
     if (card.type === "MONSTER") {
-      toast.error("No puedes jugar cartas de tipo MONSTER en esta fase.");
+      toast.error("Solo puedes jugar cartas de Monstruo con la acción Summon.");
       return false;
     }
-
     const cost = card.cost;
-
-    if (card.type === "SPELL") {
-      deckStore.discardPile.addCards([card]);
-      if (!externalCard) hand.removeCard(card);
-      this.selectCard(null);
-      toast.success("Carta de hechizo jugada y enviada a descartes.");
-      return true;
-    }
 
     if (cost === 0) {
       this.pendingSlot = { row, col };
@@ -96,13 +139,11 @@ class CardActions {
     return false;
   }
 
-  async sendPlayRequest(
-    row: number,
-    col: number,
-    gameId: string,
-    discardIds: number[]
-  ) {
+  async sendPlayRequest(row: number, col: number, gameId: string, discardIds: number[]) {
     if (!this.selectedCard) return;
+
+    const selectedCard = this.selectedCard;
+    const hasETBEffect = selectedCard.effectType === EffectType.ETB;
 
     const res = await fetch(`/api/games/${gameId}/actions/playDiscard`, {
       method: "POST",
@@ -118,6 +159,9 @@ class CardActions {
 
     if (res.ok) {
       toast.success("Carta jugada correctamente.");
+      if (hasETBEffect) {
+      await this.handleETBEffect(selectedCard, gameId);
+    }
       this.selectCard(null);
       this.discardSelection = [];
       this.pendingSlot = null;

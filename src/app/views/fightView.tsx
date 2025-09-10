@@ -32,7 +32,7 @@ const FightView = observer(({ gameId }: FightProps) => {
   const weapons = cardsInTargets
     .filter(
       (slot) =>
-        slot.owner === phaseStore.currentTurn && slot.card?.type === "WEAPON"
+        slot.owner === phaseStore.currentTurn && slot.card?.type === "WEAPON" && slot.card?.isTapped === false
     )
     .map((slot) => slot.card!) as typeof selectedWeapons;
 

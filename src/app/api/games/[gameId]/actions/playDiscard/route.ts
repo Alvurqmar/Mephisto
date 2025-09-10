@@ -54,8 +54,11 @@ export async function POST(
 
   gameState.discardPile.addCards(discardCards);
   card.owner = playerId;
+  if(card.type === "SPELL"){
+    gameState.discardPile.addCards([card]);
+  }else{
   slot.card = card;
-
+  }
   await saveGameState(gameId, gameState);
   await pusher.trigger(`game-${gameId}`, "state-updated", {});
 
