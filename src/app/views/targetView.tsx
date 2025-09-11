@@ -2,7 +2,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import targetStore from "../stores/targetStore";
-import { filterFieldType } from "../lib/gameHelpers/field";
+import { filterFieldType, filterLaneType } from "../lib/gameHelpers/field";
 import Card from "../models/card";
 import Image from "next/image";
 import Field from "../models/field";
@@ -14,25 +14,32 @@ const TargetView = observer(({ field }: TargetViewProps) => {
   if (!targetStore.isTargetModalOpen || !targetStore.targetRequirements)
     return null;
 
-  const { targetRequirements, selectedTargets } = targetStore;
+  const { targetRequirements, selectedTargets, effectCardId } = targetStore;
 
-  const getAvailableTargets = () => {
-    let targets: Card[] = [];
+const getAvailableTargets = () => {
+  let targets: Card[] = [];
 
-    if (targetRequirements.location === "field") {
-      if (Array.isArray(targetRequirements.type)) {
-        targets = targetRequirements.type.flatMap(type =>
-            filterFieldType(field, type)
-        );
+  if (targetRequirements.location === "field") {
+    if (Array.isArray(targetRequirements.type)) {
+      targets = targetRequirements.type.flatMap(type =>
+          filterFieldType(field, type)
+      );
     } else {
-        targets = filterFieldType(field, targetRequirements.type);
+      targets = filterFieldType(field, targetRequirements.type);
     }
+  } else if (targetRequirements.location === "lane" && effectCardId) {
+    if (Array.isArray(targetRequirements.type)) {
+      targets = targetRequirements.type.flatMap(type =>
+        filterLaneType(field, parseInt(effectCardId), type, targetRequirements.orientation!)
+      );
+    } else {
+      targets = filterLaneType(field, parseInt(effectCardId), targetRequirements.type, targetRequirements.orientation!);
     }
+  }
+  return targets;
+};
 
-    return targets;
-  };
-
-  const availableTargets = getAvailableTargets();
+const availableTargets = getAvailableTargets();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center z-50">

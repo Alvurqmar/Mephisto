@@ -31,7 +31,7 @@ export function cardPos(field: Field, cardId: number): { row: number; col: numbe
   return null;
 }
 
-export function filterLaneType(field: Field, cardId: number, type: string, orientation: 'horizontal' | 'vertical'): Card[] {
+export function filterLaneType(field: Field, cardId: number, type: string, orientation: string): Card[] {
   const position = cardPos(field, cardId);
   if (!position) return [];
   
@@ -45,13 +45,15 @@ export function filterLaneType(field: Field, cardId: number, type: string, orien
         cards.push(slot.card);
       }
     }
-  } else {
+  } else if (orientation === 'vertical') {
     for (let r = 0; r < field.slots.length; r++) {
       const slot = field.slots[r][col];
       if (slot.card && slot.card.id !== cardId) {
         cards.push(slot.card);
       }
     }
+  } else{
+    console.error("orientation not defined") 
   }
   
   if (type) {
@@ -60,5 +62,9 @@ export function filterLaneType(field: Field, cardId: number, type: string, orien
   }
   
   return cards;
+}
+
+export function filterCardOwner(cards: Card[], playerId: string): Card[] {
+  return cards.filter(card => card.owner === playerId);
 }
 

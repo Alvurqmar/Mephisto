@@ -15,13 +15,13 @@ export function PE(gameState: GameState, cardId: string) {
     return gameState;
   }
 
-  const { row: potionRow, col: potionCol } = position;
+  const { row: Row, col: Col } = position;
 
   let bonusFP = 0;
 
   if (orientation === "horizontal") {
-    for (let col = 0; col < gameState.field.slots[potionRow].length; col++) {
-      const slot = gameState.field.slots[potionRow][col];
+    for (let col = 0; col < gameState.field.slots[Row].length; col++) {
+      const slot = gameState.field.slots[Row][col];
       if (
         slot.card &&
         slot.card.type !== "MONSTER" &&
@@ -32,7 +32,7 @@ export function PE(gameState: GameState, cardId: string) {
     }
   } else {
     for (let row = 0; row < gameState.field.slots.length; row++) {
-      const slot = gameState.field.slots[row][potionCol];
+      const slot = gameState.field.slots[row][Col];
       if (
         slot.card &&
         slot.card.type !== "MONSTER" &&

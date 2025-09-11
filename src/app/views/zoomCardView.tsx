@@ -2,9 +2,8 @@
 import React from "react";
 import Card, { EffectType } from "../models/card";
 import Image from "next/image";
-import { effects, EffectWithTargets, fetchCardEffect } from "../lib/gameHelpers/effects/cardEffect";
+import { fetchCardEffect } from "../lib/gameHelpers/effects/cardEffect";
 import phaseStore from "../stores/phaseStore";
-import targetStore from "../stores/targetStore";
 import { toast } from "react-toastify";
 
 type ZoomedCardViewProps = {
@@ -34,44 +33,25 @@ const ZoomedCardView = ({
     id,
   } = card;
 
-    const handleEffectClick = async () => {
-      const effect = effects[effectId as keyof typeof effects] as EffectWithTargets;
+  const handleEffectClick = async () => {
     if (!effectId) {
       console.warn("This card has no effect");
       return;
     }
-    if (effect.requiresTarget){
-      targetStore.openTargetModal(effect.targetRequirements!,async (targets: Card[]) => {
-              try {
-                await fetchCardEffect(
-                  phaseStore.currentTurn,
-                  effectId,
-                  id.toString(),
-                  gameId,
-                  targets
-                );
-              } catch (error) {
-                console.error("Failed to activate effect:", error);
-                toast.error("Error al activar el efecto de la carta.");
-              }
-            }
-          );
-        } else {
-                    try {
-            await fetchCardEffect(
-              phaseStore.currentTurn,
-              effectId,
-              id.toString(),
-              gameId
-            );
-          } catch (error) {
-            console.error("Failed to activate effect:", error);
-            toast.error("Error al activar el efecto de la carta.");
-          }
-        }
+    
+    try {
+      await fetchCardEffect(
+        phaseStore.currentTurn,
+        effectId,
+        id.toString(),
+        gameId
+      );
+    } catch (error) {
+      console.error("Failed to activate effect:", error);
+      toast.error("Error al activar el efecto de la carta.");
+    }
   };
 
-  
   return (
     <div
       className="absolute top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -133,7 +113,6 @@ const ZoomedCardView = ({
             <button
               onClick={() => {
                 handleEffectClick();
-
               }}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
               disabled={!effectId}

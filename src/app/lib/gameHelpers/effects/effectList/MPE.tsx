@@ -1,6 +1,6 @@
 import { GameState } from "@/app/models/gameState";
 import { updateFP } from "../../player";
-import { activatedAbility, findById } from "../../card";
+import { activatedAbility, durabilityChange, findById } from "../../card";
 import { restartDeck } from "../../deck";
 
 export function MPE(gameState: GameState, cardId: string) {
@@ -23,7 +23,7 @@ export function MPE(gameState: GameState, cardId: string) {
     case "ITEM":
       const card = findById(gameState, numericCardId);
       if (card && card.durability !== undefined) {
-        card.durability += 1;
+        durabilityChange(gameState,card, 1);
       }
       break;
   }

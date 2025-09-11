@@ -1,5 +1,5 @@
 import { GameState } from "@/app/models/gameState";
-import { findById } from "../../card";
+import { durabilityChange, findById } from "../../card";
 import Card from "@/app/models/card";
 import phaseStore from "@/app/stores/phaseStore";
 
@@ -19,7 +19,7 @@ export function UpgradeE(gameState: GameState, cardId: string, targets?: Card[])
   }
 
   targetCard.attack += 3;
-  targetCard.durability += 1;
+  durabilityChange(gameState,targetCard, 1);
 
 
 }

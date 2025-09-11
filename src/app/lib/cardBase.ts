@@ -48,7 +48,7 @@ export const cards = [
   { name: 'Soulfeeder', type: 'WEAPON', cost: 2, attack: 6, durability: 2, effectId: 'SFE', effectType: 'ETB', soulPts: 0 },
   { name: 'Boomerang', type: 'WEAPON', cost: 0, attack: 3, durability: 2, effectId: 'BoomerangE', effectType: 'CE', soulPts: 0 },
   { name: 'Hookshot', type: 'WEAPON', cost: 2, attack: 5, durability: 3, effectId: 'HookshotE', effectType: 'AA', soulPts: 0 },
-  { name: 'Repeater', type: 'WEAPON', cost: 2, attack: 8, durability: 2, effectId: 'RepeaterE', effectType: 'CE', soulPts: 0 },
+  { name: 'Repeater', type: 'WEAPON', cost: 2, attack: 8, durability: 2, effectId: 'RepeaterE', effectType: 'ETB', soulPts: 0 },
   { name: 'Skewer', type: 'WEAPON', cost: 1, attack: 3, durability: 3, effectId: 'SkewerE', effectType: 'CE', soulPts: 0 },
   { name: 'Slingshot', type: 'WEAPON', cost: 1, attack: 4, durability: 3, effectId: 'SlingshotE', effectType: 'ETB', soulPts: 0 },
   { name: 'Arcanife', type: 'WEAPON', cost: 1, attack: 4, durability: 3, effectId: 'ArcanifeE', effectType: 'CE', soulPts: 0 },

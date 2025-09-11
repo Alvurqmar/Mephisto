@@ -14,6 +14,14 @@ export function drawCard(gameState: GameState, playerId: string) {
   return card;
 }
 
+export function topCard(gameState: GameState){
+    if (gameState.deck.length === 0) {
+    restartDeck(gameState);
+  }
+    const card = gameState.deck.shift();
+    return card!;
+}
+
 export function restartDeck(gameState: GameState) {
   const discarded = gameState.discardPile.cards;
   clearDiscardPile(gameState.discardPile);

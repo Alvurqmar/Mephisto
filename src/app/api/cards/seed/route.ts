@@ -34,7 +34,7 @@ export async function POST() {
 
     const cardCount = await client.query("SELECT COUNT(*) FROM cards");
     if (parseInt(cardCount.rows[0].count) > 0) {
-      return NextResponse.json({ message: "Cartas ya cargadas" });
+      await client.query("TRUNCATE TABLE cards RESTART IDENTITY");
     }
 
     for (const card of cards) {
