@@ -6,55 +6,95 @@ import { filterFieldType, filterLaneType } from "../lib/gameHelpers/field";
 import Card from "../models/card";
 import Image from "next/image";
 import Field from "../models/field";
+import playerStore from "../stores/playerStore";
+import phaseStore from "../stores/phaseStore";
+import { filterCardOwner } from "../lib/gameHelpers/card";
+import handStore from "../stores/handStore";
+import { filterHandType } from "../lib/gameHelpers/hand";
 
 type TargetViewProps = {
   field: Field;
 };
+
 const TargetView = observer(({ field }: TargetViewProps) => {
   if (!targetStore.isTargetModalOpen || !targetStore.targetRequirements)
     return null;
 
-  const { targetRequirements, selectedTargets, effectCardId } = targetStore;
+  const { selectedTargets, effectCardId, targetRequirements, currentRequirementIndex } = targetStore;
 
-const getAvailableTargets = () => {
-  let targets: Card[] = [];
+  const currentRequirements = Array.isArray(targetRequirements)
+    ? targetRequirements[currentRequirementIndex]
+    : targetRequirements;
 
-  if (targetRequirements.location === "field") {
-    if (Array.isArray(targetRequirements.type)) {
-      targets = targetRequirements.type.flatMap(type =>
+  const getAvailableTargets = () => {
+    if (!currentRequirements) {
+      return [];
+    }
+
+    let targets: Card[] = [];
+
+    if (currentRequirements.location === "field") {
+      if (Array.isArray(currentRequirements.type)) {
+        targets = currentRequirements.type.flatMap(type =>
           filterFieldType(field, type)
-      );
-    } else {
-      targets = filterFieldType(field, targetRequirements.type);
-    }
-  } else if (targetRequirements.location === "lane" && effectCardId) {
-    if (Array.isArray(targetRequirements.type)) {
-      targets = targetRequirements.type.flatMap(type =>
-        filterLaneType(field, parseInt(effectCardId), type, targetRequirements.orientation!)
-      );
-    } else {
-      targets = filterLaneType(field, parseInt(effectCardId), targetRequirements.type, targetRequirements.orientation!);
-    }
-  }
-  return targets;
-};
+        );
+      } else {
+        targets = filterFieldType(field, currentRequirements.type);
+      }
+    } else if (currentRequirements.location === "lane" && effectCardId) {
+      if (Array.isArray(currentRequirements.type)) {
+        targets = currentRequirements.type.flatMap(type =>
+          filterLaneType(field, parseInt(effectCardId), type, playerStore.players[phaseStore.currentTurn].orientation)
+        );
+      } else {
+        targets = filterLaneType(field, parseInt(effectCardId), currentRequirements.type, playerStore.players[phaseStore.currentTurn].orientation);
+      }
+    } else if (currentRequirements.location === "hand") {
+      const player = playerStore.players[phaseStore.currentTurn].key;
+      const hand = handStore.hands[player];
 
-const availableTargets = getAvailableTargets();
+      if (Array.isArray(currentRequirements.type)) {
+        targets = currentRequirements.type.flatMap(type =>
+          filterHandType(hand, type)
+        );
+      } else {
+        targets = filterHandType(hand, currentRequirements.type);
+      }
+    }
+
+    if (currentRequirements.owner && currentRequirements.owner !== "any") {
+      if (currentRequirements.owner === "opponent") {
+        const playerIds = Object.keys(playerStore.players);
+        const opponentId = playerIds.find(id => id !== phaseStore.currentTurn);
+        if(opponentId) {
+          targets = filterCardOwner(targets, opponentId);
+        }
+      } else {
+        targets = filterCardOwner(targets, currentRequirements.owner);
+      }
+    }
+
+    const uniqueTargets = Array.from(new Set(targets.map(card => card.id)))
+      .map(id => targets.find(card => card.id === id)!);
+
+    return uniqueTargets;
+  };
+
+  const availableTargets = getAvailableTargets();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center z-50">
       <div className="bg-neutral-700 p-6 rounded max-w-md w-full">
-        <h2 className="text-lg font-bold mb-4">
-          {"Select Targets"} ({selectedTargets.length}/
-          {targetRequirements.count})
+        <h2 className="text-lg font-bold mb-4 text-center">
+          {`Select ${currentRequirements.count} target(s)`}
         </h2>
 
-        <div className="flex gap-2 flex-wrap mb-6 max-h-60 overflow-y-auto">
+        <div className="flex flex-wrap justify-center gap-4 mb-4">
           {availableTargets.map((target) => (
             <div
               key={target.id}
-              className={`rounded cursor-pointer border-4 transition ${
-                selectedTargets.some((t) => t.id === target.id)
+              className={`relative cursor-pointer transition-transform duration-200 transform hover:scale-105 border-2 rounded ${
+                selectedTargets.some(t => t.id === target.id)
                   ? "border-blue-600"
                   : "border-transparent hover:border-blue-300"
               }`}
@@ -86,10 +126,10 @@ const availableTargets = getAvailableTargets();
           </button>
 
           <button
-            disabled={selectedTargets.length !== targetRequirements.count}
+            disabled={selectedTargets.length !== currentRequirements.count}
             onClick={() => targetStore.confirmSelection()}
             className={`px-4 py-2 rounded text-white transition ${
-              selectedTargets.length === targetRequirements.count
+              selectedTargets.length === currentRequirements.count
                 ? "bg-blue-600 hover:bg-blue-700"
                 : "bg-blue-300 cursor-not-allowed"
             }`}

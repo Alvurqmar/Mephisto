@@ -21,6 +21,10 @@ import { CorruptorE } from "./effectList/CorruptorE";
 import { ForkE } from "./effectList/ForkE";
 import { SpiderE } from "./effectList/SpiderE";
 import { MalletE } from "./effectList/MalletE";
+import { GreataxeE } from "./effectList/Greataxe";
+import { KeyE } from "./effectList/KeyE";
+import { PortalE } from "./effectList/PortalE";
+import { ShovelE } from "./effectList/ShovelE";
 
 export const effects = {
   MPE,
@@ -39,6 +43,11 @@ export const effects = {
   CorruptorE,
   ForkE,
   SpiderE,
+  GreataxeE,
+  MalletE,
+  KeyE,
+  PortalE,
+  ShovelE,
   //GoblinE,
   //LichE,
   //OozeE,
@@ -49,19 +58,14 @@ export const effects = {
   //WitchE,
   //WraithE,
   //ZombieE,
-  //KeyE,
   //BWE
   //GrimoireE,
   //BloodthirsterE,
-  //GreataxeE,
-  MalletE,
-  //ShovelE,
   //BoomerangE,
   //SkewerE,
   //SlingshotE,
   //ArcanifeE,
   //IlluminateE,
-  //PortalE,
   //TransmuteE,
   //TeleportE,
 
@@ -76,7 +80,7 @@ export interface EffectWithTargets {
     location?: string;
     owner?: string;
     orientation?: string;
-  };
+  }[];
 }
 
 export function cardEffect(
@@ -104,26 +108,20 @@ export async function fetchCardEffect(
 ) {
   const effect = effects[effectId as keyof typeof effects] as EffectWithTargets;
 
-  if (
-    effect &&
-    effect.requiresTarget &&
-    effect.targetRequirements &&
-    !targets
-  ) {
-    const player = playerStore.players[phaseStore.currentTurn];
-    const requirements = { ...effect.targetRequirements };
-    requirements.orientation = player.orientation;
-
+if (effect && effect.requiresTarget && effect.targetRequirements && !targets) {
+    let requirements = effect.targetRequirements;
+    const effectCard = targetStore.effectCardId;
+    if (effectCard) {
+      const player = playerStore.players[phaseStore.currentTurn];
+      if (player && player.orientation) {
+        requirements = requirements.map(req => ({ ...req, orientation: player.orientation }));
+      }
+    }
+    
     targetStore.openTargetModal(
       requirements,
       async (selectedTargets) => {
-        await fetchCardEffect(
-          playerId,
-          effectId,
-          cardId,
-          gameId,
-          selectedTargets
-        );
+        await fetchCardEffect(playerId, effectId, cardId, gameId, selectedTargets);
       },
       cardId
     );

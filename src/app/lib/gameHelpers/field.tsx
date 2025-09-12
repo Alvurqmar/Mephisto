@@ -63,8 +63,3 @@ export function filterLaneType(field: Field, cardId: number, type: string, orien
   
   return cards;
 }
-
-export function filterCardOwner(cards: Card[], playerId: string): Card[] {
-  return cards.filter(card => card.owner === playerId);
-}
-

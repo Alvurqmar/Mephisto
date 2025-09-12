@@ -36,3 +36,7 @@ export function durabilityChange(gameState: GameState, card: Card, amount: numbe
       }
 }
 }
+
+export function filterCardOwner(cards: Card[], playerId: string): Card[] {
+  return cards.filter(card => card.owner === playerId);
+}
