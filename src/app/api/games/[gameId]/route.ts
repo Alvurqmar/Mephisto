@@ -6,7 +6,7 @@ import Player, { PlayerData } from "@/app/models/player";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: Promise<{ gameId: string }> }
 ) {
   const { gameId } = await params;
 

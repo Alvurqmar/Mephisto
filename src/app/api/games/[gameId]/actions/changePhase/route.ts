@@ -6,10 +6,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  context: { params: Record<string, string> } 
+  { params }: { params: Promise<{ gameId: string }> } 
 ) {
   const { playerId } = await request.json();
-  const { gameId } = await context.params;
+  const { gameId } = await params;
   const gameState = await fetchGameState(gameId);
   const keys = Object.keys(gameState.players);
   const turn = keys.indexOf(gameState.currentTurn);

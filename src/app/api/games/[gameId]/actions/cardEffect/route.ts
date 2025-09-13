@@ -3,10 +3,7 @@ import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { gameId: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ gameId: string }> }) {
   try {
     const { playerId, effectId, cardId, targets } = await request.json();
     const { gameId } = await params;

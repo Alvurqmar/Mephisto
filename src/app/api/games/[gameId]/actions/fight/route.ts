@@ -6,7 +6,7 @@ import { updateFP, updateSP } from "@/app/lib/gameHelpers/player";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { gameId: string } }
+  { params }: { params: Promise<{ gameId: string }> }
 ) {
   const { gameId } = await params;
   const { playerId, results, favorSpent, gainedSP, discardedCards } =
