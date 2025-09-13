@@ -1,10 +1,11 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
-import Card, { EffectType } from "../../models/card";
-import fieldStore, { cardInField } from "../fieldStore";
+import Card, { CardType, EffectType } from "../../models/card";
+import fieldStore, { cardInField, getCard } from "../fieldStore";
 import handStore from "../handStore";
 import phaseStore from "../phaseStore";
 import { handleETBEffect } from "@/app/lib/gameHelpers/effects/cardEffect";
+import { updateCard } from "@/app/lib/gameHelpers/card";
 
 class CardActions {
   selectedCard: Card | null = null;
@@ -42,12 +43,12 @@ class CardActions {
       return false;
     }
 
-    if(cardInField(fieldStore.field, card.id)){
+    if (cardInField(fieldStore.field, card.id)) {
       toast.error("Carta ya en el campo.");
       return false;
     }
 
-    if(card?.owner !== phaseStore.currentTurn){
+    if (card?.owner !== phaseStore.currentTurn) {
       toast.error("No es tu turno.");
       return false;
     }
@@ -56,7 +57,7 @@ class CardActions {
       toast.error("Solo puedes jugar cartas durante la Main Phase.");
       return false;
     }
-    
+
     if (!slot) {
       toast.error("Casilla inválida o vacía.");
       return false;
@@ -98,7 +99,12 @@ class CardActions {
     return false;
   }
 
-  async sendPlayRequest(row: number, col: number, gameId: string, discardIds: number[]) {
+  async sendPlayRequest(
+    row: number,
+    col: number,
+    gameId: string,
+    discardIds: number[]
+  ) {
     if (!this.selectedCard) return;
 
     const selectedCard = this.selectedCard;
@@ -118,6 +124,14 @@ class CardActions {
 
     if (res.ok) {
       toast.success("Carta jugada correctamente.");
+
+      if (selectedCard.type === CardType.SPELL) {
+        const wand = getCard(fieldStore.field, 34);
+        if (wand) {
+          await updateCard(gameId, wand.id, { attack: 3 });
+        }
+      }
+      
       if (hasETBEffect) {
         await handleETBEffect(selectedCard, gameId);
       }

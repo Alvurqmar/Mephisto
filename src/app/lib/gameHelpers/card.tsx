@@ -1,6 +1,7 @@
 import Card from "@/app/models/card";
 import { GameState } from "@/app/models/gameState";
 import { findOriginalCardData } from "../cardBase";
+import phaseStore from "@/app/stores/phaseStore";
 
 export function findById(gameState: GameState, cardId: number) {
   for (let row = 0; row < gameState.field.slots.length; row++) {
@@ -51,3 +52,19 @@ export function resetCard(card: Card){
     card.owner = null;
   }
 }
+
+ export async function updateCard(gameId: string, cardId: number, updates: { attack: number }) {
+    try {
+      await fetch(`/api/games/${gameId}/actions/updateCard`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          playerId: phaseStore.currentTurn,
+          cardId,
+          updates,
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to update card on server:", error);
+    }
+  }

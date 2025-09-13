@@ -1,7 +1,7 @@
 'use client';
 import ToastProvider from "@/app/ui/toastProvider";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import cardActions from "../stores/actions/cardActions";
 import gameStore from "../stores/gameStore";
@@ -23,14 +23,14 @@ type BoardViewProps = {
   gameId: string;
 };
 const BoardView = observer(({ gameId }: BoardViewProps) => {
-  const [isReady, setIsReady] = useState(false);
   const players = JSON.parse(localStorage.getItem("players") || "{}");
   const myPlayerKey = players[gameId];
 
   useEffect(() => {
     async function init() {
-      await gameStore.loadGameState(gameId);
-      setIsReady(true);
+      if (!gameStore.isLoaded) {
+        await gameStore.loadGameState(gameId);
+      }
     }
     init();
 
@@ -48,10 +48,11 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
     };
   }, [gameId]);
 
-  if (!isReady) {
+  if (!gameStore.isLoaded) {
     return (
       <div className="h-screen bg-[url('/GameBg.jpg')] bg-cover bg-no-repeat bg-center flex items-center justify-center">
-        Cargando...
+        <div className="w-12 h-12 rounded-full border-4 border-t-4 border-gray-400 animate-spin border-t-transparent"></div>
+        <p className="mt-4 text-white">Cargando...</p>
       </div>
     );
   }
@@ -62,6 +63,12 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
 
   return (
     <main className="flex flex-col h-screen max-w-screen overflow-hidden bg-[url('/GameBg.jpg')] bg-cover bg-no-repeat bg-center">
+      {gameStore.isLoading && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
+          <div className="w-6 h-6 rounded-full border-2 border-t-2 border-white animate-spin border-t-transparent"></div>
+        </div>
+      )}
+
       <div className="flex flex-grow gap-1 h-full min-h-0">
         {/* Col 1 - InfoPanelView */}
         <div className="flex-none w-35 max-h-screen">
@@ -78,9 +85,8 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
             <HandView
               hand={myHand}
               onCardClick={(card) => {
-                  cardActions.selectCard(card);
-                }
-              }
+                cardActions.selectCard(card);
+              }}
             />
           )}
 
@@ -135,8 +141,6 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
             </button>
           </div>
         </div>
-
-        
       )}
     </main>
   );

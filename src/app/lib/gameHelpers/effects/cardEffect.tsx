@@ -26,13 +26,16 @@ import { KeyE } from "./effectList/KeyE";
 import { PortalE } from "./effectList/PortalE";
 import { ShovelE } from "./effectList/ShovelE";
 import { SkewerE } from "./effectList/SkewerE";
+import { BloodthirsterE } from "./effectList/BloodthirsterE";
+import { ArcanifeE } from "./effectList/Arcanife";
+import { TransmuteE } from "./effectList/TransmuteE";
 
 export const effects = {
   MPE,
   SFE,
   PE,
   StewE,
-  TalismanE,
+  TalismanE, //FIX
   HookshotE,
   BlazingE,
   UpgradeE,
@@ -50,26 +53,28 @@ export const effects = {
   PortalE,
   ShovelE,
   SkewerE,
+  BloodthirsterE,
+  ArcanifeE,
+  TransmuteE,
+  //BWE -> NO NECESITA FUNCION(implementado)
+
   //GoblinE,
   //LichE,
-  //OozeE,
-  //DKE,
-  //SkeletonE,
-  //TrollE,
   //WatcherE,
   //WitchE,
   //WraithE,
   //ZombieE,
-  //BWE
+
+  //OozeE,
+  //DKE,
+  //SkeletonE,
+  //TrollE,
+
   //GrimoireE,
-  //BloodthirsterE,
   //BoomerangE,
   //SlingshotE,
-  //ArcanifeE,
   //IlluminateE,
-  //TransmuteE,
   //TeleportE,
-
 };
 
 export interface EffectWithTargets {
