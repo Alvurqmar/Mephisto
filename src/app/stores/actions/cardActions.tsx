@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
 import Card, { EffectType } from "../../models/card";
-import fieldStore from "../fieldStore";
+import fieldStore, { cardInField } from "../fieldStore";
 import handStore from "../handStore";
 import phaseStore from "../phaseStore";
 import { handleETBEffect } from "@/app/lib/gameHelpers/effects/cardEffect";
@@ -37,6 +37,26 @@ class CardActions {
     const hand = handStore.hands[phaseStore.currentTurn];
     const card = externalCard ?? this.selectedCard;
 
+    if (!card) {
+      toast.error("No hay una carta seleccionada.");
+      return false;
+    }
+
+    if(cardInField(fieldStore.field, card.id)){
+      toast.error("Carta ya en el campo.");
+      return false;
+    }
+
+    if(card?.owner !== phaseStore.currentTurn){
+      toast.error("No es tu turno.");
+      return false;
+    }
+
+    if (phaseStore.currentPhase !== "Main Phase") {
+      toast.error("Solo puedes jugar cartas durante la Main Phase.");
+      return false;
+    }
+    
     if (!slot) {
       toast.error("Casilla inválida o vacía.");
       return false;
@@ -47,24 +67,16 @@ class CardActions {
       return false;
     }
 
-    if (!card) {
-      toast.error("No hay una carta seleccionada.");
-      return false;
-    }
-
     if (slot.owner !== card.owner) {
       toast.error("Solo puedes jugar cartas en tus propias casillas.");
       return false;
     }
 
-    if (phaseStore.currentPhase !== "Main Phase") {
-      toast.error("Solo puedes jugar cartas durante la Fase Principal.");
-      return false;
-    }
     if (card.type === "MONSTER") {
       toast.error("Solo puedes jugar cartas de Monstruo con la acción Summon.");
       return false;
     }
+
     const cost = card.cost;
 
     if (cost === 0) {

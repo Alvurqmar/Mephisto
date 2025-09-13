@@ -90,6 +90,7 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
               onClose={() => cardActions.selectCard(null)}
               gameId={gameId}
               myPlayerKey={myPlayerKey}
+              field={fieldStore.field}
             />
           )}
 

@@ -1,5 +1,5 @@
 import { findOriginalCardData } from "@/app/lib/cardBase";
-import { drawCard, restartDeck } from "@/app/lib/gameHelpers/deck";
+import { drawCard, restartDeck, topCard } from "@/app/lib/gameHelpers/deck";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { NextRequest, NextResponse } from "next/server";
@@ -45,11 +45,9 @@ export async function POST(
               slot.card.temporal = false;
             }
           }
-
           if (!slot.card && slot.owner === null) {
-            const card = gameState.deck.pop() ?? null;
-            slot.card = card;
-            slot.owner = null;
+            const deckCard = topCard(gameState);
+            slot.card = deckCard;
           }
         }
       }
