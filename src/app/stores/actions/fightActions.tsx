@@ -5,6 +5,7 @@ import DiscardPile from "../../models/discardPile";
 import playerStore from "../playerStore";
 import phaseStore from "../phaseStore";
 import fieldStore from "../fieldStore";
+import { fetchCardEffect } from "@/app/lib/gameHelpers/effects/cardEffect";
 
 export interface Result {
   row: number;
@@ -112,8 +113,14 @@ class FightActions {
         return;
       }
     }
+    let weaponAttack = selectedWeapons.reduce((sum, w) => sum + w.attack, 0);
+      for (const weapon of selectedWeapons) {
+      if (weapon.effectType === "BC" && weapon.effectId) {
+        await fetchCardEffect(playerId, weapon.effectId, weapon.id.toString(), gameId);
+        weaponAttack += weapon.attack;
+      }
+    }
 
-    const weaponAttack = selectedWeapons.reduce((sum, w) => sum + w.attack, 0);
     const totalAttack = weaponAttack + favorSpent;
     const totalMonsterAttack = selectedMonsters.reduce(
       (sum, m) => sum + m.attack,

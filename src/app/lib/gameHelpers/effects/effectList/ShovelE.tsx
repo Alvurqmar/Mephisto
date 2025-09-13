@@ -7,7 +7,7 @@ import { activatedAbility, findById} from "../../card";
 export function ShovelE(gameState: GameState, cardId: string, targets?: Card[]) {
   const numericCardId = parseInt(cardId);
   if (!targets || targets.length < 2) {
-    console.warn("Key requires 2 targets.");
+    console.warn("Shovel requires 2 targets.");
     return gameState;
   }
 

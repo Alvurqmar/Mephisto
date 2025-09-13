@@ -29,8 +29,8 @@ const HandView = observer(({ hand, playerName, onCardClick, selectableFilter }: 
                 key={card.id}
                 src={`/cards/${card.name}.png`}
                 alt={card.name}
-                width={96} 
-                height={144}
+                width={128}
+                height={192}
                 className={`mx-1 flex-shrink-0 cursor-pointer transition-transform duration-200 ${
                   isSelectable ? "border-4 border-yellow-400 scale-105" : ""
                 }`}

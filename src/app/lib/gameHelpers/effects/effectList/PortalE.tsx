@@ -7,7 +7,7 @@ import { updateFP } from "../../player";
 
 export function PortalE(gameState: GameState, cardId: string, targets?: Card[]) {
   if (!targets || targets.length < 2) {
-    console.warn("Key requires 2 targets.");
+    console.warn("Portal requires 2 targets.");
     return gameState;
   }
 

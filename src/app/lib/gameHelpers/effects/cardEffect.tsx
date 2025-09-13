@@ -25,6 +25,7 @@ import { GreataxeE } from "./effectList/Greataxe";
 import { KeyE } from "./effectList/KeyE";
 import { PortalE } from "./effectList/PortalE";
 import { ShovelE } from "./effectList/ShovelE";
+import { SkewerE } from "./effectList/SkewerE";
 
 export const effects = {
   MPE,
@@ -48,6 +49,7 @@ export const effects = {
   KeyE,
   PortalE,
   ShovelE,
+  SkewerE,
   //GoblinE,
   //LichE,
   //OozeE,
@@ -62,7 +64,6 @@ export const effects = {
   //GrimoireE,
   //BloodthirsterE,
   //BoomerangE,
-  //SkewerE,
   //SlingshotE,
   //ArcanifeE,
   //IlluminateE,

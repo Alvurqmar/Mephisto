@@ -6,7 +6,8 @@ export function updateSP(gameState: GameState, playerId: string, amount: number)
 }
 
 export function updateFP(gameState: GameState, playerId: string, amount: number) {
-    gameState.players[playerId].favorPoints += amount;
+    const updatedFP = gameState.players[playerId].favorPoints += amount;
+    gameState.players[playerId].favorPoints = Math.max(0, Math.min(10, updatedFP));
 }
 
 

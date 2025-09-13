@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import Card, { CardData } from "../models/card";
+import { resetCard } from "../lib/gameHelpers/card";
 
 class DiscardPile {
   cards: Card[] = [];
@@ -10,7 +11,7 @@ class DiscardPile {
 
   addCards(cards: Card[]) {
     cards.forEach((card) => {
-      card.owner = null;
+      resetCard(card);
     });
     this.cards.push(...cards);
   }

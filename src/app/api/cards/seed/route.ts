@@ -13,6 +13,7 @@ const effectTypeMap: Record<string, string> = {
   ETB: "ETB",
   CE: "CE",
   AA: "AA",
+  BC: "BC",
 };
 
 export async function POST() {
@@ -39,9 +40,10 @@ export async function POST() {
 
     for (const card of cards) {
       await client.query(
-        `INSERT INTO cards (name, type, cost, attack, durability, effectid, effecttype, soulpts)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+        `INSERT INTO cards (id, name, type, cost, attack, durability, effectid, effecttype, soulpts)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
         [
+          card.id,
           card.name,
           cardTypeMap[card.type],
           card.cost,

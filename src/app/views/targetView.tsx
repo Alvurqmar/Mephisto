@@ -82,38 +82,38 @@ const TargetView = observer(({ field }: TargetViewProps) => {
 
   const availableTargets = getAvailableTargets();
 
-  return (
+return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center z-50">
-      <div className="bg-neutral-700 p-6 rounded max-w-md w-full">
-        <h2 className="text-lg font-bold mb-4 text-center">
-          {`Select ${currentRequirements.count} target(s)`}
-        </h2>
+      <div className="bg-neutral-700 p-6 rounded max-w-xl w-full">
+        <h3 className="text-xl font-bold mb-4">
+          Selecciona {currentRequirements.count} objetivo(s)
+        </h3>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-4">
+        <div className="flex gap-4 flex-wrap mb-6 max-h-96 overflow-y-auto">
           {availableTargets.map((target) => (
             <div
               key={target.id}
-              className={`relative cursor-pointer transition-transform duration-200 transform hover:scale-105 border-2 rounded ${
-                selectedTargets.some(t => t.id === target.id)
+              className={`rounded cursor-pointer border-4 transition ${
+                selectedTargets.some((t) => t.id === target.id)
                   ? "border-blue-600"
                   : "border-transparent hover:border-blue-300"
               }`}
               onClick={() => targetStore.toggleTarget(target)}
             >
-              <div className="relative w-16 h-24">
+              <div className="relative w-24 h-36">
                 <Image
                   src={`/cards/${target.name}.png`}
                   alt={target.name}
                   fill
                   className="object-cover"
-                  sizes="64px"
+                  sizes="96px"
                 />
               </div>
             </div>
           ))}
 
           {availableTargets.length === 0 && (
-            <p className="text-gray-400 text-center">No available targets</p>
+            <p className="text-gray-400 text-center">No hay objetivos disponibles</p>
           )}
         </div>
 
@@ -122,7 +122,7 @@ const TargetView = observer(({ field }: TargetViewProps) => {
             onClick={() => targetStore.closeTargetModal()}
             className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-400 transition"
           >
-            Cancel
+            Cancelar
           </button>
 
           <button
@@ -134,7 +134,7 @@ const TargetView = observer(({ field }: TargetViewProps) => {
                 : "bg-blue-300 cursor-not-allowed"
             }`}
           >
-            Confirm
+            Confirmar
           </button>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import { findOriginalCardData } from "@/app/lib/cardBase";
 import { drawCard, restartDeck } from "@/app/lib/gameHelpers/deck";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
@@ -38,6 +39,11 @@ export async function POST(
           const slot = gameState.field.slots[row][col];
           if (slot.card && slot.card.isTapped) {
             slot.card.isTapped = false;
+            if(slot.card.temporal === true){
+              const ogCard = findOriginalCardData(slot.card.id);
+              slot.card.attack = ogCard!.attack;
+              slot.card.temporal = false;
+            }
           }
 
           if (!slot.card && slot.owner === null) {
