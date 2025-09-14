@@ -10,6 +10,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const nameExists = await pool.query(
+      `SELECT COUNT(*) FROM lobby_players WHERE lobby_id = $1 AND name = $2`,
+      [lobbyId, name]
+    );
+    if (parseInt(nameExists.rows[0].count, 10) > 0) {
+      return NextResponse.json(
+        { error: "Ese nombre ya existe en el lobby. Por favor, elige otro." },
+        { status: 409 } 
+      );
+    }
+
     const playersCountResult = await pool.query(
       `SELECT COUNT(*) FROM lobby_players WHERE lobby_id = $1`,
       [lobbyId]

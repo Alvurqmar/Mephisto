@@ -48,9 +48,9 @@ export default function LobbyPage() {
       if (!res.ok) throw new Error("Error al unirse al lobby");
       const data = await res.json();
 
-      const players = JSON.parse(localStorage.getItem("players") || "{}");
-      players[gameId] = data.playerKey;
-      localStorage.setItem("players", JSON.stringify(players));
+      sessionStorage.setItem(`playerKey-${gameId}`, data.playerKey);
+      localStorage.setItem("currentGameId", gameId);
+      setName("");
     } catch (err) {
       console.error(err);
       alert("No se pudo unir al lobby");
@@ -87,7 +87,10 @@ export default function LobbyPage() {
     };
   }, [gameId, router]);
 
-  return (
+  const myPlayerKey = sessionStorage.getItem(`playerKey-${gameId}`);
+  const hasJoined = !!myPlayerKey;
+
+ return (
     <div
       className="flex flex-col items-center p-8 text-[#d4af37] min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('/MephistoBG.jpg')" }}
@@ -102,7 +105,7 @@ export default function LobbyPage() {
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="mb-4 p-2 rounded border border-amber-500"
-        disabled={players.length >= 4}
+        disabled={players.length >= 4 || hasJoined}
       />
 
       {players.length >= 4 ? (
@@ -112,10 +115,10 @@ export default function LobbyPage() {
       ) : (
         <button
           onClick={joinLobby}
-          disabled={!name.trim()}
+          disabled={!name.trim() || hasJoined}
           className="mb-4 rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl hover:bg-[#d4af37] hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#d4af37]"
         >
-          Unirse al Lobby
+          {hasJoined ? "Ya te has unido" : "Unirse al Lobby"}
         </button>
       )}
 

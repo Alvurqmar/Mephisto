@@ -23,8 +23,7 @@ type BoardViewProps = {
   gameId: string;
 };
 const BoardView = observer(({ gameId }: BoardViewProps) => {
-  const players = JSON.parse(localStorage.getItem("players") || "{}");
-  const myPlayerKey = players[gameId];
+  const myPlayerKey = sessionStorage.getItem(`playerKey-${gameId}`);
 
   useEffect(() => {
     async function init() {

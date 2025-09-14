@@ -64,9 +64,7 @@ const FieldView = ({ field, gameId }: FieldProps) => {
 
                   if (isLoot) {
                     if (
-                      card &&
-                      (!slot.owner || slot.owner === phaseStore.currentTurn)
-                    ) {
+                      card) {
                       lootActions.lootField(
                         rowIndex,
                         colIndex,
