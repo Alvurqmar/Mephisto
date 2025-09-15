@@ -3,7 +3,7 @@ import handStore from "./handStore";
 import deckStore from "./deckStore";
 import fieldStore from "./fieldStore";
 import phaseStore from "./phaseStore";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 
 class GameStore {
   playersStore = playerStore;
@@ -25,6 +25,7 @@ class GameStore {
       if (!res.ok) throw new Error("Error fetching game state");
       const gameData = await res.json();
 
+      runInAction(() => {
       this.playersStore.setPlayers(gameData.players);
       this.handsStore.setHands(gameData.hands, this.playersStore.players);
       this.deckStore.setDeck(gameData.deck);
@@ -39,12 +40,18 @@ class GameStore {
         winningSoulPoints: gameData.winningSoulPoints,
       });
       this.isLoaded = true;
+    });
     } catch (error) {
       console.error("Error loading game state:", error);
+      runInAction(() => {
+        this.isLoaded = false;
+      });
     } finally {
+      runInAction(() => {
       this.isLoading = false;
-    }
+    });
   }
+}
 }
 
 const gameStore = new GameStore();

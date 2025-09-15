@@ -1,3 +1,4 @@
+import { checkPassiveEffects } from "@/app/lib/gameHelpers/effects/passiveEffect";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import Card from "@/app/models/card";
@@ -59,6 +60,11 @@ export async function POST(
   }else{
   slot.card = card;
   }
+
+  checkPassiveEffects([card], gameState.players, playerId, false);
+
+  checkPassiveEffects(discardCards, gameState.players, playerId, true);
+
   await saveGameState(gameId, gameState);
   await pusher.trigger(`game-${gameId}`, "state-updated", {});
 

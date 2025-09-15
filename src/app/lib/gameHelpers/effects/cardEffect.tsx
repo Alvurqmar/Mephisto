@@ -56,14 +56,16 @@ export const effects = {
   BloodthirsterE,
   ArcanifeE,
   TransmuteE,
-  //BWE -> NO NECESITA FUNCION(implementado)
-
+  //IMPLEMENTADOS
+  //BWE
   //GoblinE,
-  //LichE,
   //WatcherE,
-  //WitchE,
   //WraithE,
   //ZombieE,
+
+  //NO IMPLEMENTADOS
+  //LichE,
+  //WitchE,
 
   //OozeE,
   //DKE,

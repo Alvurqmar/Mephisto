@@ -1,3 +1,4 @@
+import { checkPassiveEffects } from "@/app/lib/gameHelpers/effects/passiveEffect";
 import { updateFP } from "@/app/lib/gameHelpers/player";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
@@ -41,6 +42,7 @@ export async function POST(
 
   hand.splice(cardIndex, 1);
 
+  selectedCard.owner = null;
   slot.card = selectedCard;
 
   if (previousCard) {
@@ -49,6 +51,7 @@ export async function POST(
   }
 
   updateFP(gameState, playerId, 3);
+  checkPassiveEffects([selectedCard], gameState.players, playerId, false);
   gameState.currentPhase = "End Phase";
   gameState.phaseAction = null;
   

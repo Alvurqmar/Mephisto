@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import { Result } from "@/app/stores/actions/fightActions";
-import { updateFP, updateSP } from "@/app/lib/gameHelpers/player";
+import { addPassiveAbility, updateFP, updateSP } from "@/app/lib/gameHelpers/player";
+import Card, { CardType, EffectType } from "@/app/models/card";
 
 export async function POST(
   request: NextRequest,
@@ -21,6 +22,12 @@ export async function POST(
   results.forEach((res: Result) => {
     const slot = gameState.field.slots[res.row][res.col];
     if (slot) slot.card = res.card ?? null;
+  });
+
+  discardedCards.forEach((card: Card) => {
+    if(card.type === CardType.MONSTER && card.effectType === EffectType.CE){
+      addPassiveAbility(playerId, card.effectId, gameState);
+    }
   });
 
   if (favorSpent) {

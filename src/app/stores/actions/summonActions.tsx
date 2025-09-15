@@ -32,6 +32,7 @@ class SummonActions {
     });
     if (res.ok) {
       toast.success(`Invocaste con éxito, ganas 3 puntos de favor`);
+      cardActions.selectCard(null);
       if (hasETBEffect) {
         await handleETBEffect(selectedCard, gameId);
       }

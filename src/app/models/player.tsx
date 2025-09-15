@@ -7,16 +7,13 @@ class Player {
   soulPoints = 0;
   isWinner: boolean = false;
   orientation: "horizontal" | "vertical" = "horizontal";
+  passiveEffects: string[] = [];
 
   constructor(name: string, key: string, orientation: "horizontal" | "vertical" = "horizontal") {
     this.name = name;
     this.key = key;
     this.orientation = orientation;
     makeAutoObservable(this);
-  }
-
-  setName(name: string) {
-    this.name = name;
   }
 
   setOrientation(orientation: "horizontal" | "vertical") {
@@ -29,6 +26,7 @@ class Player {
       soulPoints: this.soulPoints,
       isWinner: this.isWinner,
       orientation: this.orientation,
+      passiveEffects: this.passiveEffects,
     };
   }
 
@@ -37,6 +35,7 @@ class Player {
     player.favorPoints = data.favorPoints;
     player.soulPoints = data.soulPoints;
     player.isWinner = data.isWinner;
+    player.passiveEffects = data.passiveEffects;
     return player;
   }
 }
@@ -47,6 +46,7 @@ export interface PlayerData {
   soulPoints: number;
   isWinner: boolean;
   orientation: "horizontal" | "vertical";
+  passiveEffects: string[];
 }
 
 
