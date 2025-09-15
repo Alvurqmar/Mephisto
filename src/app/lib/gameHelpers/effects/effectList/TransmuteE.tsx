@@ -1,7 +1,6 @@
 import { GameState } from "@/app/models/gameState";
 import { durabilityChange, findById } from "../../card";
 import Card from "@/app/models/card";
-import phaseStore from "@/app/stores/phaseStore";
 
 
 export function TransmuteE(gameState: GameState, cardId: string, targets?: Card[]) {
@@ -30,7 +29,7 @@ export function TransmuteE(gameState: GameState, cardId: string, targets?: Card[
 TransmuteE.requiresTarget = true;
 TransmuteE.targetRequirements = [
     {
-  type: ["WEAPON, ITEM"],
+  type: ["WEAPON", "ITEM"],
   count: 1,
   location: "field",
   owner: "opponent",
@@ -39,6 +38,6 @@ TransmuteE.targetRequirements = [
   type: "WEAPON",
   count: 1,
   location: "field",
-  owner: phaseStore.currentTurn,
-    },
+  owner: "own",
+},
 ];

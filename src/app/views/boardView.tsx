@@ -123,7 +123,7 @@ const BoardView = observer(({ gameId }: BoardViewProps) => {
 
       {/* Victoria */}
       {phaseStore.status === "Finished" && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-neutral-600 rounded-xl p-6 shadow-lg text-center max-w-md w-full">
             <h2 className="text-2xl font-bold mb-4">
               🎉{" "}

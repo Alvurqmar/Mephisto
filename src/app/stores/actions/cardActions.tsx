@@ -1,11 +1,10 @@
 import { makeAutoObservable } from "mobx";
 import { toast } from "react-toastify";
-import Card, { CardType, EffectType } from "../../models/card";
-import fieldStore, { cardInField, getCard } from "../fieldStore";
+import Card, { EffectType } from "../../models/card";
+import fieldStore, { cardInField } from "../fieldStore";
 import handStore from "../handStore";
 import phaseStore from "../phaseStore";
 import { handleETBEffect } from "@/app/lib/gameHelpers/effects/cardEffect";
-import { updateCard } from "@/app/lib/gameHelpers/card";
 
 class CardActions {
   selectedCard: Card | null = null;
@@ -124,13 +123,6 @@ class CardActions {
 
     if (res.ok) {
       toast.success("Carta jugada correctamente.");
-
-      if (selectedCard.type === CardType.SPELL) {
-        const wand = getCard(fieldStore.field, 34);
-        if (wand) {
-          await updateCard(gameId, wand.id, { attack: 3 });
-        }
-      }
       
       if (hasETBEffect) {
         await handleETBEffect(selectedCard, gameId);

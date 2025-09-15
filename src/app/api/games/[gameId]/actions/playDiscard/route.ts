@@ -2,6 +2,7 @@ import { checkPassiveEffects } from "@/app/lib/gameHelpers/effects/passiveEffect
 import { fetchGameState, saveGameState } from "@/app/lib/Helpers";
 import { pusher } from "@/app/lib/pusher";
 import Card from "@/app/models/card";
+import { getCard } from "@/app/stores/fieldStore";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
@@ -55,10 +56,15 @@ export async function POST(
 
   gameState.discardPile.addCards(discardCards);
   card.owner = playerId;
-  if(card.type === "SPELL"){
+  if (card.type === "SPELL") {
+    const wand = getCard(gameState.field, 34);
+    if (wand) {
+      wand.attack += 3;
+      wand.temporal = true;
+    }
     gameState.discardPile.addCards([card]);
-  }else{
-  slot.card = card;
+  } else {
+    slot.card = card;
   }
 
   checkPassiveEffects([card], gameState.players, playerId, false);

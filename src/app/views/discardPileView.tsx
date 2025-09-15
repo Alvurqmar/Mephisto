@@ -35,7 +35,7 @@ const DiscardPileView = observer(({ discardPile }: DiscardPileViewProps) => {
       </div>
 
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
           <div className="bg-neutral-700 rounded-lg p-4 w-[90%] max-w-3xl max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Cartas descartadas</h2>
             <div className="flex flex-wrap justify-center gap-2">

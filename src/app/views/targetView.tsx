@@ -32,7 +32,7 @@ const TargetView = observer(({ field }: TargetViewProps) => {
     }
 
     let targets: Card[] = [];
-
+    //Filtrar por ubicación
     if (currentRequirements.location === "field") {
       if (Array.isArray(currentRequirements.type)) {
         targets = currentRequirements.type.flatMap(type =>
@@ -61,16 +61,18 @@ const TargetView = observer(({ field }: TargetViewProps) => {
         targets = filterHandType(hand, currentRequirements.type);
       }
     }
-
-    if (currentRequirements.owner && currentRequirements.owner !== "any") {
+    //Filtrar por propietario
+    if (currentRequirements.owner !== "any") {
+      const playerIds = Object.keys(playerStore.players);
+      const opponentId = playerIds.find(id => id !== phaseStore.currentTurn);
+      const currentPlayerId = phaseStore.currentTurn;
+      console.log("Opponent ID:", opponentId, "Current Player ID:", currentPlayerId); 
       if (currentRequirements.owner === "opponent") {
-        const playerIds = Object.keys(playerStore.players);
-        const opponentId = playerIds.find(id => id !== phaseStore.currentTurn);
         if(opponentId) {
           targets = filterCardOwner(targets, opponentId);
         }
-      } else {
-        targets = filterCardOwner(targets, currentRequirements.owner);
+      } else if (currentRequirements.owner === "own") {
+        targets = filterCardOwner(targets, currentPlayerId);
       }
     }
 
@@ -83,10 +85,11 @@ const TargetView = observer(({ field }: TargetViewProps) => {
   const availableTargets = getAvailableTargets();
 
 return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex flex-col items-center justify-center z-50">
       <div className="bg-neutral-700 p-6 rounded max-w-xl w-full">
         <h3 className="text-xl font-bold mb-4">
-          Selecciona {currentRequirements.count} objetivo(s)
+          Selecciona {currentRequirements.count} objetivo(s). <br />
+          {selectedTargets.length}/{currentRequirements.count} seleccionado(s)
         </h3>
 
         <div className="flex gap-4 flex-wrap mb-6 max-h-96 overflow-y-auto">

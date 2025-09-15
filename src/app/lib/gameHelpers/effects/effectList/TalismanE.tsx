@@ -2,7 +2,6 @@ import { GameState } from "@/app/models/gameState";
 import { activatedAbility, findById } from "../../card";
 import Card from "@/app/models/card";
 import { effects } from "../cardEffect";
-import { toast } from "react-toastify";
 
 export function TalismanE(gameState: GameState, cardId: string, targets?: Card[]) {
   const numericCardId = parseInt(cardId);
@@ -14,7 +13,7 @@ export function TalismanE(gameState: GameState, cardId: string, targets?: Card[]
     if ((targetCard.type !== "ITEM" && targetCard.type !== "WEAPON") || 
         !targetCard.effectId || 
         targetCard.effectType !== "AA") {
-      toast.warn("Invalid target for Talisman - must be Item or Weapon with activated ability");
+      console.warn("Invalid target for Talisman - must be Item or Weapon with activated ability");
       return gameState;
     }
 
@@ -22,7 +21,7 @@ export function TalismanE(gameState: GameState, cardId: string, targets?: Card[]
     if (targetEffect) {
         targetEffect(gameState, cardId, []);
     } else {
-        toast.warn(`Target effect '${targetCard.effectId}' not found`);
+        console.warn(`Target effect '${targetCard.effectId}' not found`);
     }
 
     activatedAbility(gameState, numericCardId);

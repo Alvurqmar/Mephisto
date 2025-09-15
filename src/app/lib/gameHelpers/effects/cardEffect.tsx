@@ -27,8 +27,9 @@ import { PortalE } from "./effectList/PortalE";
 import { ShovelE } from "./effectList/ShovelE";
 import { SkewerE } from "./effectList/SkewerE";
 import { BloodthirsterE } from "./effectList/BloodthirsterE";
-import { ArcanifeE } from "./effectList/Arcanife";
+import { ArcanifeE } from "./effectList/ArcanifeE";
 import { TransmuteE } from "./effectList/TransmuteE";
+import { GrimoireE } from "./effectList/GrimoireE";
 
 export const effects = {
   MPE,
@@ -56,6 +57,7 @@ export const effects = {
   BloodthirsterE,
   ArcanifeE,
   TransmuteE,
+  GrimoireE,
   //IMPLEMENTADOS
   //BWE
   //GoblinE,
@@ -72,7 +74,6 @@ export const effects = {
   //SkeletonE,
   //TrollE,
 
-  //GrimoireE,
   //BoomerangE,
   //SlingshotE,
   //IlluminateE,
@@ -85,8 +86,8 @@ export interface EffectWithTargets {
   targetRequirements?: {
     type: string | string[];
     count: number;
-    location?: string;
-    owner?: string;
+    location: string;
+    owner: string;
     orientation?: string;
   }[];
 }
@@ -154,9 +155,10 @@ if (effect && effect.requiresTarget && effect.targetRequirements && !targets) {
         errorData.error || `HTTP error! status: ${response.status}`
       );
     }
-
+    toast.success("Efecto de carta activado.");
     return await response.json();
   } catch (error) {
+    toast.error("El efecto no se ha activado.");
     console.error("Error using effect:", error);
     throw error;
   }

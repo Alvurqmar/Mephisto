@@ -1,7 +1,6 @@
 import { GameState } from "@/app/models/gameState";
 import { durabilityChange, findById } from "../../card";
 import Card from "@/app/models/card";
-import phaseStore from "@/app/stores/phaseStore";
 
 
 export function UpgradeE(gameState: GameState, cardId: string, targets?: Card[]) {
@@ -28,5 +27,5 @@ UpgradeE.targetRequirements = {
   type: "WEAPON",
   count: 1,
   location: "field",
-  owner: phaseStore.currentTurn,
+  owner: "own",
 };

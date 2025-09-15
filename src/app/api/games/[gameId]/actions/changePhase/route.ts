@@ -33,17 +33,17 @@ export async function POST(
       if (gameState.deck.length <= 0) {
         restartDeck(gameState);
       }
-      
+
       for (let row = 0; row < gameState.field.slots.length; row++) {
         for (let col = 0; col < gameState.field.slots[row].length; col++) {
           const slot = gameState.field.slots[row][col];
           if (slot.card && slot.card.isTapped) {
             slot.card.isTapped = false;
-            if(slot.card.temporal === true){
-              const ogCard = findOriginalCardData(slot.card.id);
-              slot.card.attack = ogCard!.attack;
-              slot.card.temporal = false;
-            }
+          }
+          if (slot.card && slot.card.temporal === true) {
+            const ogCard = findOriginalCardData(slot.card.id);
+            slot.card.attack = ogCard!.attack;
+            slot.card.temporal = false;
           }
           if (!slot.card && slot.owner === null) {
             const deckCard = topCard(gameState);

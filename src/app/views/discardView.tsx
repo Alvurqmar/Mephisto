@@ -23,10 +23,11 @@ const DiscardView = observer(({ gameId }: DiscardProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex flex-col items-center justify-center z-50">
       <div className="bg-neutral-700 p-6 rounded max-w-md w-full">
         <h2 className="text-lg font-bold mb-4">
-          Selecciona {cost} carta{cost > 1 ? "s" : ""} para descartar
+          Selecciona {cost} carta{cost > 1 ? "s" : ""} para descartar. <br />
+          {cardActions.discardSelection.length}/{cost} seleccionado(s)
         </h2>
 
         <div className="flex gap-2 overflow-x-auto mb-6">

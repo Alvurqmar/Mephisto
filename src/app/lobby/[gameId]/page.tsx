@@ -106,6 +106,7 @@ export default function LobbyPage() {
         onChange={(e) => setName(e.target.value)}
         className="mb-4 p-2 rounded border border-amber-500"
         disabled={players.length >= 4 || hasJoined}
+        maxLength={10}
       />
 
       {players.length >= 4 ? (

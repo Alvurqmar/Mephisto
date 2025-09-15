@@ -4,10 +4,9 @@ import Card from "../models/card";
 export interface TargetRequirement {
   type: string | string[];
   count: number;
-  location?: string | string[];
-  owner?: string;
+  location: string | string[];
+  owner: string;
   orientation?: string;
-  label?: string;
 }
 
 class TargetStore {
