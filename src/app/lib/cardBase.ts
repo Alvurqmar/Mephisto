@@ -5,8 +5,8 @@ export const cards = [
   { id: 3, name: 'Lich', type: 'MONSTER', cost: 0, attack: 18, durability: 0, effectId: 'LichE', effectType: 'CE', soulPts: 4 },
   { id: 4, name: 'Ooze', type: 'MONSTER', cost: 0, attack: 8, durability: 0, effectId: 'OozeE', effectType: 'ETB', soulPts: 2 },
   { id: 5, name: 'Ooze', type: 'MONSTER', cost: 0, attack: 8, durability: 0, effectId: 'OozeE', effectType: 'ETB', soulPts: 2 },
-  { id: 6, name: 'Doom_Knight', type: 'MONSTER', cost: 0, attack: 17, durability: 0, effectId: 'DKE', effectType: 'ETB', soulPts: 4 },
-  { id: 7, name: 'Doom_Knight', type: 'MONSTER', cost: 0, attack: 17, durability: 0, effectId: 'DKE', effectType: 'ETB', soulPts: 4 },
+  { id: 6, name: 'Doom Knight', type: 'MONSTER', cost: 0, attack: 17, durability: 0, effectId: 'DKE', effectType: 'ETB', soulPts: 4 },
+  { id: 7, name: 'Doom Knight', type: 'MONSTER', cost: 0, attack: 17, durability: 0, effectId: 'DKE', effectType: 'ETB', soulPts: 4 },
   { id: 8, name: 'Skeleton', type: 'MONSTER', cost: 0, attack: 3, durability: 0, effectId: 'SkeletonE', effectType: 'ETB', soulPts: 1 },
   { id: 9, name: 'Skeleton', type: 'MONSTER', cost: 0, attack: 3, durability: 0, effectId: 'SkeletonE', effectType: 'ETB', soulPts: 1 },
   { id: 10, name: 'Spider', type: 'MONSTER', cost: 0, attack: 8, durability: 0, effectId: 'SpiderE', effectType: 'ETB', soulPts: 2 },
@@ -27,17 +27,17 @@ export const cards = [
   { id: 25, name: 'Zombie', type: 'MONSTER', cost: 0, attack: 5, durability: 0, effectId: 'ZombieE', effectType: 'CE', soulPts: 1 },
 
   // ITEMS
-  { id: 26, name: 'Mystery_Potion', type: 'ITEM', cost: 1, attack: 0, durability: 3, effectId: 'MPE', effectType: 'AA', soulPts: 0 },
-  { id: 27, name: 'Mystery_Potion', type: 'ITEM', cost: 1, attack: 0, durability: 3, effectId: 'MPE', effectType: 'AA', soulPts: 0 },
+  { id: 26, name: 'Mystery Potion', type: 'ITEM', cost: 1, attack: 0, durability: 3, effectId: 'MPE', effectType: 'AA', soulPts: 0 },
+  { id: 27, name: 'Mystery Potion', type: 'ITEM', cost: 1, attack: 0, durability: 3, effectId: 'MPE', effectType: 'AA', soulPts: 0 },
   { id: 28, name: 'Potion', type: 'ITEM', cost: 0, attack: 0, durability: 3, effectId: 'PE', effectType: 'AA', soulPts: 0 },
   { id: 29, name: 'Stew', type: 'ITEM', cost: 1, attack: 0, durability: 3, effectId: 'StewE', effectType: 'AA', soulPts: 0 },
   { id: 30, name: 'Talisman', type: 'ITEM', cost: 0, attack: 0, durability: 3, effectId: 'TalismanE', effectType: 'AA', soulPts: 0 },
   { id: 31, name: 'Torch', type: 'ITEM', cost: 0, attack: 0, durability: 3, effectId: 'TorchE', effectType: 'AA', soulPts: 0 },
-  { id: 32, name: 'Treasure_Chest', type: 'ITEM', cost: 1, attack: 0, durability: 3, effectId: 'TCE', effectType: 'AA', soulPts: 0 },
+  { id: 32, name: 'Treasure Chest', type: 'ITEM', cost: 1, attack: 0, durability: 3, effectId: 'TCE', effectType: 'AA', soulPts: 0 },
   { id: 33, name: 'Key', type: 'ITEM', cost: 0, attack: 0, durability: 3, effectId: 'KeyE', effectType: 'AA', soulPts: 0 },
 
   // WEAPONS
-  { id: 34, name: 'Blast_Wand', type: 'WEAPON', cost: 1, attack: 3, durability: 3, effectId: 'BWE', effectType: 'CE', soulPts: 0 },
+  { id: 34, name: 'Blast Wand', type: 'WEAPON', cost: 1, attack: 3, durability: 3, effectId: 'BWE', effectType: 'CE', soulPts: 0 },
   { id: 35, name: 'Corruptor', type: 'WEAPON', cost: 2, attack: 5, durability: 2, effectId: 'CorruptorE', effectType: 'ETB', soulPts: 0 },
   { id: 36, name: 'Fork', type: 'WEAPON', cost: 0, attack: 3, durability: 2, effectId: 'ForkE', effectType: 'ETB', soulPts: 0 },
   { id: 37, name: 'Grimoire', type: 'WEAPON', cost: 2, attack: 5, durability: 3, effectId: 'GrimoireE', effectType: 'AA', soulPts: 0 },
