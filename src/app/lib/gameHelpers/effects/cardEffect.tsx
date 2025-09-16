@@ -66,7 +66,7 @@ export const effects = {
   //WitchE, //Con cambios
   //LichE,
 
-  //NO IMPLEMENTADOS
+  //NO IMPLEMENTADOS----------------------------
   //OozeE,
   //DKE,
   //SkeletonE,

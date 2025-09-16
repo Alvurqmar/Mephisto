@@ -18,9 +18,9 @@ const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
 
   if (!phaseAction && myPlayerKey === phaseStore.currentTurn) {
     return (
-      <div className="absolute top-6 bg-neutral-400 px-6 py-4 rounded shadow-md text-neutral-800">
+      <div className="absolute top-6 bg-neutral-500 px-7 py-5 rounded shadow-md text-neutral-800">
         <h1 className="font-bold mb-2 text-center">
-          Elige una acción (o pasa de fase):
+          Elige una acción:
         </h1>
         <div className="flex gap-4 justify-center">
           <button
@@ -60,7 +60,7 @@ const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
       const isRows = orientation === "rows";
 
       return (
-        <div className="absolute top-6 z-50 bg-neutral-400 p-4 rounded shadow text-neutral-800">
+        <div className="absolute top-6 z-50 bg-neutral-500 p-4 rounded shadow text-neutral-800">
           <h1 className="font-bold mb-2 text-center">
             Selecciona una {isRows ? "fila" : "columna"} para combatir:
           </h1>
@@ -91,7 +91,7 @@ const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
 
   if (phaseAction === "Loot" && myPlayerKey === phaseStore.currentTurn) {
     return (
-      <div className="absolute top-4 z-50 bg-neutral-400 px-6 py-3 rounded shadow-md text-neutral-800 w-max">
+      <div className="absolute top-4 z-50 bg-neutral-500 px-6 py-3 rounded shadow-md text-neutral-800 w-max">
         <h1 className="mb-2 text-center font-semibold">
           Haz click en una carta en la dungeon para robarla,
           <br />o roba una carta del mazo:
@@ -122,12 +122,14 @@ const ActionsView = ({ gameId, myPlayerKey }: ActionProps) => {
 
   if (phaseAction === "Summon" && myPlayerKey === phaseStore.currentTurn) {
     return (
-      <div className="absolute top-4 z-50 bg-neutral-400 px-6 py-3 rounded shadow-md text-neutral-800 w-max">
+      <div className="absolute top-4 z-50 bg-neutral-500 px-6 py-3 rounded shadow-md text-neutral-800 w-max">
         <h1 className="mb-2 text-center font-semibold">
-          Selecciona un monstruo de tu mano para invocar.
+          Selecciona un monstruo de tu mano para invocar
+          <br /> y una carta del campo donde colocarlo.
+
         </h1>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-center mt-4">
           <button
             onClick={() =>
               phaseActions.setAction(gameId, phaseStore.currentTurn, null)

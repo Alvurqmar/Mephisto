@@ -16,13 +16,13 @@ type FieldProps = {
 
 const FieldView = ({ field, gameId }: FieldProps) => {
   return (
-    <div className="w-full h-full max-w-screen max-h-screen mx-auto p-2 overflow-y-auto overflow-x-hidden flex justify-center items-start pt-20">
+    <div className="w-full h-full  max-w-screen max-h-screen mx-auto p-2 overflow-y-auto overflow-x-hidden flex justify-center items-start pt-20">
       <div
-        className="grid gap-2"
+        className="grid"
         style={{
-          gridTemplateColumns: `repeat(${field.columns}, 8rem)`,
-          gridTemplateRows: `repeat(${field.rows}, 12rem)`,
-          minWidth: "100%",
+          gridTemplateColumns: `repeat(${field.columns}, 9rem)`,
+          gridTemplateRows: `repeat(${field.rows}, 13rem)`,
+          minWidth: field.columns * 144,
           minHeight: field.rows * 144,
           boxSizing: "content-box",
         }}
@@ -47,10 +47,10 @@ const FieldView = ({ field, gameId }: FieldProps) => {
                 key={`${rowIndex}-${colIndex}`}
                 className={`border bg-neutral-700 rounded relative flex items-center justify-center`}
                 style={{
-                  width: "6rem",
-                  height: "9rem",
-                  minWidth: "6rem",
-                  minHeight: "9rem",
+                  width: "8rem",
+                  height: "11rem",
+                  minWidth: "8rem",
+                  minHeight: "11rem",
                   position: "relative",
                   zIndex: field.rows - rowIndex,
                 }}

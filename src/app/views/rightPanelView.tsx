@@ -5,6 +5,7 @@ import cardActions from "../stores/actions/cardActions";
 import phaseActions from "../stores/actions/phaseActions";
 import playerStore from "../stores/playerStore";
 import phaseStore from "../stores/phaseStore";
+import handStore from "../stores/handStore";
 
 type PanelProps = {
   gameId: string;
@@ -16,13 +17,14 @@ const RightPanelView = ({ gameId, myPlayerKey}: PanelProps) => {
   return (
     <div className={`flex flex-col h-full w-[110px]`}>
       {playerCount >= 3 && (
-        <div className="h-[100px] border rounded bg-yellow-800/80 flex flex-col items-center justify-center mb-auto">
+        <div className="h-[120px] border rounded bg-yellow-800/80 flex flex-col items-center justify-center mb-auto">
           <p>P3: {playerStore.players["p3"].name}</p>
           <p>🌀SP: {playerStore.players["p3"].soulPoints}</p>
-          <p>✨FP: {playerStore.players["p3"].favorPoints}</p>
+          <p>🔥FP: {playerStore.players["p3"].favorPoints}</p>
+          <p>🃏Cartas: {handStore.hands["p3"].cards.length}</p>
         </div>
       )}
-      {myPlayerKey === phaseStore.currentTurn && (
+      {myPlayerKey === phaseStore.currentTurn && phaseStore.currentPhase !== "Action Phase" && (
       <button
         onClick={() => {
           phaseActions.changePhase(gameId,myPlayerKey);
@@ -33,12 +35,12 @@ const RightPanelView = ({ gameId, myPlayerKey}: PanelProps) => {
             bg-red-800 text-white
             hover:bg-red-600 active:bg-red-900
             transition-colors duration-150
-            shadow-md"
+            shadow-md mt-4"
       >
         Pasar Fase
       </button>
     )}
-      <p className="border text-white bg-neutral-700/70 bg-opacity-70 px-2 rounded flex flex-col mt-4">
+      <p className="border text-white bg-neutral-700/70 bg-opacity-70 p-2 rounded flex flex-col mt-4 w-32">
         <span className="mb-4">
           Turno {phaseStore.turnCounter}:{" "}
           {playerStore.players[phaseStore.currentTurn].name}
@@ -52,10 +54,11 @@ const RightPanelView = ({ gameId, myPlayerKey}: PanelProps) => {
       </p>
 
       {playerCount === 4 && (
-        <div className="h-[100px] border rounded bg-purple-800/80 flex flex-col items-center justify-center mt-auto">
+        <div className="h-[120px] border rounded bg-purple-800/80 flex flex-col items-center justify-center mt-auto">
           <p>P4: {playerStore.players["p4"].name}</p>
           <p>🌀SP: {playerStore.players["p4"].soulPoints}</p>
-          <p>✨FP: {playerStore.players["p4"].favorPoints}</p>
+          <p>🔥FP: {playerStore.players["p4"].favorPoints}</p>
+          <p>🃏Cartas: {handStore.hands["p4"].cards.length}</p>
         </div>
       )}
     </div>

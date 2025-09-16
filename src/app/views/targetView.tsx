@@ -105,7 +105,7 @@ return (
               }`}
               onClick={() => targetStore.toggleTarget(target)}
             >
-              <div className="relative w-24 h-36">
+              <div className="relative min-w-32 h-44">
                 <Image
                   src={`/cards/${target.name}.png`}
                   alt={target.name}
