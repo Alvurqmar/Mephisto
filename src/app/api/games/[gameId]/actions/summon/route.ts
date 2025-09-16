@@ -51,7 +51,7 @@ export async function POST(
   }
 
   updateFP(gameState, playerId, 3);
-  checkPassiveEffects([selectedCard], gameState.players, playerId, false);
+  checkPassiveEffects([selectedCard], gameState.players, playerId, false, gameState);
   gameState.currentPhase = "End Phase";
   gameState.phaseAction = null;
   

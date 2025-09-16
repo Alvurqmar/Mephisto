@@ -4,7 +4,6 @@ import Card from "@/app/models/card";
 import { SFE } from "./effectList/SFE";
 import { PE } from "./effectList/PE";
 import { StewE } from "./effectList/StewE";
-import { TalismanE } from "./effectList/TalismanE";
 import { BlazingE } from "./effectList/BlazingE";
 import { UpgradeE } from "./effectList/UpgradeE";
 import { RepeaterE } from "./effectList/RepeaterE";
@@ -36,7 +35,7 @@ export const effects = {
   SFE,
   PE,
   StewE,
-  TalismanE, //FIX
+  //TalismanE, //FIX
   HookshotE,
   BlazingE,
   UpgradeE,
@@ -57,18 +56,17 @@ export const effects = {
   BloodthirsterE,
   ArcanifeE,
   TransmuteE,
-  GrimoireE,
+  GrimoireE, //Con cambios
   //IMPLEMENTADOS
   //BWE
   //GoblinE,
   //WatcherE,
   //WraithE,
-  //ZombieE,
+  //ZombieE, 
+  //WitchE, //Con cambios
+  //LichE,
 
   //NO IMPLEMENTADOS
-  //LichE,
-  //WitchE,
-
   //OozeE,
   //DKE,
   //SkeletonE,
@@ -158,7 +156,6 @@ if (effect && effect.requiresTarget && effect.targetRequirements && !targets) {
     toast.success("Efecto de carta activado.");
     return await response.json();
   } catch (error) {
-    toast.error("El efecto no se ha activado.");
     console.error("Error using effect:", error);
     throw error;
   }

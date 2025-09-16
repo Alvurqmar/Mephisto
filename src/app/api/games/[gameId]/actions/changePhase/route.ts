@@ -51,6 +51,8 @@ export async function POST(
           }
         }
       }
+
+      gameState.players[playerId].activationHistory = {};
       gameState.turnCounter++;
       gameState.currentTurn = keys[(turn + 1) % keys.length];
       gameState.currentPhase = "Main Phase";

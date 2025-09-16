@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from "react";
 import { observer } from "mobx-react";
 import targetStore from "../stores/targetStore";
@@ -26,56 +26,58 @@ const TargetView = observer(({ field }: TargetViewProps) => {
     ? targetRequirements[currentRequirementIndex]
     : targetRequirements;
 
-  const getAvailableTargets = () => {
-    if (!currentRequirements) {
-      return [];
+  if (!currentRequirements) {
+    return null;
+  }
+  
+  const getTargetsByLocation = (): Card[] => {
+    const { location, type } = currentRequirements;
+    
+    if (location === "field") {
+      return Array.isArray(type) ? 
+        type.flatMap(t => filterFieldType(field, t)) : 
+        filterFieldType(field, type);
+    } 
+    
+    if (location === "lane" && effectCardId) {
+      const orientation = playerStore.players[phaseStore.currentTurn].orientation;
+      return Array.isArray(type) ? 
+        type.flatMap(t => filterLaneType(field, parseInt(effectCardId), t, orientation)) :
+        filterLaneType(field, parseInt(effectCardId), type, orientation);
+    } 
+    
+    if (location === "hand") {
+      const playerKey = playerStore.players[phaseStore.currentTurn].key;
+      const hand = handStore.hands[playerKey];
+      return Array.isArray(type) ?
+        type.flatMap(t => filterHandType(hand, t)) :
+        filterHandType(hand, type);
     }
+    
+    return [];
+  };
 
-    let targets: Card[] = [];
-    //Filtrar por ubicación
-    if (currentRequirements.location === "field") {
-      if (Array.isArray(currentRequirements.type)) {
-        targets = currentRequirements.type.flatMap(type =>
-          filterFieldType(field, type)
-        );
-      } else {
-        targets = filterFieldType(field, currentRequirements.type);
-      }
-    } else if (currentRequirements.location === "lane" && effectCardId) {
-      if (Array.isArray(currentRequirements.type)) {
-        targets = currentRequirements.type.flatMap(type =>
-          filterLaneType(field, parseInt(effectCardId), type, playerStore.players[phaseStore.currentTurn].orientation)
-        );
-      } else {
-        targets = filterLaneType(field, parseInt(effectCardId), currentRequirements.type, playerStore.players[phaseStore.currentTurn].orientation);
-      }
-    } else if (currentRequirements.location === "hand") {
-      const player = playerStore.players[phaseStore.currentTurn].key;
-      const hand = handStore.hands[player];
-
-      if (Array.isArray(currentRequirements.type)) {
-        targets = currentRequirements.type.flatMap(type =>
-          filterHandType(hand, type)
-        );
-      } else {
-        targets = filterHandType(hand, currentRequirements.type);
-      }
-    }
-    //Filtrar por propietario
-    if (currentRequirements.owner !== "any") {
-      const playerIds = Object.keys(playerStore.players);
+  const filterTargetsByOwner = (targets: Card[]): Card[] => {
+    const { owner } = currentRequirements;
+    const playerIds = Object.keys(playerStore.players);
+    
+    if (owner === "opponent") {
       const opponentId = playerIds.find(id => id !== phaseStore.currentTurn);
-      const currentPlayerId = phaseStore.currentTurn;
-      console.log("Opponent ID:", opponentId, "Current Player ID:", currentPlayerId); 
-      if (currentRequirements.owner === "opponent") {
-        if(opponentId) {
-          targets = filterCardOwner(targets, opponentId);
-        }
-      } else if (currentRequirements.owner === "own") {
-        targets = filterCardOwner(targets, currentPlayerId);
-      }
+      return opponentId ? filterCardOwner(targets, opponentId) : [];
     }
+    
+    if (owner === "own") {
+      const currentPlayerId = phaseStore.currentTurn;
+      return filterCardOwner(targets, currentPlayerId);
+    }
+    
+    return targets;
+  };
 
+  const getAvailableTargets = (): Card[] => {
+          let targets = getTargetsByLocation();
+    targets = filterTargetsByOwner(targets);
+    
     const uniqueTargets = Array.from(new Set(targets.map(card => card.id)))
       .map(id => targets.find(card => card.id === id)!);
 

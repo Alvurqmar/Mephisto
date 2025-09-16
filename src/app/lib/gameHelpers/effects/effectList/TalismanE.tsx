@@ -1,9 +1,9 @@
 import { GameState } from "@/app/models/gameState";
 import { activatedAbility, findById } from "../../card";
 import Card from "@/app/models/card";
-import { effects } from "../cardEffect";
+import { cardEffect } from "../cardEffect";
 
-export function TalismanE(gameState: GameState, cardId: string, targets?: Card[]) {
+export async function TalismanE(gameState: GameState, cardId: string, targets?: Card[]) {
   const numericCardId = parseInt(cardId);
   const talismanCard = findById(gameState, numericCardId);
   
@@ -17,14 +17,13 @@ export function TalismanE(gameState: GameState, cardId: string, targets?: Card[]
       return gameState;
     }
 
-    const targetEffect = effects[targetCard.effectId as keyof typeof effects];
-    if (targetEffect) {
-        targetEffect(gameState, cardId, []);
-    } else {
-        console.warn(`Target effect '${targetCard.effectId}' not found`);
-    }
+    talismanCard.effectId = targetCard.effectId;
+    talismanCard.temporal = true;
+    
+    const updatedState = cardEffect(gameState, talismanCard.effectId, talismanCard.id.toString(), []);
 
-    activatedAbility(gameState, numericCardId);
+    activatedAbility(updatedState, numericCardId);
+    return updatedState;
   }
   
   return gameState;

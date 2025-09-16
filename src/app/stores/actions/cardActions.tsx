@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import { toast } from "react-toastify";
 import Card, { EffectType } from "../../models/card";
 import fieldStore, { cardInField } from "../fieldStore";
@@ -127,21 +127,23 @@ class CardActions {
       if (hasETBEffect) {
         await handleETBEffect(selectedCard, gameId);
       }
+      runInAction(() => {
       this.selectCard(null);
       this.discardSelection = [];
       this.pendingSlot = null;
       this.discardModal = false;
+      });
     } else {
       const error = await res.json();
       toast.error(error.error);
     }
   }
 
-  confirmDiscard(gameId: string) {
+  async confirmDiscard(gameId: string) {
     if (!this.pendingSlot) return;
     const { row, col } = this.pendingSlot;
     const discardIds = this.discardSelection.map((c) => c.id);
-    this.sendPlayRequest(row, col, gameId, discardIds);
+    await this.sendPlayRequest(row, col, gameId, discardIds);
   }
 
   cancelDiscard = () => {

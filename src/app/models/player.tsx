@@ -8,6 +8,7 @@ class Player {
   isWinner: boolean = false;
   orientation: "horizontal" | "vertical" = "horizontal";
   passiveEffects: string[] = [];
+  activationHistory: Record<string, number> = {};
 
   constructor(name: string, key: string, orientation: "horizontal" | "vertical" = "horizontal") {
     this.name = name;
@@ -27,6 +28,7 @@ class Player {
       isWinner: this.isWinner,
       orientation: this.orientation,
       passiveEffects: this.passiveEffects,
+      activationHistory: this.activationHistory,
     };
   }
 
@@ -36,6 +38,7 @@ class Player {
     player.soulPoints = data.soulPoints;
     player.isWinner = data.isWinner;
     player.passiveEffects = data.passiveEffects;
+    player.activationHistory = data.activationHistory;
     return player;
   }
 }
@@ -47,6 +50,7 @@ export interface PlayerData {
   isWinner: boolean;
   orientation: "horizontal" | "vertical";
   passiveEffects: string[];
+  activationHistory: Record<string, number>;
 }
 
 

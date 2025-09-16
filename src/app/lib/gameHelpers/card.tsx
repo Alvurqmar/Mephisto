@@ -2,6 +2,7 @@ import Card from "@/app/models/card";
 import { GameState } from "@/app/models/gameState";
 import { findOriginalCardData } from "../cardBase";
 import phaseStore from "@/app/stores/phaseStore";
+import { checkPassiveEffects } from "./effects/passiveEffect";
 
 export function findById(gameState: GameState, cardId: number) {
   for (let row = 0; row < gameState.field.slots.length; row++) {
@@ -18,6 +19,13 @@ export function activatedAbility(gameState: GameState, cardId: number) {
   const card = findById(gameState, cardId);
   if (card && card.durability !== undefined) {
     card.isTapped = true;
+    const history = gameState.players[card.owner!].activationHistory;
+    if(history[cardId]){
+      history[cardId] += 1;
+    } else {
+      history[cardId] = 1;
+    }
+    checkPassiveEffects([card], gameState.players, card.owner!, false, gameState);
     durabilityChange(gameState, card, -1);
     }
 }

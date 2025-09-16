@@ -67,9 +67,9 @@ export async function POST(
     slot.card = card;
   }
 
-  checkPassiveEffects([card], gameState.players, playerId, false);
+  checkPassiveEffects([card], gameState.players, playerId, false, gameState);
 
-  checkPassiveEffects(discardCards, gameState.players, playerId, true);
+  checkPassiveEffects(discardCards, gameState.players, playerId, true, gameState);
 
   await saveGameState(gameId, gameState);
   await pusher.trigger(`game-${gameId}`, "state-updated", {});

@@ -58,7 +58,7 @@ export default function Home() {
       <header>
         <Image
           className="w-auto h-auto"
-          src="/mephisto_title.png"
+          src="/Mephisto_title.png"
           alt="Mephisto logo"
           width={300}
           height={100}
