@@ -32,3 +32,11 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+# Copyright
+
+- All original card images and concepts used in this project are property of Dylan Mangini, the game's designer, you can find his [Site here](https://www.dammdesigns.com) .
+
+- For the background image of the main page, I used the license-free image "Scenes of horror in the canyon" from the user 'liuzishan' published in [Freepik](https://www.freepik.com/author/liuzishan).
+
+- For the background image of the game page, I used "pixel art dungeon themed video game background flat wall", an image from the user 'pandabro' published in [Idyllic](https://us.idyllic.app/profile/pandabro).
