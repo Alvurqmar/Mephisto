@@ -7,21 +7,6 @@ export default function Home() {
   const router = useRouter();
   const [joinCode, setJoinCode] = useState("");
 
-    async function seedDatabase() {
-    try {
-      const res = await fetch("/api/cards/seed", { method: "POST" });
-      if (!res.ok) throw new Error("Error al sembrar la base");
-      alert("Seed completado!");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error en seed:", error.message);
-        alert("Error en seed: " + error.message);
-      } else {
-        console.error("Error desconocido en seed:", error);
-        alert("Error desconocido en seed");
-      }
-    }
-  }
   async function createLobby() {
     try {
       const res = await fetch("/api/lobbies/create", { method: "POST" });
@@ -131,19 +116,6 @@ export default function Home() {
         >
           Mira las reglas originales aquí
         </a>
-                <section className="flex flex-col gap-6 items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-base tracking-wide text-[#d4af37]">
-              Comienza seedeando la base de datos, para que puedas jugar.
-            </span>
-            <button
-              onClick={seedDatabase}
-              className="rounded-full border border-solid border-[#d4af37] px-6 py-3 text-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-black transition-all"
-            >
-              Pulsa aquí
-            </button>
-          </div>
-        </section>
       </footer>
     </div>
   );
